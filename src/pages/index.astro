@@ -1,129 +1,16 @@
 ---
-const title = "GAIO Validation Lab";
+import GroupLayout from '../layouts/GroupLayout.astro';
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{title}</title>
-    <style>
-      body {
-        font-family: system-ui, -apple-system, sans-serif;
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 2rem;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-      }
-      .container {
-        background: white;
-        padding: 3rem;
-        border-radius: 12px;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-      }
-      h1 {
-        color: #333;
-        margin-bottom: 0.5rem;
-        font-size: 2.5rem;
-      }
-      .subtitle {
-        color: #666;
-        font-size: 1.125rem;
-        margin-bottom: 2rem;
-      }
-      .groups {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.5rem;
-        margin-top: 2rem;
-      }
-      .group-card {
-        padding: 1.5rem;
-        border-radius: 8px;
-        text-decoration: none;
-        color: inherit;
-        transition: transform 0.2s, box-shadow 0.2s;
-        border: 2px solid transparent;
-      }
-      .group-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      }
-      .group-card.control {
-        background: #e3f2fd;
-        border-color: #0066cc;
-      }
-      .group-card.test {
-        background: #e8f5e9;
-        border-color: #00c853;
-      }
-      .group-card h2 {
-        margin-top: 0;
-        margin-bottom: 0.5rem;
-      }
-      .group-card.control h2 {
-        color: #0066cc;
-      }
-      .group-card.test h2 {
-        color: #00c853;
-      }
-      .badge {
-        display: inline-block;
-        padding: 0.25rem 0.75rem;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        font-weight: bold;
-        color: white;
-        margin-bottom: 0.5rem;
-      }
-      .badge.control {
-        background: #0066cc;
-      }
-      .badge.test {
-        background: #00c853;
-      }
-      .info-section {
-        margin-top: 2rem;
-        padding: 1.5rem;
-        background: #f5f5f5;
-        border-radius: 8px;
-        border-left: 4px solid #667eea;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>🧪 {title}</h1>
-      <p class="subtitle">Testing environment for web components to validate Gen-AI optimization methods</p>
-
-      <div class="groups">
-        <a href="/control-group-a" class="group-card control">
-          <span class="badge control">CONTROL</span>
-          <h2>Control Group A</h2>
-          <p>Standard DXP Components</p>
-          <p style="font-size: 0.875rem; color: #666;">Baseline implementation without AI optimization for comparison</p>
-        </a>
-
-        <a href="/test-group-b" class="group-card test">
-          <span class="badge test">OPTIMIZED</span>
-          <h2>Test Group B</h2>
-          <p>Optimized GAIO Components</p>
-          <p style="font-size: 0.875rem; color: #666;">AI-optimized components for testing and validation</p>
-        </a>
-      </div>
-
-      <div class="info-section">
-        <h3 style="margin-top: 0;">About This Lab</h3>
-        <p>This environment allows you to:</p>
-        <ul>
-          <li>Compare standard components (Control Group A) with AI-optimized components (Test Group B)</li>
-          <li>Track performance metrics through middleware logging</li>
-          <li>Validate Gen-AI optimization methods in a controlled environment</li>
-          <li>Deploy easily to Vercel for production testing</li>
-        </ul>
-      </div>
-    </div>
-  </body>
-</html>
+<GroupLayout
+  title="GAIO Validation Lab"
+  accentColor="#667eea"
+  badgeText="HOME"
+  purpose="Testing environment for web components to validate Gen-AI optimization methods"
+  componentType="Central hub for accessing control and test groups"
+  group="Home"
+  navLinks={[
+    { href: '/control-group-a', text: 'Control Group A' },
+    { href: '/test-group-b', text: 'Test Group B' }
+  ]}
+/>
