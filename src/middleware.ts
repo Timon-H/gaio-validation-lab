@@ -51,12 +51,17 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     console.log(`GAIO_METRIC_DATA: ${JSON.stringify(logData)}`);
   } else {
     // Normales Logging für menschliche Besucher (optional, zur Kontrolle)
-    console.log(`[${new Date().toISOString()}] HUMAN_VISIT: ${url.pathname} [${group}] (${duration}ms)`);
+    console.log(
+      `[${new Date().toISOString()}] HUMAN_VISIT: ${request.method} ${url.pathname} [${group}] ${response.status} (${duration}ms)`
+    );
   }
 
   // 6. Header für manuelle Verifikation setzen
   response.headers.set('X-Test-Group', group);
-  response.headers.set('X-AI-Bot-Detected', isAiBot ? detectedBot!.name : 'false');
+  response.headers.set('X-AI-Bot-Detected', isAiBot ? 'true' : 'false');
+  if (isAiBot && detectedBot?.name) {
+    response.headers.set('X-AI-Bot-Name', detectedBot.name);
+  }
   response.headers.set('X-Response-Time', `${duration}ms`);
 
   return response;
