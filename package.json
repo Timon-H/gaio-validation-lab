@@ -1,0 +1,35 @@
+{
+  "name": "gaio-validation-lab",
+  "version": "1.0.0",
+  "description": "Minimalist environment to validate and benchmark generative AI optimization approaches on web-components",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Timon-H/gaio-validation-lab.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Timon-H/gaio-validation-lab/issues"
+  },
+  "homepage": "https://github.com/Timon-H/gaio-validation-lab#readme",
+  "dependencies": {
+    "@astrojs/vercel": "^9.0.4",
+    "astro": "^5.17.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.6",
+    "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "path-to-regexp": "8.3.0",
+    "lodash": "4.17.23"
+  }
+}
