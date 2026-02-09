@@ -1,18 +1,51 @@
 ---
 // Standard DXP Component - Control Group A
-import GroupLayout from '../../layouts/GroupLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
 
-<GroupLayout
+<BaseLayout 
   title="Control Group A - Standard DXP Components"
-  accentColor="#0066cc"
-  badgeText="CONTROL"
-  purpose="This page represents the standard DXP (Digital Experience Platform) components without AI optimization."
-  componentType="Baseline implementation for comparison"
-  group="Control Group A"
-  navLinks={[
-    { href: '/', text: 'Home' },
-    { href: '/test-group-b', text: 'Test Group B' }
-  ]}
-/>
+  description="Standard DXP components without AI optimization - baseline implementation for comparison"
+  group="A"
+>
+  <div style="margin-top: 1.5rem;">
+    <h2>Standard DXP Components</h2>
+    <p>
+      This page represents the <strong>control group</strong> using standard DXP 
+      (Digital Experience Platform) components without AI optimization.
+    </p>
+    
+    <h3>Purpose</h3>
+    <p>
+      Serves as the baseline implementation for comparison against GAIO-optimized 
+      components in Test Group B.
+    </p>
+
+    <h3>Key Characteristics</h3>
+    <ul>
+      <li>Basic HTML structure using <code>&lt;div&gt;</code> elements</li>
+      <li>Standard metadata tags only</li>
+      <li>No JSON-LD structured data</li>
+      <li>Traditional SEO approach</li>
+      <li>No semantic HTML5 elements</li>
+    </ul>
+
+    <h3>What We're Testing</h3>
+    <p>
+      This control group helps us measure the baseline performance metrics:
+    </p>
+    <ul>
+      <li>Organic search rankings</li>
+      <li>Search result click-through rates</li>
+      <li>User engagement (time on page, bounce rate)</li>
+      <li>Accessibility scores</li>
+    </ul>
+
+    <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #0066cc;">
+      <strong>Note:</strong> Compare this implementation with 
+      <a href="/test-group-b" style="color: #0066cc;">Test Group B</a> 
+      to see the GAIO optimization differences.
+    </p>
+  </div>
+</BaseLayout>
 

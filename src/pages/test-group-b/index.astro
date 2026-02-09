@@ -1,18 +1,73 @@
 ---
 // Optimized GAIO Component - Test Group B
-import GroupLayout from '../../layouts/GroupLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const gaioSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Test Group B - Optimized GAIO Components",
+  "description": "GAIO (Gen-AI Optimized) components with AI-driven improvements for enhanced search visibility and accessibility",
+  "about": {
+    "@type": "Thing",
+    "name": "Web Component Optimization",
+    "description": "AI-driven optimization techniques for web components"
+  },
+  "inLanguage": "en-US",
+  "keywords": "GAIO, AI optimization, web components, semantic HTML, structured data"
+};
 ---
 
-<GroupLayout
+<BaseLayout 
   title="Test Group B - Optimized GAIO Components"
-  accentColor="#00c853"
-  badgeText="OPTIMIZED"
-  purpose="This page represents GAIO (Gen-AI Optimized) components with AI-driven improvements."
-  componentType="AI-optimized implementation for testing"
-  group="Test Group B"
-  navLinks={[
-    { href: '/', text: 'Home' },
-    { href: '/control-group-a', text: 'Control Group A' }
-  ]}
-/>
+  description="GAIO (Gen-AI Optimized) components with AI-driven improvements for enhanced search visibility and accessibility"
+  group="B"
+  schemaData={gaioSchema}
+>
+  <div style="margin-top: 1.5rem;">
+    <h2>GAIO-Optimized Components</h2>
+    <p>
+      This page represents the <strong>test group</strong> using GAIO 
+      (Gen-AI Optimized) components with AI-driven improvements.
+    </p>
+    
+    <h3>GAIO Optimizations Applied</h3>
+    <ul>
+      <li>✅ Semantic HTML5 structure (<code>&lt;main&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;header&gt;</code>)</li>
+      <li>✅ Enhanced robots meta tags for better indexing</li>
+      <li>✅ JSON-LD structured data (Schema.org WebPage)</li>
+      <li>✅ Canonical URL specification</li>
+      <li>✅ ARIA labels for improved accessibility</li>
+      <li>✅ Optimized metadata for AI systems</li>
+    </ul>
+
+    <h3>Expected Benefits</h3>
+    <p>
+      The GAIO optimizations are designed to improve:
+    </p>
+    <ul>
+      <li><strong>Search Visibility:</strong> Better understanding by search engines</li>
+      <li><strong>Rich Results:</strong> Enhanced search result snippets</li>
+      <li><strong>AI Understanding:</strong> Improved content comprehension by AI systems</li>
+      <li><strong>Accessibility:</strong> Better support for assistive technologies</li>
+      <li><strong>User Engagement:</strong> More relevant traffic from search</li>
+    </ul>
+
+    <h3>Technical Implementation</h3>
+    <p>
+      View the page source to see the differences:
+    </p>
+    <ul>
+      <li>JSON-LD schema in the <code>&lt;head&gt;</code></li>
+      <li>Optimized robots meta tags</li>
+      <li>Semantic HTML structure in the <code>&lt;body&gt;</code></li>
+      <li>Canonical URL reference</li>
+    </ul>
+
+    <p style="margin-top: 2rem; padding: 1rem; background: #e8f5e9; border-left: 4px solid #10b981;">
+      <strong>Compare:</strong> View 
+      <a href="/control-group-a" style="color: #10b981;">Control Group A</a> 
+      to see the baseline implementation without these optimizations.
+    </p>
+  </div>
+</BaseLayout>
 

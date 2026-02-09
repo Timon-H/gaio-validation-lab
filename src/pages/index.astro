@@ -1,16 +1,53 @@
 ---
-import GroupLayout from '../layouts/GroupLayout.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const homeSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "GAIO Validation Lab",
+  "description": "Testing environment for web components to validate Gen-AI optimization methods",
+  "url": "https://gaio-validation-lab.vercel.app"
+};
 ---
 
-<GroupLayout
+<BaseLayout 
   title="GAIO Validation Lab"
-  accentColor="#667eea"
-  badgeText="HOME"
-  purpose="Testing environment for web components to validate Gen-AI optimization methods"
-  componentType="Central hub for accessing control and test groups"
-  group="Home"
-  navLinks={[
-    { href: '/control-group-a', text: 'Control Group A' },
-    { href: '/test-group-b', text: 'Test Group B' }
-  ]}
-/>
+  description="Testing environment for web components to validate Gen-AI optimization methods"
+  group="B"
+  schemaData={homeSchema}
+>
+  <div style="margin-top: 1.5rem;">
+    <h2>Welcome to GAIO Validation Lab</h2>
+    <p>
+      This is a minimalist environment designed to validate and benchmark 
+      generative AI optimization approaches on web components.
+    </p>
+    
+    <h3>Testing Groups</h3>
+    <div style="display: grid; gap: 1.5rem; margin-top: 1rem;">
+      <div style="padding: 1rem; border: 2px solid #0066cc; border-radius: 8px;">
+        <h4 style="color: #0066cc; margin-top: 0;">Control Group A</h4>
+        <p>Standard DXP components without AI optimization - baseline for comparison.</p>
+        <a href="/control-group-a" style="color: #0066cc; font-weight: bold;">View Control Group →</a>
+      </div>
+      
+      <div style="padding: 1rem; border: 2px solid #10b981; border-radius: 8px;">
+        <h4 style="color: #10b981; margin-top: 0;">Test Group B</h4>
+        <p>GAIO-optimized components with AI-driven improvements for testing and validation.</p>
+        <a href="/test-group-b" style="color: #10b981; font-weight: bold;">View Test Group →</a>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 2rem;">About This Lab</h3>
+    <p>
+      We use A/B testing to compare standard web components (Group A) against 
+      GAIO-optimized versions (Group B) to measure improvements in:
+    </p>
+    <ul>
+      <li>Search engine visibility and rankings</li>
+      <li>AI system content understanding</li>
+      <li>Accessibility and semantic structure</li>
+      <li>User engagement metrics</li>
+    </ul>
+  </div>
+</BaseLayout>
