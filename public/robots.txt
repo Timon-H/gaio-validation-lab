@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Specific Bot instructions (optional, tbd)
+User-agent: GPTBot
+Allow: /
+User-agent: Claude-Web
+Allow: /
+
+# Link to Sitemap
+Sitemap: https://gaio-validation-lab.vercel.app/sitemap-index.xml
