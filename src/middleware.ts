@@ -29,9 +29,9 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   const isAiBot = !!detectedBot;
 
   const response = await next();
-
   const duration = Date.now() - start;
   
+if (isAiBot) {
   // Prepare log data for Supabase (matches bot_logs schema)
   const logData = {
     bot_name: detectedBot?.name || 'Unknown',
@@ -42,39 +42,43 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     status: response.status,
     latency_ms: duration
   };
-  
-  if (isAiBot) {
-    console.log(`GAIO_METRIC_DATA: ${JSON.stringify(logData)}`);
-  } else {
-    // Optional logging for human visits
-    console.log(
-      `[${new Date().toISOString()}] HUMAN_VISIT: ${request.method} ${url.pathname} [${group}] ${response.status} (${duration}ms)`
-    );
-  }
 
-  // Vercel Edge Environment variables for Supabase
-  const supabaseUrl = import.meta.env.SUPABASE_URL;
-  const supabaseKey = import.meta.env.SUPABASE_ANON_KEY;
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
   if (supabaseUrl && supabaseKey) {
-    fetch(`${supabaseUrl}/rest/v1/bot_logs`, {
-      method: 'POST',
-      headers: {
-        'apikey': supabaseKey,
-        'Authorization': `Bearer ${supabaseKey}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify(logData)
-    }).catch(err => console.error("Supabase Log Error:", err));
+    // AbortController stops slow requests to prevent hanging the middleware
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1000); // 1 second timeout
+
+    try {
+      await fetch(`${supabaseUrl}/rest/v1/bot_logs`, {
+        method: 'POST',
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(logData),
+        signal: controller.signal
+      });
+      console.log(`GAIO_LOG_SUCCESS: ${detectedBot?.name} recorded.`);
+    } catch (err) {
+      console.error("GAIO_LOG_ERROR (Supabase):", err instanceof Error && err.name === 'AbortError' 
+        ? "Timeout reached" 
+        : err);
+    } finally {
+      clearTimeout(timeoutId);
+    }
   }
+}
 
   // Headers for manual verification
   response.headers.set('X-Test-Group', group);
-  response.headers.set('X-AI-Bot-Detected', isAiBot ? 'true' : 'false');
-  if (isAiBot && detectedBot?.name) {
-    response.headers.set('X-AI-Bot-Name', detectedBot.name);
-  }
+  const botHeaderValue = isAiBot && detectedBot ? detectedBot.name : 'false';
+  response.headers.set('X-AI-Bot-Detected', botHeaderValue);
+  
   response.headers.set('X-Response-Time', `${duration}ms`);
 
   return response;
