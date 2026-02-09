@@ -32,16 +32,15 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
   const duration = Date.now() - start;
   
-  // Prepare log data
+  // Prepare log data for Supabase (matches bot_logs schema)
   const logData = {
-    ts: new Date().toISOString(),
-    bot: detectedBot?.name,
-    group: group,
-    method: request.method,
+    bot_name: detectedBot?.name || 'Unknown',
+    test_group: group,
     path: url.pathname,
+    user_agent: userAgent,
+    method: request.method,
     status: response.status,
-    latencyMs: duration,
-    ua: userAgent
+    latency_ms: duration
   };
   
   if (isAiBot) {
