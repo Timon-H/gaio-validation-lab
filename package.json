@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/Timon-H/gaio-validation-lab#readme",
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.0",
     "@astrojs/vercel": "^9.0.4",
     "astro": "^5.17.1"
   },

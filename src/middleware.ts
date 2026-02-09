@@ -1,6 +1,6 @@
 import type { MiddlewareHandler } from 'astro';
 
-// 1. Definition der relevanten KI-Crawler
+// Definition of relevant AI crawlers
 const AI_BOTS = [
   { name: 'ChatGPT', regex: /GPTBot|OAI-SearchBot/i },
   { name: 'Claude', regex: /Claude-Web|AnthropicAI/i },
@@ -15,7 +15,6 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   const url = new URL(request.url);
   const userAgent = request.headers.get('user-agent') || '';
 
-  // 2. Filter: Nur Experiment-Seiten verarbeiten, statische Assets ignorieren
   const isGroupA = url.pathname.startsWith('/control-group-a');
   const isGroupB = url.pathname.startsWith('/test-group-b');
   
@@ -26,43 +25,60 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   const start = Date.now();
   const group = isGroupA ? 'control-group-a' : 'test-group-b';
 
-  // 3. KI-Bot Identifizierung
   const detectedBot = AI_BOTS.find(bot => bot.regex.test(userAgent));
   const isAiBot = !!detectedBot;
 
-  // 4. Request verarbeiten
   const response = await next();
-
-  // 5. Metriken erfassen & Loggen
   const duration = Date.now() - start;
   
-  // Strukturiertes Log für die spätere Datenextraktion (Kapitel 6)
-  if (isAiBot) {
-    const logData = {
-      ts: new Date().toISOString(),
-      bot: detectedBot?.name,
-      group: group,
-      method: request.method,
-      path: url.pathname,
-      status: response.status,
-      latencyMs: duration,
-      ua: userAgent
-    };
-    // Ein einheitlicher Präfix macht das Filtern in Vercel/Cloud-Logs extrem einfach
-    console.log(`GAIO_METRIC_DATA: ${JSON.stringify(logData)}`);
-  } else {
-    // Normales Logging für menschliche Besucher (optional, zur Kontrolle)
-    console.log(
-      `[${new Date().toISOString()}] HUMAN_VISIT: ${request.method} ${url.pathname} [${group}] ${response.status} (${duration}ms)`
-    );
-  }
+if (isAiBot) {
+  // Prepare log data for Supabase (matches bot_logs schema)
+  const logData = {
+    bot_name: detectedBot?.name || 'Unknown',
+    test_group: group,
+    path: url.pathname,
+    user_agent: userAgent,
+    method: request.method,
+    status: response.status,
+    latency_ms: duration
+  };
 
-  // 6. Header für manuelle Verifikation setzen
-  response.headers.set('X-Test-Group', group);
-  response.headers.set('X-AI-Bot-Detected', isAiBot ? 'true' : 'false');
-  if (isAiBot && detectedBot?.name) {
-    response.headers.set('X-AI-Bot-Name', detectedBot.name);
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+  if (supabaseUrl && supabaseKey) {
+    // AbortController stops slow requests to prevent hanging the middleware
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1000); // 1 second timeout
+
+    try {
+      await fetch(`${supabaseUrl}/rest/v1/bot_logs`, {
+        method: 'POST',
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(logData),
+        signal: controller.signal
+      });
+      console.log(`GAIO_LOG_SUCCESS: ${detectedBot?.name} recorded.`);
+    } catch (err) {
+      console.error("GAIO_LOG_ERROR (Supabase):", err instanceof Error && err.name === 'AbortError' 
+        ? "Timeout reached" 
+        : err);
+    } finally {
+      clearTimeout(timeoutId);
+    }
   }
+}
+
+  // Headers for manual verification
+  response.headers.set('X-Test-Group', group);
+  const botHeaderValue = isAiBot && detectedBot ? detectedBot.name : 'false';
+  response.headers.set('X-AI-Bot-Detected', botHeaderValue);
+  
   response.headers.set('X-Response-Time', `${duration}ms`);
 
   return response;

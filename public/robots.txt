@@ -1,0 +1,24 @@
+# Prioritize AI Bots
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: Claude-Web
+User-agent: AnthropicAI
+User-agent: Google-Extended
+User-agent: PerplexityBot
+User-agent: CCBot
+Allow: /
+
+# 2. Block SEO Bots
+User-agent: AhrefsBot
+User-agent: SemrushBot
+User-agent: DotBot
+User-agent: Rogerbot
+User-agent: MJ12bot
+Disallow: /
+
+# 3. Allow Unknown users
+User-agent: *
+Allow: /
+
+# Link to Sitemap
+Sitemap: https://gaio-validation-lab.vercel.app/sitemap-index.xml
