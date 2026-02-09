@@ -1,37 +1,63 @@
 import type { MiddlewareHandler } from 'astro';
 
+// 1. Definition der relevanten KI-Crawler
+const AI_BOTS = [
+  { name: 'ChatGPT', regex: /GPTBot|OAI-SearchBot/i },
+  { name: 'Claude', regex: /Claude-Web|AnthropicAI/i },
+  { name: 'Gemini', regex: /Google-Extended/i },
+  { name: 'Perplexity', regex: /PerplexityBot/i },
+  { name: 'CommonCrawl', regex: /CCBot/i },
+  { name: 'Applebot', regex: /Applebot-Extended/i }
+];
+
 export const onRequest: MiddlewareHandler = async (context, next) => {
   const { request } = context;
   const url = new URL(request.url);
+  const userAgent = request.headers.get('user-agent') || '';
+
+  // 2. Filter: Nur Experiment-Seiten verarbeiten, statische Assets ignorieren
+  const isGroupA = url.pathname.startsWith('/control-group-a');
+  const isGroupB = url.pathname.startsWith('/test-group-b');
   
-  // Only process experiment pages, skip static assets
-  const isExperimentPage = url.pathname.startsWith('/control-group-a') || 
-                           url.pathname.startsWith('/test-group-b');
-  
-  if (!isExperimentPage) {
+  if (!isGroupA && !isGroupB) {
     return next();
   }
-  
+
   const start = Date.now();
-  
-  // Log only pathname to prevent leaking sensitive query parameters
-  console.log(`[${new Date().toISOString()}] ${request.method} ${url.pathname}`);
-  
-  // Determine which group this request belongs to
-  const group = url.pathname.startsWith('/control-group-a') 
-    ? 'control-group-a' 
-    : 'test-group-b';
-  
-  // Continue to the next middleware or route handler
+  const group = isGroupA ? 'control-group-a' : 'test-group-b';
+
+  // 3. KI-Bot Identifizierung
+  const detectedBot = AI_BOTS.find(bot => bot.regex.test(userAgent));
+  const isAiBot = !!detectedBot;
+
+  // 4. Request verarbeiten
   const response = await next();
-  
-  // Log response time
+
+  // 5. Metriken erfassen & Loggen
   const duration = Date.now() - start;
-  console.log(`[${new Date().toISOString()}] ${request.method} ${url.pathname} - ${response.status} (${duration}ms) [${group}]`);
   
-  // Add custom headers to track which group served the request
+  // Strukturiertes Log für die spätere Datenextraktion (Kapitel 6)
+  if (isAiBot) {
+    const logData = {
+      ts: new Date().toISOString(),
+      bot: detectedBot?.name,
+      group: group,
+      path: url.pathname,
+      status: response.status,
+      lat: `${duration}ms`,
+      ua: userAgent
+    };
+    // Ein einheitlicher Präfix macht das Filtern in Vercel/Cloud-Logs extrem einfach
+    console.log(`GAIO_METRIC_DATA: ${JSON.stringify(logData)}`);
+  } else {
+    // Normales Logging für menschliche Besucher (optional, zur Kontrolle)
+    console.log(`[${new Date().toISOString()}] HUMAN_VISIT: ${url.pathname} [${group}] (${duration}ms)`);
+  }
+
+  // 6. Header für manuelle Verifikation setzen
   response.headers.set('X-Test-Group', group);
+  response.headers.set('X-AI-Bot-Detected', isAiBot ? detectedBot!.name : 'false');
   response.headers.set('X-Response-Time', `${duration}ms`);
-  
+
   return response;
 };
