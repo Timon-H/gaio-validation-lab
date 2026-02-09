@@ -6,6 +6,6 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   output: 'server',
   adapter: vercel(),
-  site: 'https://gaio-validation-lab.vercel.app/',
+  site: 'https://gaio-validation-lab.vercel.app',
   integrations: [sitemap()],
 });
