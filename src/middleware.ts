@@ -51,23 +51,23 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     console.log(
       `[${new Date().toISOString()}] HUMAN_VISIT: ${request.method} ${url.pathname} [${group}] ${response.status} (${duration}ms)`
     );
+  }
 
-    // Vercel Edge Environment variables for Supabase
-    const supabaseUrl = import.meta.env.SUPABASE_URL;
-    const supabaseKey = import.meta.env.SUPABASE_ANON_KEY;
+  // Vercel Edge Environment variables for Supabase
+  const supabaseUrl = import.meta.env.SUPABASE_URL;
+  const supabaseKey = import.meta.env.SUPABASE_ANON_KEY;
 
-    if (supabaseUrl && supabaseKey) {
-      fetch(`${supabaseUrl}/rest/v1/bot_logs`, {
-        method: 'POST',
-        headers: {
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify(logData)
-      }).catch(err => console.error("Supabase Log Error:", err));
-    }
+  if (supabaseUrl && supabaseKey) {
+    fetch(`${supabaseUrl}/rest/v1/bot_logs`, {
+      method: 'POST',
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(logData)
+    }).catch(err => console.error("Supabase Log Error:", err));
   }
 
   // Headers for manual verification
