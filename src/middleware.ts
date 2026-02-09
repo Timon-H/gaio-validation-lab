@@ -42,9 +42,10 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
       ts: new Date().toISOString(),
       bot: detectedBot?.name,
       group: group,
+      method: request.method,
       path: url.pathname,
       status: response.status,
-      lat: `${duration}ms`,
+      latencyMs: duration,
       ua: userAgent
     };
     // Ein einheitlicher Präfix macht das Filtern in Vercel/Cloud-Logs extrem einfach
