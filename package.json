@@ -24,7 +24,8 @@
     "@astrojs/sitemap": "^3.7.0",
     "@astrojs/vercel": "^9.0.4",
     "@vercel/analytics": "^1.6.1",
-    "astro": "^5.17.1"
+    "astro": "^5.17.1",
+    "lit": "^3.3.2"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.6",
