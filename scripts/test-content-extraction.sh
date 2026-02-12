@@ -50,8 +50,8 @@ fi
 
 # All test variants
 VARIANTS=(
-  "control-group-a"
-  "test-group-b"
+  "control"
+  "combined"
   "test-jsonld-only"
   "test-semantic-only"
   "test-noscript-only"
@@ -186,13 +186,13 @@ echo "============================================"
 echo "Legend: LD=JSON-LD, ARIA=aria-label, SEM=semantic HTML, NOSC=<noscript>, DB=database status"
 echo ""
 echo "Expected pattern for isolated variables:"
-echo "  control-group-a   → no  / no  / no  / no"
+echo "  control           → no  / no  / no  / no"
 echo "  test-jsonld-only  → YES / no  / no  / no"
 echo "  test-semantic-only→ no  / no  / YES / no"
 echo "  test-noscript-only→ no  / no  / no  / YES"
 echo "  test-aria-only    → no  / YES / no  / no"
 echo "  test-dsd          → no  / no  / no  / no  (but shadow content in HTML)"
-echo "  test-group-b      → YES / YES / YES / YES"
+echo "  combined          → YES / YES / YES / YES"
 
 if [ "$MODE" = "persist" ]; then
   echo ""

@@ -2,7 +2,7 @@
 /**
  * Isolated Test: JSON-LD Only
  * 
- * Same components as Group A (Shadow DOM, <div> wrappers),
+ * Same components as Baseline (Shadow DOM, <div> wrappers),
  * but WITH JSON-LD structured data in the <head>.
  * 
  * Isolates the effect of structured data alone on GAIObility,
@@ -73,7 +73,6 @@ const jsonldSchema = {
 <BaseLayout 
   title="Isolated Test: JSON-LD Only"
   description="DXP components with JSON-LD structured data only – no semantic HTML, no ARIA, no noscript fallbacks."
-  group="B"
   schemaData={jsonldSchema}
 >
   <script>
@@ -83,7 +82,7 @@ const jsonldSchema = {
   <div style="margin-top: 1.5rem;">
     <h2>Isolated Variable: JSON-LD Only</h2>
     <p>
-      Same components as <a href="/control-group-a">Group A</a>, same <code>&lt;div&gt;</code> wrappers — 
+      Same components as <a href="/control">Baseline</a>, same <code>&lt;div&gt;</code> wrappers — 
       but this page includes <strong>JSON-LD structured data</strong> in the <code>&lt;head&gt;</code>.
     </p>
     <p style="padding: 0.5rem; background: #fff3e0; border-left: 3px solid #ff9800; font-size: 0.875rem;">
@@ -175,7 +174,7 @@ const jsonldSchema = {
   </div>
 
   <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #ff9800;">
-    <a href="/control-group-a">← Baseline (keine Maßnahmen)</a> · 
-    <a href="/test-group-b">Alle Maßnahmen kombiniert →</a>
+    <a href="/control">← Baseline (keine Maßnahmen)</a> · 
+    <a href="/combined">Alle Maßnahmen kombiniert →</a>
   </p>
 </BaseLayout>

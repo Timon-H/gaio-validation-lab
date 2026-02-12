@@ -13,7 +13,6 @@ const homeSchema = {
 <BaseLayout 
   title="GAIO Validation Lab"
   description="Testing environment for web components to validate Gen-AI optimization methods"
-  group="B"
   schemaData={homeSchema}
 >
   <div style="margin-top: 1.5rem;">
@@ -28,15 +27,15 @@ const homeSchema = {
 
     <div style="display: grid; gap: 1rem; margin-top: 1rem;">
       <div style="padding: 1rem; border: 2px solid #d32f2f; border-radius: 8px;">
-        <h4 style="color: #d32f2f; margin-top: 0;">Baseline — Control Group A</h4>
+        <h4 style="color: #d32f2f; margin-top: 0;">Baseline — Control</h4>
         <p>Standard DXP components with Shadow DOM. No GAIO measures. <strong>Poor GAIObility.</strong></p>
-        <a href="/control-group-a" style="color: #d32f2f; font-weight: bold;">View Baseline →</a>
+        <a href="/control" style="color: #d32f2f; font-weight: bold;">View Baseline →</a>
       </div>
 
       <div style="padding: 1rem; border: 2px solid #43a047; border-radius: 8px;">
-        <h4 style="color: #43a047; margin-top: 0;">Full Combo — Test Group B</h4>
-        <p>All GAIO measures combined: JSON-LD + Semantic HTML + ARIA + &lt;noscript&gt; fallbacks.</p>
-        <a href="/test-group-b" style="color: #43a047; font-weight: bold;">View Full Combo →</a>
+        <h4 style="color: #43a047; margin-top: 0;">Full Combo — Combined</h4>
+        <p>All GAIO measures combined: JSON-LD + Semantic HTML + ARIA + &lt;noscript&gt; fallbacks + DSD.</p>
+        <a href="/combined" style="color: #43a047; font-weight: bold;">View Full Combo →</a>
       </div>
     </div>
 

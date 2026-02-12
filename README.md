@@ -1,7 +1,7 @@
 # gaio-validation-lab
 Minimalist environment to validate and benchmark generative AI optimization approaches on web-components
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # Install dependencies
@@ -14,99 +14,88 @@ npm run dev
 npm run build
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 /src
+  /components/baseline   ← 9 Lit web components (Shadow DOM)
   /layouts
-    BaseLayout.astro  ← A/B testing layout system
+    BaseLayout.astro     ← Neutral page shell (shared styling, SEO constants)
+  /lib
+    lit-ssr.ts           ← @lit-labs/ssr helper for Declarative Shadow DOM
   /pages
-    index.astro       ← Landing page (Group B with schema)
-    /control-group-a
-      index.astro     ← Control group (Group A)
-    /test-group-b
-      index.astro     ← Test group (Group B with schema)
-  /middleware.ts      ← Logging and tracking middleware
-/public               ← Static assets
-astro.config.mjs      ← Astro configuration with Vercel adapter
+    index.astro          ← Landing page with links to all variants
+    /control             ← Baseline — no GAIO measures
+    /combined            ← All GAIO measures combined
+    /test-jsonld-only    ← Isolated: JSON-LD only
+    /test-semantic-only  ← Isolated: Semantic HTML wrappers only
+    /test-noscript-only  ← Isolated: <noscript> Light DOM fallbacks only
+    /test-aria-only      ← Isolated: ARIA attributes on hosts only
+    /test-dsd            ← Isolated: Declarative Shadow DOM via @lit-labs/ssr
+  /middleware.ts         ← AI bot detection + Supabase logging
+/scripts
+  test-bots.sh           ← Bot UA simulation tests
+  test-content-extraction.sh ← Content extraction + optional Supabase persist
+/supabase
+  schema.sql             ← DDL for bot_logs, extraction_results
 ```
 
-## 🧪 Testing Groups & A/B Testing System
+## Multi-Arm Test Design
 
-### BaseLayout A/B Testing
-The `BaseLayout.astro` implements a sophisticated A/B testing system that differentiates between control and optimized groups at the layout level.
+Seven variants of the same insurance page content. Each isolates a single GAIO variable for scientific measurement.
 
-#### Group A (Control) - Standard Implementation
-- **Structure**: Basic HTML with `<div>` containers
-- **Metadata**: Standard meta tags only
-- **SEO**: Traditional approach
-- **Example**: `/control-group-a`
+| Variant | JSON-LD | Semantic HTML | ARIA | Noscript | DSD |
+|---------|:-------:|:------------:|:----:|:--------:|:---:|
+| `/control` | — | — | — | — | — |
+| `/test-jsonld-only` | ✅ | — | — | — | — |
+| `/test-semantic-only` | — | ✅ | — | — | — |
+| `/test-aria-only` | — | — | ✅ | — | — |
+| `/test-noscript-only` | — | — | — | ✅ | — |
+| `/test-dsd` | — | — | — | — | ✅ |
+| `/combined` | ✅ | ✅ | ✅ | ✅ | ✅ |
 
-#### Group B (Test) - GAIO Optimized
-- **Structure**: Semantic HTML5 (`<main>`, `<article>`, `<header>`)
-- **Metadata**: Enhanced robots meta, canonical URLs
-- **SEO**: JSON-LD structured data (Schema.org)
-- **Accessibility**: ARIA labels
-- **Example**: `/test-group-b`
+### Constants across all variants
+- Same 9 Lit web components with Shadow DOM encapsulation
+- Same content (insurance FAQ, tariff comparison, form fields, product cards)
+- Traditional SEO signals (robots meta, canonical URL) on every page
+- Same BaseLayout styling shell
 
-### How to Use BaseLayout
+### BaseLayout
+
+`BaseLayout.astro` is a neutral shell providing shared `<head>` boilerplate, styling, and navigation. It applies `robots` and `canonical` as constants on every page (these are not experimental variables). Only `schemaData` is optional — pages that test JSON-LD pass it in.
 
 ```astro
----
-import BaseLayout from '../../layouts/BaseLayout.astro';
-
-// For Group B: Define JSON-LD schema
-const mySchema = {
-  "@context": "https://schema.org",
-  "@type": "TechArticle",
-  "headline": "Your Article Title",
-  "description": "Your description",
-  // ... more schema properties
-};
----
-
-<BaseLayout 
-  title="Your Page Title" 
-  description="Your page description" 
-  group="B"              <!-- 'A' for control, 'B' for optimized -->
-  schemaData={mySchema}  <!-- Optional, only for Group B -->
+<BaseLayout
+  title="Page Title"
+  description="Page description"
+  schemaData={optionalJsonLd}
 >
-  <!-- Your page content here -->
+  <!-- page content with its own GAIO measures -->
 </BaseLayout>
 ```
 
-### Key Differences: Group A vs Group B
+## Testing
 
-| Feature | Group A (Control) | Group B (GAIO) |
-|---------|------------------|----------------|
-| HTML Structure | `<div id="content">` | `<main><article>` |
-| Meta Robots | Default | `index, follow, max-snippet:-1` |
-| Canonical URL | ❌ | ✅ |
-| JSON-LD Schema | ❌ | ✅ |
-| ARIA Labels | ❌ | ✅ |
-| Semantic HTML | ❌ | ✅ |
+```bash
+# Simulate AI bot visits across all 7 variants
+npm run test:bots
 
-## 📊 Middleware Logging
+# Extract content and compare structural markers
+npm run test:extract
 
-The middleware automatically logs:
-- Request method and URL
-- Response time
-- Test group identification
-- Custom headers for tracking (`X-Test-Group`, `X-Response-Time`)
+# Extract + persist results to Supabase
+npm run test:extract:persist
+```
 
-## 🌐 Vercel Deployment
+## Middleware
 
-This project is configured for easy deployment to Vercel:
+The middleware detects 6 AI crawlers (GPTBot, Claude-Web, Google-Extended, PerplexityBot, CCBot, Applebot-Extended) and logs visits to Supabase `bot_logs` with variant path, latency, and status code.
 
-1. Push to GitHub
-2. Import repository in Vercel
-3. Deploy (zero configuration needed)
+## Technologies
 
-The project uses `@astrojs/vercel` adapter for serverless deployment.
-
-## 🛠️ Technologies
-
-- **Astro**: Modern static site generator with server-side rendering
-- **TypeScript**: Type-safe development
-- **Supabase**: Open-source Firebase alternative for backend and database
-- **Vercel**: Serverless deployment platform
+- **Astro 5**: SSR mode with `@astrojs/vercel` adapter
+- **Lit 3**: Web components with Shadow DOM encapsulation
+- **@lit-labs/ssr**: Server-side rendering to Declarative Shadow DOM
+- **TypeScript**: Strict mode
+- **Supabase**: Bot logging + extraction results
+- **Vercel**: Serverless deployment

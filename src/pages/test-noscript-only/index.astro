@@ -2,7 +2,7 @@
 /**
  * Isolated Test: <noscript> Light DOM Fallbacks Only
  * 
- * Same components as Group A (Shadow DOM, <div> wrappers, no JSON-LD, no ARIA),
+ * Same components as Baseline (Shadow DOM, <div> wrappers, no JSON-LD, no ARIA),
  * but WITH <noscript> blocks providing Light DOM content for each component.
  * 
  * Isolates the effect of Light DOM fallbacks on GAIObility.
@@ -14,7 +14,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 <BaseLayout 
   title="Isolated Test: Noscript Fallbacks Only"
   description="DXP components with noscript Light DOM fallbacks only – no JSON-LD, no semantic HTML, no ARIA."
-  group="A"
 >
   <script>
     import '../../components/baseline/index.ts';
@@ -23,7 +22,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   <div style="margin-top: 1.5rem;">
     <h2>Isolated Variable: &lt;noscript&gt; Light DOM Fallbacks</h2>
     <p>
-      Same components as <a href="/control-group-a">Group A</a>, same <code>&lt;div&gt;</code> wrappers — 
+      Same components as <a href="/control">Baseline</a>, same <code>&lt;div&gt;</code> wrappers — 
       but each component has a <strong>&lt;noscript&gt; fallback</strong> with static HTML content.
     </p>
     <p style="padding: 0.5rem; background: #fce4ec; border-left: 3px solid #e91e63; font-size: 0.875rem;">
@@ -188,7 +187,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   </div>
 
   <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #e91e63;">
-    <a href="/control-group-a">← Baseline (keine Maßnahmen)</a> · 
-    <a href="/test-group-b">Alle Maßnahmen kombiniert →</a>
+    <a href="/control">← Baseline (keine Maßnahmen)</a> · 
+    <a href="/combined">Alle Maßnahmen kombiniert →</a>
   </p>
 </BaseLayout>

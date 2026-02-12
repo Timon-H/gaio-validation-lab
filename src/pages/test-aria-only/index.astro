@@ -2,7 +2,7 @@
 /**
  * Isolated Test: ARIA Attributes Only
  * 
- * Same components as Group A (Shadow DOM, <div> wrappers, no JSON-LD, no <noscript>),
+ * Same components as Baseline (Shadow DOM, <div> wrappers, no JSON-LD, no <noscript>),
  * but WITH ARIA attributes (aria-label, aria-labelledby, role) on host elements.
  * 
  * Isolates the effect of ARIA on GAIObility — can crawlers/LLMs use
@@ -14,7 +14,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 <BaseLayout 
   title="Isolated Test: ARIA Only"
   description="DXP components with ARIA attributes on host elements only – no JSON-LD, no semantic HTML, no noscript fallbacks."
-  group="A"
 >
   <script>
     import '../../components/baseline/index.ts';
@@ -23,7 +22,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   <div style="margin-top: 1.5rem;">
     <h2>Isolated Variable: ARIA Attributes Only</h2>
     <p>
-      Same components as <a href="/control-group-a">Group A</a>, same <code>&lt;div&gt;</code> wrappers — 
+      Same components as <a href="/control">Baseline</a>, same <code>&lt;div&gt;</code> wrappers — 
       but with <strong>ARIA attributes</strong> on the custom element host nodes.
     </p>
     <p style="padding: 0.5rem; background: #e0f2f1; border-left: 3px solid #009688; font-size: 0.875rem;">
@@ -117,7 +116,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   </div>
 
   <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #009688;">
-    <a href="/control-group-a">← Baseline (keine Maßnahmen)</a> · 
-    <a href="/test-group-b">Alle Maßnahmen kombiniert →</a>
+    <a href="/control">← Baseline (keine Maßnahmen)</a> · 
+    <a href="/combined">Alle Maßnahmen kombiniert →</a>
   </p>
 </BaseLayout>

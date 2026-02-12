@@ -2,7 +2,7 @@
 /**
  * Isolated Test: Semantic HTML Only
  * 
- * Same components as Group A, but wrapped in semantic HTML5 elements
+ * Same components as Baseline, but wrapped in semantic HTML5 elements
  * (<section>, <article>, <address>) instead of <div>.
  * 
  * NO JSON-LD, NO ARIA on host elements, NO <noscript> fallbacks.
@@ -14,7 +14,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 <BaseLayout 
   title="Isolated Test: Semantic HTML Only"
   description="DXP components wrapped in semantic HTML5 elements – no JSON-LD, no ARIA, no noscript fallbacks."
-  group="A"
 >
   <script>
     import '../../components/baseline/index.ts';
@@ -23,7 +22,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   <section style="margin-top: 1.5rem;">
     <h2>Isolated Variable: Semantic HTML Only</h2>
     <p>
-      Same components as <a href="/control-group-a">Group A</a> — 
+      Same components as <a href="/control">Baseline</a> — 
       but wrapped in <strong>semantic HTML5 elements</strong> (<code>&lt;section&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;address&gt;</code>).
     </p>
     <p style="padding: 0.5rem; background: #e8eaf6; border-left: 3px solid #3f51b5; font-size: 0.875rem;">
@@ -127,7 +126,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   </section>
 
   <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #3f51b5;">
-    <a href="/control-group-a">← Baseline (keine Maßnahmen)</a> · 
-    <a href="/test-group-b">Alle Maßnahmen kombiniert →</a>
+    <a href="/control">← Baseline (keine Maßnahmen)</a> · 
+    <a href="/combined">Alle Maßnahmen kombiniert →</a>
   </p>
 </BaseLayout>

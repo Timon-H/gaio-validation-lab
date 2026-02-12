@@ -129,7 +129,6 @@ const tariffHtml = await renderLitToString(html`
 <BaseLayout 
   title="Isolated Test: Declarative Shadow DOM"
   description="DXP components rendered via @lit-labs/ssr Declarative Shadow DOM – server-side shadow content visible to crawlers without JavaScript."
-  group="A"
 >
   <div style="margin-top: 1.5rem;">
     <h2>Isolated Variable: Declarative Shadow DOM (DSD)</h2>
@@ -203,7 +202,7 @@ const tariffHtml = await renderLitToString(html`
     Crawler sehen den vollständigen gerenderten Inhalt inkl. Lit-Hydration-Marker 
     (<code>&lt;!--lit-part--&gt;</code>).
     <br><br>
-    <a href="/control-group-a">← Baseline (client-side Shadow DOM)</a> · 
-    <a href="/test-group-b">Alle Maßnahmen kombiniert →</a>
+    <a href="/control">← Baseline (client-side Shadow DOM)</a> · 
+    <a href="/combined">Alle Maßnahmen kombiniert →</a>
   </p>
 </BaseLayout>

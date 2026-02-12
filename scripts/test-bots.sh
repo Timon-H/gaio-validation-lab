@@ -22,8 +22,8 @@ NC='\033[0m'
 
 # All test variants
 VARIANTS=(
-  "control-group-a"
-  "test-group-b"
+  "control"
+  "combined"
   "test-jsonld-only"
   "test-semantic-only"
   "test-noscript-only"

@@ -1,8 +1,8 @@
 ---
 /**
- * Test Group B — GAIO-Optimized Components (Full Combo)
+ * Combined — GAIO-Optimized Components (Full Combo)
  * 
- * The SAME web components as Group A, but with ALL GAIO countermeasures:
+ * The SAME web components as Baseline, but with ALL GAIO countermeasures:
  * - JSON-LD structured data describing each component's content
  * - Semantic HTML wrappers (<section>, <article>) around every component
  * - Light DOM fallback content in <noscript> blocks
@@ -193,8 +193,6 @@ const tariffHtml = await renderLitToString(html`
   title="GAIO-Optimized DXP Components – Versicherungsvergleich"
   description="Vergleichen Sie unsere Haftpflicht-, Hausrat- und Kaskoversicherungen. GAIO-optimierte DXP-Komponenten mit JSON-LD, semantischem HTML und Light-DOM-Fallbacks."
   schemaData={gaioSchema}
-  robotsMeta
-  canonical
 >
   <!-- Client-side Lit for hydration after SSR -->
   <script>
@@ -204,7 +202,7 @@ const tariffHtml = await renderLitToString(html`
   <section aria-labelledby="page-heading" style="margin-top: 1.5rem;">
     <h2 id="page-heading">GAIO-optimierte DXP-Komponenten</h2>
     <p>
-      Dieselben Web Components wie in <a href="/control-group-a">Group A</a>, aber mit <strong>allen GAIO-Maßnahmen</strong>: 
+      Dieselben Web Components wie in <a href="/control">Baseline</a>, aber mit <strong>allen GAIO-Maßnahmen</strong>: 
       JSON-LD, semantisches HTML, Light-DOM-Fallbacks, ARIA-Attribute und Declarative Shadow DOM 
       machen den Shadow-DOM-Inhalt für Crawler und AI-Systeme sichtbar.
     </p>
@@ -385,7 +383,7 @@ const tariffHtml = await renderLitToString(html`
       <li><strong>Declarative Shadow DOM:</strong> <code>@lit-labs/ssr</code> rendert Shadow-Inhalte als <code>&lt;template shadowrootmode="open"&gt;</code></li>
     </ul>
     <br>
-    <a href="/control-group-a" style="color: #2e7d32;">→ Vergleich mit Standard-Version (Group A)</a>
+    <a href="/control" style="color: #2e7d32;">→ Vergleich mit Standard-Version (Baseline)</a>
   </aside>
 </BaseLayout>
 

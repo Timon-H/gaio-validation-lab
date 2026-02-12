@@ -15,15 +15,15 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   const url = new URL(request.url);
   const userAgent = request.headers.get('user-agent') || '';
 
-  const isGroupA = url.pathname.startsWith('/control-group-a');
-  const isGroupB = url.pathname.startsWith('/test-group-b');
+  const isControl = url.pathname.startsWith('/control');
+  const isCombined = url.pathname.startsWith('/combined');
   const isIsolatedTest = url.pathname.startsWith('/test-jsonld-only')
     || url.pathname.startsWith('/test-semantic-only')
     || url.pathname.startsWith('/test-noscript-only')
     || url.pathname.startsWith('/test-aria-only')
     || url.pathname.startsWith('/test-dsd');
   
-  if (!isGroupA && !isGroupB && !isIsolatedTest) {
+  if (!isControl && !isCombined && !isIsolatedTest) {
     return next();
   }
 
