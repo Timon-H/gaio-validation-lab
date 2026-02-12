@@ -17,13 +17,19 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
   const isGroupA = url.pathname.startsWith('/control-group-a');
   const isGroupB = url.pathname.startsWith('/test-group-b');
+  const isIsolatedTest = url.pathname.startsWith('/test-jsonld-only')
+    || url.pathname.startsWith('/test-semantic-only')
+    || url.pathname.startsWith('/test-noscript-only')
+    || url.pathname.startsWith('/test-aria-only')
+    || url.pathname.startsWith('/test-dsd');
   
-  if (!isGroupA && !isGroupB) {
+  if (!isGroupA && !isGroupB && !isIsolatedTest) {
     return next();
   }
 
   const start = Date.now();
-  const group = isGroupA ? 'control-group-a' : 'test-group-b';
+  // Use the first path segment as the group identifier
+  const group = url.pathname.split('/').filter(Boolean)[0] || 'unknown';
 
   const detectedBot = AI_BOTS.find(bot => bot.regex.test(userAgent));
   const isAiBot = !!detectedBot;
