@@ -6,7 +6,12 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && astro build",
-    "astro": "astro"
+    "astro": "astro",
+    "test:bots": "./scripts/test-bots.sh",
+    "test:extract": "./scripts/test-content-extraction.sh",
+    "test:extract:persist": "source .env 2>/dev/null; ./scripts/test-content-extraction.sh --persist",
+    "test:all": "npm run test:bots && npm run test:extract",
+    "preview": "astro build && astro preview"
   },
   "repository": {
     "type": "git",
