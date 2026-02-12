@@ -1,0 +1,194 @@
+---
+/**
+ * Isolated Test: <noscript> Light DOM Fallbacks Only
+ * 
+ * Same components as Group A (Shadow DOM, <div> wrappers, no JSON-LD, no ARIA),
+ * but WITH <noscript> blocks providing Light DOM content for each component.
+ * 
+ * Isolates the effect of Light DOM fallbacks on GAIObility.
+ * Crawlers that don't execute JS will see the fallback content.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="Isolated Test: Noscript Fallbacks Only"
+  description="DXP components with noscript Light DOM fallbacks only – no JSON-LD, no semantic HTML, no ARIA."
+  group="A"
+>
+  <script>
+    import '../../components/baseline/index.ts';
+  </script>
+
+  <div style="margin-top: 1.5rem;">
+    <h2>Isolated Variable: &lt;noscript&gt; Light DOM Fallbacks</h2>
+    <p>
+      Same components as <a href="/control-group-a">Group A</a>, same <code>&lt;div&gt;</code> wrappers — 
+      but each component has a <strong>&lt;noscript&gt; fallback</strong> with static HTML content.
+    </p>
+    <p style="padding: 0.5rem; background: #fce4ec; border-left: 3px solid #e91e63; font-size: 0.875rem;">
+      <strong>Isolated variable:</strong> &lt;noscript&gt; Light DOM fallbacks. No JSON-LD, no semantic HTML, no ARIA.
+    </p>
+  </div>
+
+  <!-- BUTTON -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Button</div>
+    <dxp-button>Jetzt berechnen</dxp-button>
+    <dxp-button variant="secondary">Mehr erfahren</dxp-button>
+    <dxp-button disabled>Nicht verfügbar</dxp-button>
+    <noscript>
+      <ul>
+        <li><a href="/berechnen">Jetzt berechnen</a></li>
+        <li><a href="/produkte">Mehr erfahren</a></li>
+      </ul>
+    </noscript>
+  </div>
+
+  <!-- TEXT INPUT -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Text Input</div>
+    <dxp-text-input label="Vorname" name="vorname" placeholder="Max" required required-error-text="Bitte geben Sie Ihren Vornamen ein."></dxp-text-input>
+    <dxp-text-input label="E-Mail" name="email" type="email" placeholder="max@example.de" regex="^[^@]+@[^@]+\.[^@]+$" regex-error-text="Bitte geben Sie eine gültige E-Mail-Adresse ein."></dxp-text-input>
+    <noscript>
+      <form>
+        <label for="fallback-vorname">Vorname (Pflichtfeld)</label>
+        <input id="fallback-vorname" name="vorname" type="text" required />
+        <label for="fallback-email">E-Mail</label>
+        <input id="fallback-email" name="email" type="email" />
+      </form>
+    </noscript>
+  </div>
+
+  <!-- DROPDOWN -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Dropdown</div>
+    <dxp-dropdown-v1 label="Versicherungstyp" name="versicherungstyp" placeholder="Bitte wählen..." options='[{"key":"haftpflicht","value":"Haftpflichtversicherung"},{"key":"kasko","value":"Kaskoversicherung"},{"key":"teilkasko","value":"Teilkaskoversicherung"}]' required></dxp-dropdown-v1>
+    <noscript>
+      <label for="fallback-versicherung">Versicherungstyp</label>
+      <select id="fallback-versicherung" name="versicherungstyp">
+        <option value="">Bitte wählen...</option>
+        <option value="haftpflicht">Haftpflichtversicherung</option>
+        <option value="kasko">Kaskoversicherung</option>
+        <option value="teilkasko">Teilkaskoversicherung</option>
+      </select>
+    </noscript>
+  </div>
+
+  <!-- RADIO -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Input Radio</div>
+    <dxp-input-radio label="Zahlungsweise" name="zahlungsweise" options='[{"value":"monatlich","label":"Monatlich"},{"value":"quartal","label":"Vierteljährlich"},{"value":"jaehrlich","label":"Jährlich"}]' default="monatlich"></dxp-input-radio>
+    <noscript>
+      <fieldset>
+        <legend>Zahlungsweise</legend>
+        <label><input type="radio" name="zahlungsweise" value="monatlich" checked /> Monatlich</label>
+        <label><input type="radio" name="zahlungsweise" value="quartal" /> Vierteljährlich</label>
+        <label><input type="radio" name="zahlungsweise" value="jaehrlich" /> Jährlich</label>
+      </fieldset>
+    </noscript>
+  </div>
+
+  <!-- ACCORDION -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Accordion</div>
+    <dxp-accordion>
+      <dxp-accordion-element id="faq-1">
+        <span slot="headline">Was ist eine Haftpflichtversicherung?</span>
+        <p>Eine Haftpflichtversicherung schützt Sie vor Schadensersatzansprüchen Dritter. Sie übernimmt die Kosten, wenn Sie versehentlich Schäden an Personen oder deren Eigentum verursachen.</p>
+      </dxp-accordion-element>
+      <dxp-accordion-element id="faq-2">
+        <span slot="headline">Wie berechne ich meinen Beitrag?</span>
+        <p>Ihr Beitrag hängt von verschiedenen Faktoren ab, wie z.B. Ihrem Alter, Ihrem Wohnort und dem gewünschten Versicherungsschutz. Nutzen Sie unseren Online-Rechner für eine individuelle Berechnung.</p>
+      </dxp-accordion-element>
+      <dxp-accordion-element id="faq-3">
+        <span slot="headline">Kann ich meine Versicherung online kündigen?</span>
+        <p>Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit.</p>
+      </dxp-accordion-element>
+    </dxp-accordion>
+    <noscript>
+      <dl>
+        <dt>Was ist eine Haftpflichtversicherung?</dt>
+        <dd>Eine Haftpflichtversicherung schützt Sie vor Schadensersatzansprüchen Dritter. Sie übernimmt die Kosten, wenn Sie versehentlich Schäden an Personen oder deren Eigentum verursachen.</dd>
+        <dt>Wie berechne ich meinen Beitrag?</dt>
+        <dd>Ihr Beitrag hängt von verschiedenen Faktoren ab, wie z.B. Ihrem Alter, Ihrem Wohnort und dem gewünschten Versicherungsschutz. Nutzen Sie unseren Online-Rechner für eine individuelle Berechnung.</dd>
+        <dt>Kann ich meine Versicherung online kündigen?</dt>
+        <dd>Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit.</dd>
+      </dl>
+    </noscript>
+  </div>
+
+  <!-- CARD -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Card</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+      <div>
+        <dxp-card>
+          <span slot="badge" style="background: #e3f2fd; color: #0066cc;">Empfohlen</span>
+          <h3 slot="header-title">Privathaftpflicht</h3>
+          <p slot="teaser-text">Umfassender Schutz für Ihren Alltag – ab 3,50 € im Monat.</p>
+          <dxp-button slot="buttons">Jetzt abschließen</dxp-button>
+        </dxp-card>
+        <noscript>
+          <h4>Privathaftpflicht</h4>
+          <p>Umfassender Schutz für Ihren Alltag – ab 3,50 € im Monat. <a href="/produkte/haftpflicht">Jetzt abschließen</a></p>
+        </noscript>
+      </div>
+      <div>
+        <dxp-card>
+          <h3 slot="header-title">Hausratversicherung</h3>
+          <p slot="teaser-text">Schützen Sie Ihr Hab und Gut gegen Einbruch, Feuer und Wasserschäden.</p>
+          <dxp-button slot="buttons" variant="secondary">Details ansehen</dxp-button>
+        </dxp-card>
+        <noscript>
+          <h4>Hausratversicherung</h4>
+          <p>Schützen Sie Ihr Hab und Gut gegen Einbruch, Feuer und Wasserschäden. <a href="/produkte/hausrat">Details ansehen</a></p>
+        </noscript>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLYOUT -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Flyout</div>
+    <dxp-flyout flyout-position="left">
+      <dxp-button slot="content" variant="secondary">Hilfe & Kontakt</dxp-button>
+      <div slot="flyout" style="padding: 0.5rem;">
+        <p style="margin: 0 0 0.5rem;"><strong>Kundenservice</strong></p>
+        <p style="margin: 0;">Telefon: 0800 123 456 789</p>
+        <p style="margin: 0;">Mo–Fr: 8:00–18:00 Uhr</p>
+      </div>
+    </dxp-flyout>
+    <noscript>
+      <address>
+        <strong>Kundenservice</strong><br />
+        Telefon: <a href="tel:+498001234567890">0800 123 456 789</a><br />
+        Erreichbar Mo–Fr: 8:00–18:00 Uhr
+      </address>
+    </noscript>
+  </div>
+
+  <!-- TARIFF COMPARISON -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Tariff Comparison</div>
+    <dxp-tariff-comparison headline="Unsere Tarife im Vergleich" sub-headline="Wählen Sie den passenden Schutz für Ihre Bedürfnisse" tariffs='{"prefix":"ab","productName":"Haftpflicht","suffix":"€","tariffData":[{"id":"basis","name":"Basis","period":"monthly","premium":"3,50","description":"Grundschutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"5 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"150 €"}}]},{"id":"komfort","name":"Komfort","period":"monthly","premium":"5,90","highlighted":true,"overline":"Beliebteste Wahl","description":"Erweiterter Schutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"10 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]},{"id":"premium","name":"Premium","period":"monthly","premium":"9,80","description":"Rundum-Sorglos","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"50 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]}],"moduleGroups":[{"name":"Leistungen","modules":[{"moduleName":"deckung","name":"Deckungssumme","uuid":"1"},{"moduleName":"selbstbeteiligung","name":"Selbstbeteiligung","uuid":"2"}]}]}'></dxp-tariff-comparison>
+    <noscript>
+      <table>
+        <caption>Haftpflichtversicherung – Tarifvergleich</caption>
+        <thead>
+          <tr><th>Tarif</th><th>Monatsbeitrag</th><th>Deckungssumme</th><th>Selbstbeteiligung</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Basis</td><td>ab 3,50 €</td><td>5 Mio. €</td><td>150 €</td></tr>
+          <tr><td>Komfort (Beliebteste Wahl)</td><td>ab 5,90 €</td><td>10 Mio. €</td><td>0 €</td></tr>
+          <tr><td>Premium</td><td>ab 9,80 €</td><td>50 Mio. €</td><td>0 €</td></tr>
+        </tbody>
+      </table>
+    </noscript>
+  </div>
+
+  <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #e91e63;">
+    <a href="/control-group-a">← Baseline (keine Maßnahmen)</a> · 
+    <a href="/test-group-b">Alle Maßnahmen kombiniert →</a>
+  </p>
+</BaseLayout>

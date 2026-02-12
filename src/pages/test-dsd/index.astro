@@ -1,0 +1,311 @@
+---
+/**
+ * Isolated Test: Declarative Shadow DOM (DSD)
+ * 
+ * Instead of relying on client-side JS to create Shadow DOM,
+ * this page uses <template shadowrootmode="open"> to provide
+ * server-rendered shadow content that crawlers can parse.
+ * 
+ * NO JSON-LD, NO ARIA on host, NO <noscript> fallbacks, NO semantic wrappers.
+ * Isolates the effect of DSD on GAIObility — the Shadow DOM content
+ * is present in the initial HTML response, not deferred to JS.
+ * 
+ * Note: DSD components are hand-written HTML, not Lit @customElement.
+ * This is intentional — DSD is assessed as a standalone technique.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="Isolated Test: Declarative Shadow DOM"
+  description="DXP components rendered via Declarative Shadow DOM – server-side shadow content visible to crawlers without JavaScript."
+  group="A"
+>
+  <div style="margin-top: 1.5rem;">
+    <h2>Isolated Variable: Declarative Shadow DOM (DSD)</h2>
+    <p>
+      Unlike all other test pages, these are <strong>not</strong> Lit-rendered components.
+      Instead, each component uses <code>&lt;template shadowrootmode="open"&gt;</code> 
+      so the Shadow DOM content is <strong>in the initial HTML</strong> — no JavaScript needed.
+    </p>
+    <p style="padding: 0.5rem; background: #f3e5f5; border-left: 3px solid #9c27b0; font-size: 0.875rem;">
+      <strong>Isolated variable:</strong> Declarative Shadow DOM. No JSON-LD, no semantic HTML, no ARIA, no &lt;noscript&gt;.
+    </p>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- BUTTON — DSD: shadow content in HTML          -->
+  <!-- ============================================ -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Button (DSD)</div>
+    
+    <dxp-button-dsd>
+      <template shadowrootmode="open">
+        <style>
+          button {
+            font-family: inherit;
+            padding: 0.5rem 1.25rem;
+            border: 2px solid #0066cc;
+            background: #0066cc;
+            color: #ffffff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+          }
+          button:hover { background: #004c99; }
+          button:disabled { opacity: 0.5; cursor: not-allowed; }
+        </style>
+        <button><slot></slot></button>
+      </template>
+      Jetzt berechnen
+    </dxp-button-dsd>
+
+    <dxp-button-dsd>
+      <template shadowrootmode="open">
+        <style>
+          button {
+            font-family: inherit;
+            padding: 0.5rem 1.25rem;
+            border: 2px solid #0066cc;
+            background: transparent;
+            color: #0066cc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+          }
+          button:hover { background: rgba(0,102,204,0.1); }
+        </style>
+        <button><slot></slot></button>
+      </template>
+      Mehr erfahren
+    </dxp-button-dsd>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- TEXT INPUT — DSD                              -->
+  <!-- ============================================ -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Text Input (DSD)</div>
+    
+    <dxp-text-input-dsd>
+      <template shadowrootmode="open">
+        <style>
+          :host { display: block; margin-bottom: 1rem; }
+          label { display: block; font-weight: 600; margin-bottom: 0.25rem; color: #333; }
+          input { width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; box-sizing: border-box; }
+          input:focus { border-color: #0066cc; outline: none; box-shadow: 0 0 0 2px rgba(0,102,204,0.2); }
+        </style>
+        <label for="vorname">Vorname</label>
+        <input id="vorname" type="text" name="vorname" placeholder="Max" required />
+      </template>
+    </dxp-text-input-dsd>
+
+    <dxp-text-input-dsd>
+      <template shadowrootmode="open">
+        <style>
+          :host { display: block; margin-bottom: 1rem; }
+          label { display: block; font-weight: 600; margin-bottom: 0.25rem; color: #333; }
+          input { width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; box-sizing: border-box; }
+          input:focus { border-color: #0066cc; outline: none; box-shadow: 0 0 0 2px rgba(0,102,204,0.2); }
+        </style>
+        <label for="email">E-Mail</label>
+        <input id="email" type="email" name="email" placeholder="max@example.de" />
+      </template>
+    </dxp-text-input-dsd>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- DROPDOWN — DSD                                -->
+  <!-- ============================================ -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Dropdown (DSD)</div>
+    
+    <dxp-dropdown-dsd>
+      <template shadowrootmode="open">
+        <style>
+          :host { display: block; margin-bottom: 1rem; }
+          label { display: block; font-weight: 600; margin-bottom: 0.25rem; color: #333; }
+          select { width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; background: #fff; }
+        </style>
+        <label for="versicherungstyp">Versicherungstyp</label>
+        <select id="versicherungstyp" name="versicherungstyp">
+          <option value="">Bitte wählen...</option>
+          <option value="haftpflicht">Haftpflichtversicherung</option>
+          <option value="kasko">Kaskoversicherung</option>
+          <option value="teilkasko">Teilkaskoversicherung</option>
+        </select>
+      </template>
+    </dxp-dropdown-dsd>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- RADIO — DSD                                   -->
+  <!-- ============================================ -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Input Radio (DSD)</div>
+    
+    <dxp-input-radio-dsd>
+      <template shadowrootmode="open">
+        <style>
+          :host { display: block; }
+          fieldset { border: none; padding: 0; }
+          legend { font-weight: 600; color: #333; margin-bottom: 0.5rem; }
+          label { display: block; padding: 0.25rem 0; cursor: pointer; }
+          input { margin-right: 0.5rem; }
+        </style>
+        <fieldset>
+          <legend>Zahlungsweise</legend>
+          <label><input type="radio" name="zahlungsweise" value="monatlich" checked /> Monatlich</label>
+          <label><input type="radio" name="zahlungsweise" value="quartal" /> Vierteljährlich</label>
+          <label><input type="radio" name="zahlungsweise" value="jaehrlich" /> Jährlich</label>
+        </fieldset>
+      </template>
+    </dxp-input-radio-dsd>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- ACCORDION — DSD                               -->
+  <!-- ============================================ -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Accordion (DSD)</div>
+    
+    <dxp-accordion-dsd>
+      <template shadowrootmode="open">
+        <style>
+          :host { display: block; }
+          details { border-bottom: 1px solid #e0e0e0; }
+          details:first-of-type { border-top: 1px solid #e0e0e0; }
+          summary { padding: 1rem; cursor: pointer; font-weight: 600; color: #333; }
+          summary:hover { background: #f5f5f5; }
+          .content { padding: 0 1rem 1rem; color: #555; }
+        </style>
+        <details>
+          <summary>Was ist eine Haftpflichtversicherung?</summary>
+          <div class="content">
+            <p>Eine Haftpflichtversicherung schützt Sie vor Schadensersatzansprüchen Dritter. Sie übernimmt die Kosten, wenn Sie versehentlich Schäden an Personen oder deren Eigentum verursachen.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Wie berechne ich meinen Beitrag?</summary>
+          <div class="content">
+            <p>Ihr Beitrag hängt von verschiedenen Faktoren ab, wie z.B. Ihrem Alter, Ihrem Wohnort und dem gewünschten Versicherungsschutz. Nutzen Sie unseren Online-Rechner für eine individuelle Berechnung.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Kann ich meine Versicherung online kündigen?</summary>
+          <div class="content">
+            <p>Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit.</p>
+          </div>
+        </details>
+      </template>
+    </dxp-accordion-dsd>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- CARD — DSD                                    -->
+  <!-- ============================================ -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Card (DSD)</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+      <dxp-card-dsd>
+        <template shadowrootmode="open">
+          <style>
+            :host { display: block; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
+            .badge { display: inline-block; background: #e3f2fd; color: #0066cc; padding: 0.25rem 0.5rem; font-size: 0.75rem; font-weight: 600; border-radius: 4px; margin-bottom: 0.5rem; }
+            .content { padding: 1.5rem; }
+            h3 { margin: 0 0 0.5rem; color: #333; }
+            p { color: #666; margin: 0 0 1rem; }
+            button { padding: 0.5rem 1.25rem; border: 2px solid #0066cc; background: #0066cc; color: #fff; border-radius: 4px; cursor: pointer; }
+          </style>
+          <div class="content">
+            <span class="badge">Empfohlen</span>
+            <h3>Privathaftpflicht</h3>
+            <p>Umfassender Schutz für Ihren Alltag – ab 3,50 € im Monat.</p>
+            <button>Jetzt abschließen</button>
+          </div>
+        </template>
+      </dxp-card-dsd>
+
+      <dxp-card-dsd>
+        <template shadowrootmode="open">
+          <style>
+            :host { display: block; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
+            .content { padding: 1.5rem; }
+            h3 { margin: 0 0 0.5rem; color: #333; }
+            p { color: #666; margin: 0 0 1rem; }
+            button { padding: 0.5rem 1.25rem; border: 2px solid #0066cc; background: transparent; color: #0066cc; border-radius: 4px; cursor: pointer; }
+          </style>
+          <div class="content">
+            <h3>Hausratversicherung</h3>
+            <p>Schützen Sie Ihr Hab und Gut gegen Einbruch, Feuer und Wasserschäden.</p>
+            <button>Details ansehen</button>
+          </div>
+        </template>
+      </dxp-card-dsd>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- TARIFF TABLE — DSD                            -->
+  <!-- ============================================ -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Tariff Comparison (DSD)</div>
+
+    <dxp-tariff-comparison-dsd>
+      <template shadowrootmode="open">
+        <style>
+          :host { display: block; }
+          h3 { margin: 0 0 0.25rem; color: #333; }
+          .subtitle { color: #666; margin: 0 0 1.5rem; }
+          .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+          .tariff { background: #fff; border: 2px solid #e0e0e0; border-radius: 8px; padding: 1.5rem; text-align: center; }
+          .tariff.highlighted { border-color: #0066cc; }
+          .overline { color: #0066cc; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+          .name { font-size: 1.25rem; font-weight: 700; margin: 0.5rem 0; }
+          .price { font-size: 1.5rem; font-weight: 700; color: #0066cc; }
+          .price-suffix { font-size: 0.875rem; color: #666; }
+          .desc { color: #666; margin: 0.5rem 0 1rem; }
+          .detail { font-size: 0.875rem; color: #555; margin: 0.25rem 0; }
+          button { padding: 0.5rem 1.25rem; border: 2px solid #0066cc; background: #0066cc; color: #fff; border-radius: 4px; cursor: pointer; margin-top: 1rem; }
+        </style>
+        <h3>Unsere Tarife im Vergleich</h3>
+        <p class="subtitle">Wählen Sie den passenden Schutz für Ihre Bedürfnisse</p>
+        <div class="grid">
+          <div class="tariff">
+            <div class="name">Basis</div>
+            <div class="price">ab 3,50 <span class="price-suffix">€</span></div>
+            <div class="desc">Grundschutz</div>
+            <div class="detail">Deckungssumme: 5 Mio. €</div>
+            <div class="detail">Selbstbeteiligung: 150 €</div>
+            <button>Auswählen</button>
+          </div>
+          <div class="tariff highlighted">
+            <div class="overline">Beliebteste Wahl</div>
+            <div class="name">Komfort</div>
+            <div class="price">ab 5,90 <span class="price-suffix">€</span></div>
+            <div class="desc">Erweiterter Schutz</div>
+            <div class="detail">Deckungssumme: 10 Mio. €</div>
+            <div class="detail">Selbstbeteiligung: 0 €</div>
+            <button>Auswählen</button>
+          </div>
+          <div class="tariff">
+            <div class="name">Premium</div>
+            <div class="price">ab 9,80 <span class="price-suffix">€</span></div>
+            <div class="desc">Rundum-Sorglos</div>
+            <div class="detail">Deckungssumme: 50 Mio. €</div>
+            <div class="detail">Selbstbeteiligung: 0 €</div>
+            <button>Auswählen</button>
+          </div>
+        </div>
+      </template>
+    </dxp-tariff-comparison-dsd>
+  </div>
+
+  <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #9c27b0;">
+    <strong>Hinweis:</strong> Diese Seite nutzt kein JavaScript. Der Shadow-DOM-Inhalt ist direkt im HTML-Quelltext 
+    über <code>&lt;template shadowrootmode="open"&gt;</code> eingebettet. Crawler sehen den vollständigen Inhalt ohne JS-Ausführung.
+    <br><br>
+    <a href="/control-group-a">← Baseline (JS Shadow DOM)</a> · 
+    <a href="/test-group-b">Alle Maßnahmen kombiniert →</a>
+  </p>
+</BaseLayout>

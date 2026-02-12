@@ -1,51 +1,169 @@
 ---
-// Standard DXP Component - Control Group A
+/**
+ * Control Group A — Standard DXP Components
+ * 
+ * Components are used exactly as a typical DXP would render them:
+ * - Shadow DOM encapsulated (content invisible to crawlers/LLMs)
+ * - No JSON-LD or structured data
+ * - No semantic HTML wrappers around components
+ * - No Light DOM fallback content
+ * - Minimal ARIA on host elements
+ * 
+ * This represents the "poor GAIObility" baseline.
+ */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout 
   title="Control Group A - Standard DXP Components"
-  description="Standard DXP components without AI optimization - baseline implementation for comparison"
+  description="Standard DXP components without AI optimization"
   group="A"
 >
+  <script>
+    import '../../components/baseline/index.ts';
+  </script>
+
   <div style="margin-top: 1.5rem;">
     <h2>Standard DXP Components</h2>
     <p>
-      This page represents the <strong>control group</strong> using standard DXP 
-      (Digital Experience Platform) components without AI optimization.
-    </p>
-    
-    <h3>Purpose</h3>
-    <p>
-      Serves as the baseline implementation for comparison against GAIO-optimized 
-      components in Test Group B.
-    </p>
-
-    <h3>Key Characteristics</h3>
-    <ul>
-      <li>Basic HTML structure using <code>&lt;div&gt;</code> elements</li>
-      <li>Standard metadata tags only</li>
-      <li>No JSON-LD structured data</li>
-      <li>Traditional SEO approach</li>
-      <li>No semantic HTML5 elements</li>
-    </ul>
-
-    <h3>What We're Testing</h3>
-    <p>
-      This control group helps us measure the baseline performance metrics:
-    </p>
-    <ul>
-      <li>Organic search rankings</li>
-      <li>Search result click-through rates</li>
-      <li>User engagement (time on page, bounce rate)</li>
-      <li>Accessibility scores</li>
-    </ul>
-
-    <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #0066cc;">
-      <strong>Note:</strong> Compare this implementation with 
-      <a href="/test-group-b" style="color: #0066cc;">Test Group B</a> 
-      to see the GAIO optimization differences.
+      These components use Shadow DOM encapsulation — the typical DXP approach. 
+      Crawlers and AI systems only see the custom element tags, not the rendered content inside.
     </p>
   </div>
+
+  <!-- ============================================ -->
+  <!-- BUTTON — Shadow DOM, no semantic context     -->
+  <!-- ============================================ -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Button</div>
+    <dxp-button>Jetzt berechnen</dxp-button>
+    <dxp-button variant="secondary">Mehr erfahren</dxp-button>
+    <dxp-button disabled>Nicht verfügbar</dxp-button>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- TEXT INPUT — Shadow DOM, no label context     -->
+  <!-- ============================================ -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Text Input</div>
+    <dxp-text-input
+      label="Vorname"
+      name="vorname"
+      placeholder="Max"
+      required
+      required-error-text="Bitte geben Sie Ihren Vornamen ein."
+    ></dxp-text-input>
+    <dxp-text-input
+      label="E-Mail"
+      name="email"
+      type="email"
+      placeholder="max@example.de"
+      regex="^[^@]+@[^@]+\.[^@]+$"
+      regex-error-text="Bitte geben Sie eine gültige E-Mail-Adresse ein."
+    ></dxp-text-input>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- DROPDOWN — Shadow DOM, options in attributes  -->
+  <!-- ============================================ -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Dropdown</div>
+    <dxp-dropdown-v1
+      label="Versicherungstyp"
+      name="versicherungstyp"
+      placeholder="Bitte wählen..."
+      options='[{"key":"haftpflicht","value":"Haftpflichtversicherung"},{"key":"kasko","value":"Kaskoversicherung"},{"key":"teilkasko","value":"Teilkaskoversicherung"}]'
+      required
+    ></dxp-dropdown-v1>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- RADIO — Shadow DOM, options as JSON attr      -->
+  <!-- ============================================ -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Input Radio</div>
+    <dxp-input-radio
+      label="Zahlungsweise"
+      name="zahlungsweise"
+      options='[{"value":"monatlich","label":"Monatlich"},{"value":"quartal","label":"Vierteljährlich"},{"value":"jaehrlich","label":"Jährlich"}]'
+      default="monatlich"
+    ></dxp-input-radio>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- ACCORDION — Shadow DOM, content hidden        -->
+  <!-- ============================================ -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Accordion</div>
+    <dxp-accordion>
+      <dxp-accordion-element id="faq-1">
+        <span slot="headline">Was ist eine Haftpflichtversicherung?</span>
+        <p>Eine Haftpflichtversicherung schützt Sie vor Schadensersatzansprüchen Dritter. Sie übernimmt die Kosten, wenn Sie versehentlich Schäden an Personen oder deren Eigentum verursachen.</p>
+      </dxp-accordion-element>
+      <dxp-accordion-element id="faq-2">
+        <span slot="headline">Wie berechne ich meinen Beitrag?</span>
+        <p>Ihr Beitrag hängt von verschiedenen Faktoren ab, wie z.B. Ihrem Alter, Ihrem Wohnort und dem gewünschten Versicherungsschutz. Nutzen Sie unseren Online-Rechner für eine individuelle Berechnung.</p>
+      </dxp-accordion-element>
+      <dxp-accordion-element id="faq-3">
+        <span slot="headline">Kann ich meine Versicherung online kündigen?</span>
+        <p>Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit.</p>
+      </dxp-accordion-element>
+    </dxp-accordion>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- CARD — Shadow DOM, slots hide content         -->
+  <!-- ============================================ -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Card</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+      <dxp-card>
+        <span slot="badge" style="background: #e3f2fd; color: #0066cc;">Empfohlen</span>
+        <h3 slot="header-title">Privathaftpflicht</h3>
+        <p slot="teaser-text">Umfassender Schutz für Ihren Alltag – ab 3,50 € im Monat.</p>
+        <dxp-button slot="buttons">Jetzt abschließen</dxp-button>
+      </dxp-card>
+      <dxp-card>
+        <h3 slot="header-title">Hausratversicherung</h3>
+        <p slot="teaser-text">Schützen Sie Ihr Hab und Gut gegen Einbruch, Feuer und Wasserschäden.</p>
+        <dxp-button slot="buttons" variant="secondary">Details ansehen</dxp-button>
+      </dxp-card>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- FLYOUT — Shadow DOM, hidden panel content     -->
+  <!-- ============================================ -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Flyout</div>
+    <dxp-flyout flyout-position="left">
+      <dxp-button slot="content" variant="secondary">Hilfe & Kontakt</dxp-button>
+      <div slot="flyout" style="padding: 0.5rem;">
+        <p style="margin: 0 0 0.5rem;"><strong>Kundenservice</strong></p>
+        <p style="margin: 0;">Telefon: 0800 123 456 789</p>
+        <p style="margin: 0;">Mo–Fr: 8:00–18:00 Uhr</p>
+      </div>
+    </dxp-flyout>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- TARIFF COMPARISON — Complex Shadow DOM        -->
+  <!-- ============================================ -->
+  <div style="margin: 2rem 0;">
+    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Tariff Comparison</div>
+    <dxp-tariff-comparison
+      headline="Unsere Tarife im Vergleich"
+      sub-headline="Wählen Sie den passenden Schutz für Ihre Bedürfnisse"
+      tariffs='{"prefix":"ab","productName":"Haftpflicht","suffix":"€","tariffData":[{"id":"basis","name":"Basis","period":"monthly","premium":"3,50","description":"Grundschutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"5 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"150 €"}}]},{"id":"komfort","name":"Komfort","period":"monthly","premium":"5,90","highlighted":true,"overline":"Beliebteste Wahl","description":"Erweiterter Schutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"10 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]},{"id":"premium","name":"Premium","period":"monthly","premium":"9,80","description":"Rundum-Sorglos","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"50 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]}],"moduleGroups":[{"name":"Leistungen","modules":[{"moduleName":"deckung","name":"Deckungssumme","uuid":"1"},{"moduleName":"selbstbeteiligung","name":"Selbstbeteiligung","uuid":"2"}]}]}'
+    ></dxp-tariff-comparison>
+  </div>
+
+  <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #0066cc;">
+    <strong>GAIObility-Problem:</strong> All diese Komponenten nutzen Shadow DOM. 
+    Crawler und AI-Systeme sehen nur <code>&lt;dxp-button&gt;</code>, <code>&lt;dxp-card&gt;</code> etc. — 
+    der tatsächlich gerenderte Inhalt (Labels, Texte, Struktur) bleibt im Shadow Tree verborgen.
+    <br><br>
+    <a href="/test-group-b" style="color: #0066cc;">→ Vergleich mit GAIO-optimierter Version (Group B)</a>
+  </p>
 </BaseLayout>
 
