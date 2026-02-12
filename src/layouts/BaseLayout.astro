@@ -1,13 +1,21 @@
 ---
-// src/layouts/BaseLayout.astro
+/**
+ * BaseLayout — Neutral page shell
+ * 
+ * Provides shared styling, <head> boilerplate, and navigation.
+ * Traditional SEO signals (robots, canonical) are constants applied
+ * to every page — they are NOT experimental variables.
+ * 
+ * Only JSON-LD is optional because it IS one of the GAIO variables
+ * under test and must be absent from baseline/non-JSON-LD pages.
+ */
 interface Props {
   title: string;
   description: string;
-  group: 'A' | 'B';
-  schemaData?: object; // Das JSON-LD Objekt
+  schemaData?: object;
 }
 
-const { title, description, group, schemaData } = Astro.props;
+const { title, description, schemaData } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -17,16 +25,13 @@ const { title, description, group, schemaData } = Astro.props;
     <meta name="viewport" content="width=device-width" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    
-    {/* Gruppe B bekommt zusätzlich optimierte Metadaten */}
-    {group === 'B' && (
-      <>
-        <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
-        <link rel="canonical" href={Astro.url} />
-        {schemaData && (
-          <script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
-        )}
-      </>
+
+    <!-- Constant SEO baseline — not an experimental variable -->
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+    <link rel="canonical" href={Astro.url} />
+
+    {schemaData && (
+      <script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
     )}
 
     <style>
@@ -48,22 +53,6 @@ const { title, description, group, schemaData } = Astro.props;
         border-bottom: 3px solid #667eea;
         padding-bottom: 0.5rem;
       }
-      .badge {
-        display: inline-block;
-        background: #667eea;
-        color: white;
-        padding: 0.25rem 0.75rem;
-        border-radius: 4px;
-        font-size: 0.875rem;
-        font-weight: bold;
-        margin-bottom: 1rem;
-      }
-      .badge.group-a {
-        background: #0066cc;
-      }
-      .badge.group-b {
-        background: #10b981;
-      }
       nav {
         margin-top: 2rem;
         padding-top: 1rem;
@@ -77,49 +66,15 @@ const { title, description, group, schemaData } = Astro.props;
       nav a:hover {
         text-decoration: underline;
       }
-      #content {
-        /* Basic styling for Group A */
-        margin-top: 1rem;
-      }
-      main[aria-label="Main Content"] {
-        /* Semantic styling for Group B */
-        margin-top: 1rem;
-      }
-      article header {
-        margin-bottom: 1.5rem;
-      }
     </style>
   </head>
   <body>
-    {/* Semantische Unterscheidung im Body */}
-    {group === 'B' ? (
-      <main aria-label="Main Content">
-        <article>
-          <header>
-            <h1>{title}</h1>
-            <span class="badge group-b">Test Group B - GAIO Optimized</span>
-          </header>
-          <slot />
-        </article>
-        <nav>
-          <a href="/">Home</a>
-          <a href="/control-group-a">Control Group A</a>
-          <a href="/test-group-b">Test Group B</a>
-        </nav>
-      </main>
-    ) : (
-      <div class="container">
-        <div id="content">
-          <h1>{title}</h1>
-          <span class="badge group-a">Control Group A - Standard</span>
-          <slot />
-        </div>
-        <nav>
-          <a href="/">Home</a>
-          <a href="/control-group-a">Control Group A</a>
-          <a href="/test-group-b">Test Group B</a>
-        </nav>
-      </div>
-    )}
+    <div class="container">
+      <h1>{title}</h1>
+      <slot />
+      <nav>
+        <a href="/">Home</a>
+      </nav>
+    </div>
   </body>
 </html>
