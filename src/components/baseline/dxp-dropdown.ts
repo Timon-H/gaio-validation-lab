@@ -19,7 +19,7 @@
  * Simplified: Uses native-like dropdown instead of tippy.js overlay
  */
 import { LitElement, html, css, nothing } from 'lit';
-import { customElement, property, query, state } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 
 export interface DropdownOption {
   key: string;
@@ -159,8 +159,6 @@ export class DxpDropdown extends LitElement {
 
   @state() private selectedKey: string = '';
   @state() private _invalid: boolean = false;
-
-  @query('select') private _select!: HTMLSelectElement;
 
   get value(): string {
     return this.selectedKey;
