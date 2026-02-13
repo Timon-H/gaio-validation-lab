@@ -4,7 +4,7 @@
 # ============================================
 # Tests that the middleware correctly detects AI bots
 # and sets the right X-Test-Group / X-AI-Bot-Detected headers
-# for ALL 7 test variants.
+# for ALL 8 test variants.
 #
 # Usage:
 #   ./scripts/test-bots.sh [BASE_URL]
@@ -29,6 +29,7 @@ VARIANTS=(
   "test-noscript-only"
   "test-aria-only"
   "test-dsd"
+  "test-microdata-only"
 )
 
 # Bot user agents: "User-Agent|ExpectedBotName"

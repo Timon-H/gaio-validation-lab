@@ -21,7 +21,8 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     || url.pathname.startsWith('/test-semantic-only')
     || url.pathname.startsWith('/test-noscript-only')
     || url.pathname.startsWith('/test-aria-only')
-    || url.pathname.startsWith('/test-dsd');
+    || url.pathname.startsWith('/test-dsd')
+    || url.pathname.startsWith('/test-microdata-only');
   
   if (!isControl && !isCombined && !isIsolatedTest) {
     return next();
