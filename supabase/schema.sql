@@ -60,7 +60,17 @@ FROM bot_logs
 GROUP BY test_group
 ORDER BY test_group;
 
--- 4. Row-level security: allow anonymous reads, authenticated writes
+-- 4. Row-level security
+-- NOTE: Intentionally permissive (WITH CHECK (true) / USING (true)).
+-- This is a thesis validation lab — not a production system.
+-- The data (bot visit logs, extraction markers) is non-sensitive and
+-- append-only by design. The anon key is used by both the Astro
+-- middleware (bot_logs INSERT) and the extraction test script
+-- (extraction_results INSERT). No UPDATE/DELETE policies exist,
+-- so the tables are effectively append-only even without auth.
+-- For a production system: restrict INSERT to authenticated roles,
+-- add rate-limiting via pg_net or Edge Function middleware, and
+-- scope SELECT to the owning organization.
 ALTER TABLE bot_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE extraction_results ENABLE ROW LEVEL SECURITY;
 
