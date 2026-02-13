@@ -5,13 +5,17 @@
  * The SAME web components as Baseline, but with ALL GAIO countermeasures:
  * - JSON-LD structured data describing each component's content
  * - Semantic HTML wrappers (<section>, <article>) around every component
- * - Light DOM fallback content in <noscript> blocks
  * - ARIA attributes on host elements for additional context
  * - Declarative Shadow DOM via @lit-labs/ssr (shadow content in initial HTML)
  * - robots meta + canonical URL for optimal crawler directives
  * 
+ * NOTE: <noscript> fallbacks are NOT included here because DSD makes them
+ * redundant — the shadow content is already in the initial HTML without JS.
+ * The noscript technique is tested in isolation at /test-noscript-only.
+ * 
  * Crawlers and LLMs can now parse the page content even though the
  * interactive rendering still lives inside Shadow DOM.
+ * DSD supersedes <noscript> as a content accessibility mechanism.
  */
 import { renderLitToString } from '../../lib/lit-ssr.ts';
 import { html } from 'lit';
@@ -194,8 +198,9 @@ const tariffHtml = await renderLitToString(html`
   description="Vergleichen Sie unsere Haftpflicht-, Hausrat- und Kaskoversicherungen. GAIO-optimierte DXP-Komponenten mit JSON-LD, semantischem HTML und Light-DOM-Fallbacks."
   schemaData={gaioSchema}
 >
-  <!-- Client-side Lit for hydration after SSR -->
+  <!-- Client-side Lit hydration — hydrate-support MUST load before element definitions -->
   <script>
+    import '@lit-labs/ssr-client/lit-element-hydrate-support.js';
     import '../../components/baseline/index.ts';
   </script>
 
@@ -203,30 +208,23 @@ const tariffHtml = await renderLitToString(html`
     <h2 id="page-heading">GAIO-optimierte DXP-Komponenten</h2>
     <p>
       Dieselben Web Components wie in <a href="/control">Baseline</a>, aber mit <strong>allen GAIO-Maßnahmen</strong>: 
-      JSON-LD, semantisches HTML, Light-DOM-Fallbacks, ARIA-Attribute und Declarative Shadow DOM 
+      JSON-LD, semantisches HTML, ARIA-Attribute und Declarative Shadow DOM 
       machen den Shadow-DOM-Inhalt für Crawler und AI-Systeme sichtbar.
     </p>
   </section>
 
   <!-- ============================================ -->
-  <!-- BUTTON — DSD + Semantic + ARIA + noscript     -->
+  <!-- BUTTON — DSD + Semantic + ARIA               -->
   <!-- ============================================ -->
   <section aria-label="Call-to-Action Buttons" style="margin: 2rem 0;">
     <h3>Aktionen</h3>
     <p>Starten Sie Ihre Versicherungsberechnung oder erfahren Sie mehr über unsere Produkte.</p>
 
     <Fragment set:html={buttonHtml} />
-
-    <noscript>
-      <ul>
-        <li><a href="/berechnen">Jetzt berechnen</a></li>
-        <li><a href="/produkte">Mehr erfahren</a></li>
-      </ul>
-    </noscript>
   </section>
 
   <!-- ============================================ -->
-  <!-- TEXT INPUT — DSD + Semantic + ARIA + noscript  -->
+  <!-- TEXT INPUT — DSD + Semantic + ARIA             -->
   <!-- ============================================ -->
   <section aria-label="Kontaktformular" style="margin: 2rem 0;">
     <h3>Persönliche Angaben</h3>
@@ -235,79 +233,40 @@ const tariffHtml = await renderLitToString(html`
     <div role="group" aria-label="Ihre Daten">
       <Fragment set:html={textInputHtml} />
     </div>
-
-    <noscript>
-      <form>
-        <label for="fallback-vorname">Vorname (Pflichtfeld)</label>
-        <input id="fallback-vorname" name="vorname" type="text" required />
-        <label for="fallback-email">E-Mail</label>
-        <input id="fallback-email" name="email" type="email" />
-      </form>
-    </noscript>
   </section>
 
   <!-- ============================================ -->
-  <!-- DROPDOWN — DSD + Semantic + ARIA + noscript   -->
+  <!-- DROPDOWN — DSD + Semantic + ARIA              -->
   <!-- ============================================ -->
   <section aria-label="Versicherungsauswahl" style="margin: 2rem 0;">
     <h3>Versicherungstyp auswählen</h3>
     <p>Wählen Sie die gewünschte Versicherungsart aus unseren Angeboten.</p>
 
     <Fragment set:html={dropdownHtml} />
-
-    <noscript>
-      <label for="fallback-versicherung">Versicherungstyp</label>
-      <select id="fallback-versicherung" name="versicherungstyp">
-        <option value="">Bitte wählen...</option>
-        <option value="haftpflicht">Haftpflichtversicherung</option>
-        <option value="kasko">Kaskoversicherung</option>
-        <option value="teilkasko">Teilkaskoversicherung</option>
-      </select>
-    </noscript>
   </section>
 
   <!-- ============================================ -->
-  <!-- RADIO — DSD + Semantic + ARIA + noscript      -->
+  <!-- RADIO — DSD + Semantic + ARIA                 -->
   <!-- ============================================ -->
   <section aria-label="Zahlungsoptionen" style="margin: 2rem 0;">
     <h3>Zahlungsweise</h3>
     <p>Wählen Sie Ihre bevorzugte Zahlungsfrequenz für Ihren Versicherungsbeitrag.</p>
 
     <Fragment set:html={radioHtml} />
-
-    <noscript>
-      <fieldset>
-        <legend>Zahlungsweise</legend>
-        <label><input type="radio" name="zahlungsweise" value="monatlich" checked /> Monatlich</label>
-        <label><input type="radio" name="zahlungsweise" value="quartal" /> Vierteljährlich</label>
-        <label><input type="radio" name="zahlungsweise" value="jaehrlich" /> Jährlich</label>
-      </fieldset>
-    </noscript>
   </section>
 
   <!-- ============================================ -->
-  <!-- ACCORDION / FAQ — DSD + Semantic + ARIA + noscript -->
+  <!-- ACCORDION / FAQ — DSD + Semantic + ARIA       -->
   <!-- ============================================ -->
   <section aria-labelledby="faq-heading" style="margin: 2rem 0;">
     <h3 id="faq-heading">Häufig gestellte Fragen</h3>
     <p>Antworten auf die wichtigsten Fragen rund um unsere Versicherungsprodukte.</p>
 
     <Fragment set:html={accordionHtml} />
-
-    <noscript>
-      <dl>
-        <dt>Was ist eine Haftpflichtversicherung?</dt>
-        <dd>Eine Haftpflichtversicherung schützt Sie vor Schadensersatzansprüchen Dritter. Sie übernimmt die Kosten, wenn Sie versehentlich Schäden an Personen oder deren Eigentum verursachen.</dd>
-        <dt>Wie berechne ich meinen Beitrag?</dt>
-        <dd>Ihr Beitrag hängt von verschiedenen Faktoren ab, wie z.B. Ihrem Alter, Ihrem Wohnort und dem gewünschten Versicherungsschutz. Nutzen Sie unseren Online-Rechner für eine individuelle Berechnung.</dd>
-        <dt>Kann ich meine Versicherung online kündigen?</dt>
-        <dd>Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit.</dd>
-      </dl>
-    </noscript>
   </section>
 
   <!-- ============================================ -->
-  <!-- CARD — DSD + Semantic + ARIA + noscript       -->
+  <!-- CARD — DSD + Semantic + ARIA                  -->
   <!-- ============================================ -->
   <section aria-labelledby="products-heading" style="margin: 2rem 0;">
     <h3 id="products-heading">Unsere Versicherungsprodukte</h3>
@@ -316,61 +275,31 @@ const tariffHtml = await renderLitToString(html`
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
       <article aria-label="Privathaftpflicht – ab 3,50 € monatlich">
         <Fragment set:html={cardHtml1} />
-        <noscript>
-          <h4>Privathaftpflicht</h4>
-          <p>Umfassender Schutz für Ihren Alltag – ab 3,50 € im Monat. <a href="/produkte/haftpflicht">Jetzt abschließen</a></p>
-        </noscript>
       </article>
       <article aria-label="Hausratversicherung – Schutz für Hab und Gut">
         <Fragment set:html={cardHtml2} />
-        <noscript>
-          <h4>Hausratversicherung</h4>
-          <p>Schützen Sie Ihr Hab und Gut gegen Einbruch, Feuer und Wasserschäden. <a href="/produkte/hausrat">Details ansehen</a></p>
-        </noscript>
       </article>
     </div>
   </section>
 
   <!-- ============================================ -->
-  <!-- FLYOUT — DSD + Semantic + ARIA + noscript     -->
+  <!-- FLYOUT — DSD + Semantic + ARIA                -->
   <!-- ============================================ -->
   <section aria-label="Hilfe und Kontakt" style="margin: 2rem 0;">
     <h3>Brauchen Sie Hilfe?</h3>
     <p>Unser Kundenservice steht Ihnen gerne zur Verfügung.</p>
 
     <Fragment set:html={flyoutHtml} />
-
-    <noscript>
-      <address>
-        <strong>Kundenservice</strong><br />
-        Telefon: <a href="tel:+498001234567890">0800 123 456 789</a><br />
-        Erreichbar Mo–Fr: 8:00–18:00 Uhr
-      </address>
-    </noscript>
   </section>
 
   <!-- ============================================ -->
-  <!-- TARIFF COMPARISON — DSD + Semantic + ARIA + noscript -->
+  <!-- TARIFF COMPARISON — DSD + Semantic + ARIA     -->
   <!-- ============================================ -->
   <section aria-labelledby="tariff-heading" style="margin: 2rem 0;">
     <h3 id="tariff-heading">Unsere Tarife im Vergleich</h3>
     <p>Wählen Sie den passenden Schutz für Ihre Bedürfnisse. Alle Preise verstehen sich als monatliche Beiträge.</p>
 
     <Fragment set:html={tariffHtml} />
-
-    <noscript>
-      <table>
-        <caption>Haftpflichtversicherung – Tarifvergleich</caption>
-        <thead>
-          <tr><th>Tarif</th><th>Monatsbeitrag</th><th>Deckungssumme</th><th>Selbstbeteiligung</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Basis</td><td>ab 3,50 €</td><td>5 Mio. €</td><td>150 €</td></tr>
-          <tr><td>Komfort (Beliebteste Wahl)</td><td>ab 5,90 €</td><td>10 Mio. €</td><td>0 €</td></tr>
-          <tr><td>Premium</td><td>ab 9,80 €</td><td>50 Mio. €</td><td>0 €</td></tr>
-        </tbody>
-      </table>
-    </noscript>
   </section>
 
   <aside style="margin-top: 2rem; padding: 1rem; background: #e8f5e9; border-left: 4px solid #43a047;">
@@ -378,10 +307,14 @@ const tariffHtml = await renderLitToString(html`
     <ul style="margin: 0.5rem 0 0;">
       <li><strong>JSON-LD:</strong> FAQPage-Schema, Offer-Schema für jeden Tarif, WebPage-Schema</li>
       <li><strong>Semantisches HTML:</strong> <code>&lt;section&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;address&gt;</code> statt <code>&lt;div&gt;</code></li>
-      <li><strong>Light-DOM-Fallbacks:</strong> <code>&lt;noscript&gt;</code>-Blöcke mit <code>&lt;table&gt;</code>, <code>&lt;dl&gt;</code>, <code>&lt;fieldset&gt;</code></li>
       <li><strong>ARIA:</strong> <code>aria-label</code>, <code>aria-labelledby</code>, <code>role="group"</code> auf Host-Elementen</li>
       <li><strong>Declarative Shadow DOM:</strong> <code>@lit-labs/ssr</code> rendert Shadow-Inhalte als <code>&lt;template shadowrootmode="open"&gt;</code></li>
     </ul>
+    <p style="margin-top: 0.75rem; font-size: 0.875rem; color: #555;">
+      <strong>Hinweis:</strong> <code>&lt;noscript&gt;</code>-Fallbacks werden hier bewusst weggelassen,
+      da DSD den Shadow-Inhalt bereits ohne JavaScript im initialen HTML bereitstellt.
+      Die Noscript-Technik wird isoliert unter <a href="/test-noscript-only" style="color: #2e7d32;">/test-noscript-only</a> getestet.
+    </p>
     <br>
     <a href="/control" style="color: #2e7d32;">→ Vergleich mit Standard-Version (Baseline)</a>
   </aside>

@@ -59,12 +59,14 @@ VARIANTS=(
   "test-dsd"
 )
 
-# Bot user agents for simulation
-declare -A BOTS
-BOTS[GPTBot]="Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)"
-BOTS[ClaudeBot]="Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)"
-BOTS[GoogleBot]="Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
-BOTS[curl]="curl/8.0"
+# Bot user agents for simulation (parallel arrays for bash 3.2 compatibility)
+BOT_NAMES=(GPTBot ClaudeBot GoogleBot curl)
+BOT_UAS=(
+  "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)"
+  "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)"
+  "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+  "curl/8.0"
+)
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -75,60 +77,64 @@ echo "============================================"
 echo "GAIO Content Extraction Test"
 echo "Base URL: $BASE_URL"
 echo "Mode:     $MODE"
-echo "Variants: ${#VARIANTS[@]}  |  Bots: ${!BOTS[@]}"
+echo "Variants: ${#VARIANTS[@]}  |  Bots: ${BOT_NAMES[*]}"
 echo "============================================"
 echo ""
 
 # Results table header
-printf "%-22s | %-10s | %6s | %5s | %5s | %5s | %5s | %5s | %5s | %s\n" \
-  "VARIANT" "BOT" "WORDS" "HEADS" "LINKS" "LD" "ARIA" "SEM" "NOSC" "DB"
-printf "%s\n" "------------------------------------------------------------------------------------------------------"
+printf "%-22s | %-10s | %6s | %5s | %5s | %5s | %5s | %5s | %5s | %5s | %s\n" \
+  "VARIANT" "BOT" "WORDS" "HEADS" "LINKS" "LD" "ARIA" "SEM" "NOSC" "DSD" "DB"
+printf "%s\n" "-------------------------------------------------------------------------------------------------------------"
 
 PERSISTED=0
 FAILED=0
 
 for variant in "${VARIANTS[@]}"; do
-  for bot_name in "${!BOTS[@]}"; do
-    ua="${BOTS[$bot_name]}"
+  for i in $(seq 0 $((${#BOT_NAMES[@]} - 1))); do
+    bot_name="${BOT_NAMES[$i]}"
+    ua="${BOT_UAS[$i]}"
     url="$BASE_URL/$variant"
 
-    # Fetch page HTML (no JS, just like a crawler)
-    html=$(curl -s -A "$ua" "$url" 2>/dev/null || echo "")
+    # Fetch page HTML to temp file (no JS, just like a crawler)
+    tmpfile=$(mktemp)
+    curl -s -A "$ua" "$url" > "$tmpfile" 2>/dev/null || true
 
-    if [ -z "$html" ]; then
-      printf "%-22s | %-10s | %6s | %5s | %5s | %5s | %5s | %5s | %5s | %s\n" \
-        "$variant" "$bot_name" "ERR" "-" "-" "-" "-" "-" "-" "-"
+    if [ ! -s "$tmpfile" ]; then
+      printf "%-22s | %-10s | %6s | %5s | %5s | %5s | %5s | %5s | %5s | %5s | %s\n" \
+        "$variant" "$bot_name" "ERR" "-" "-" "-" "-" "-" "-" "-" "-"
+      rm -f "$tmpfile"
       ((FAILED++))
       continue
     fi
 
     # Strip HTML tags to get text, count words
-    text=$(echo "$html" | sed 's/<[^>]*>//g' | tr -s '[:space:]' ' ')
+    text=$(sed 's/<[^>]*>//g' "$tmpfile" | tr -s '[:space:]' ' ')
     word_count=$(echo "$text" | wc -w | tr -d ' ')
 
     # Count structural elements
-    heading_count=$(echo "$html" | grep -oi '<h[1-6][^>]*>' | wc -l | tr -d ' ')
-    link_count=$(echo "$html" | grep -oi '<a ' | wc -l | tr -d ' ')
+    heading_count=$(grep -oi '<h[1-6][^>]*>' "$tmpfile" | wc -l | tr -d ' ')
+    link_count=$(grep -oi '<a ' "$tmpfile" | wc -l | tr -d ' ')
 
-    # Check markers (boolean flags)
-    has_jsonld=$(echo "$html" | grep -q 'application/ld+json' && echo "true" || echo "false")
-    has_aria=$(echo "$html" | grep -q 'aria-label' && echo "true" || echo "false")
-    has_semantic=$(echo "$html" | grep -qE '<(section|article|address|aside|nav|main) ' && echo "true" || echo "false")
-    has_noscript=$(echo "$html" | grep -q '<noscript>' && echo "true" || echo "false")
-    has_dsd=$(echo "$html" | grep -q 'shadowrootmode' && echo "true" || echo "false")
+    # Check markers (boolean flags) — grep file directly to avoid pipe/SIGPIPE issues
+    has_jsonld=$(grep -q 'application/ld+json' "$tmpfile" && echo "true" || echo "false")
+    has_aria=$(grep -q 'aria-label' "$tmpfile" && echo "true" || echo "false")
+    has_semantic=$(grep -qE '<(section|article|address|aside|nav|main) ' "$tmpfile" && echo "true" || echo "false")
+    has_noscript=$(grep -q '<noscript>' "$tmpfile" && echo "true" || echo "false")
+    has_dsd=$(grep -q 'shadowrootmode' "$tmpfile" && echo "true" || echo "false")
 
     # Display labels
     ld_label=$( [ "$has_jsonld" = "true" ] && echo "YES" || echo "no")
     aria_label=$( [ "$has_aria" = "true" ] && echo "YES" || echo "no")
     sem_label=$( [ "$has_semantic" = "true" ] && echo "YES" || echo "no")
     nosc_label=$( [ "$has_noscript" = "true" ] && echo "YES" || echo "no")
+    dsd_label=$( [ "$has_dsd" = "true" ] && echo "YES" || echo "no")
 
     db_status="-"
 
     # ---- Persist to Supabase ----
     if [ "$MODE" = "persist" ]; then
       # Extract JSON-LD content (if any)
-      jsonld_content=$(echo "$html" | grep -oP '(?<=<script type="application/ld\+json">).*?(?=</script>)' 2>/dev/null | head -1 || echo "null")
+      jsonld_content=$(grep -o '<script type="application/ld+json">[^<]*</script>' "$tmpfile" 2>/dev/null | sed 's/<script type="application\/ld+json">//;s/<\/script>//' | head -1 || echo "null")
       [ -z "$jsonld_content" ] && jsonld_content="null"
 
       # Content hash for deduplication
@@ -175,24 +181,30 @@ JSONEOF
       fi
     fi
 
-    printf "%-22s | %-10s | %6s | %5s | %5s | %5s | %5s | %5s | %5s | $(echo -e "$db_status")\n" \
+    printf "%-22s | %-10s | %6s | %5s | %5s | %5s | %5s | %5s | %5s | %5s | $(echo -e "$db_status")\n" \
       "$variant" "$bot_name" "$word_count" "$heading_count" "$link_count" \
-      "$ld_label" "$aria_label" "$sem_label" "$nosc_label"
+      "$ld_label" "$aria_label" "$sem_label" "$nosc_label" "$dsd_label"
+
+    rm -f "$tmpfile"
   done
   echo ""
 done
 
 echo "============================================"
-echo "Legend: LD=JSON-LD, ARIA=aria-label, SEM=semantic HTML, NOSC=<noscript>, DB=database status"
+echo "Legend: LD=JSON-LD, ARIA=aria-label, SEM=semantic HTML, NOSC=<noscript>, DSD=Declarative Shadow DOM, DB=database status"
 echo ""
-echo "Expected pattern for isolated variables:"
-echo "  control           → no  / no  / no  / no"
-echo "  test-jsonld-only  → YES / no  / no  / no"
-echo "  test-semantic-only→ no  / no  / YES / no"
-echo "  test-noscript-only→ no  / no  / no  / YES"
-echo "  test-aria-only    → no  / YES / no  / no"
-echo "  test-dsd          → no  / no  / no  / no  (but shadow content in HTML)"
-echo "  combined          → YES / YES / YES / YES"
+echo "Expected GAIO variable pattern (LD / ARIA / SEM / NOSC / DSD):"
+echo "  control           → no  / no  / no  / no  / no"
+echo "  test-jsonld-only  → YES / no  / no  / no  / no"
+echo "  test-semantic-only→ no  / no  / YES / no  / no"
+echo "  test-noscript-only→ no  / no  / no  / YES / no"
+echo "  test-aria-only    → no  / YES / no  / no  / no"
+echo "  test-dsd          → no  / no  / no  / no  / YES"
+echo "  combined          → YES / YES / YES / no  / YES (DSD supersedes noscript)"
+echo ""
+echo "NOTE: SEM/ARIA may show infrastructure positives (BaseLayout <nav>, DSD"
+echo "      template internals). These are constant across all pages and cancel"
+echo "      out in comparisons. Focus on the unique GAIO variable per arm."
 
 if [ "$MODE" = "persist" ]; then
   echo ""
