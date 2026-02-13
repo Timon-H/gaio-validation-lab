@@ -37,6 +37,21 @@ const gaioSchema = {
   "@type": "WebPage",
   "name": "DXP Versicherungen – Tarifvergleich & Übersicht",
   "description": "Vergleichen Sie unsere Haftpflicht-, Hausrat- und Kaskoversicherungen. Berechnen Sie Ihren individuellen Beitrag online.",
+  "about": {
+    "@type": "FinancialProduct",
+    "name": "Haftpflichtversicherung",
+    "sameAs": [
+      "https://de.wikipedia.org/wiki/Haftpflichtversicherung",
+      "https://www.wikidata.org/wiki/Q1377051"
+    ]
+  },
+  "provider": {
+    "@type": "InsuranceAgency",
+    "name": "DXP Versicherungen",
+    "sameAs": [
+      "https://de.wikipedia.org/wiki/Versicherungsunternehmen"
+    ]
+  },
   "mainEntity": {
     "@type": "FAQPage",
     "mainEntity": [
@@ -72,21 +87,39 @@ const gaioSchema = {
       "name": "Haftpflicht Basis",
       "price": "3.50",
       "priceCurrency": "EUR",
-      "description": "Grundschutz – Deckungssumme 5 Mio. €, Selbstbeteiligung 150 €"
+      "description": "Grundschutz – Deckungssumme 5 Mio. €, Selbstbeteiligung 150 €",
+      "itemOffered": {
+        "@type": "Product",
+        "name": "Privathaftpflichtversicherung Basis",
+        "category": "Haftpflichtversicherung",
+        "sameAs": "https://de.wikipedia.org/wiki/Privathaftpflichtversicherung"
+      }
     },
     {
       "@type": "Offer",
       "name": "Haftpflicht Komfort",
       "price": "5.90",
       "priceCurrency": "EUR",
-      "description": "Erweiterter Schutz – Deckungssumme 10 Mio. €, keine Selbstbeteiligung"
+      "description": "Erweiterter Schutz – Deckungssumme 10 Mio. €, keine Selbstbeteiligung",
+      "itemOffered": {
+        "@type": "Product",
+        "name": "Privathaftpflichtversicherung Komfort",
+        "category": "Haftpflichtversicherung",
+        "sameAs": "https://de.wikipedia.org/wiki/Privathaftpflichtversicherung"
+      }
     },
     {
       "@type": "Offer",
       "name": "Haftpflicht Premium",
       "price": "9.80",
       "priceCurrency": "EUR",
-      "description": "Rundum-Sorglos – Deckungssumme 50 Mio. €, keine Selbstbeteiligung"
+      "description": "Rundum-Sorglos – Deckungssumme 50 Mio. €, keine Selbstbeteiligung",
+      "itemOffered": {
+        "@type": "Product",
+        "name": "Privathaftpflichtversicherung Premium",
+        "category": "Haftpflichtversicherung",
+        "sameAs": "https://de.wikipedia.org/wiki/Privathaftpflichtversicherung"
+      }
     }
   ]
 };
@@ -224,9 +257,10 @@ const tariffHtml = await renderLitToString(html`
   </section>
 
   <!-- ============================================ -->
-  <!-- TEXT INPUT — DSD + Semantic + ARIA             -->
+  <!-- TEXT INPUT — DSD + Semantic + ARIA + Microdata -->
   <!-- ============================================ -->
-  <section aria-label="Kontaktformular" style="margin: 2rem 0;">
+  <section aria-label="Kontaktformular" style="margin: 2rem 0;" itemscope itemtype="https://schema.org/Person">
+    <meta itemprop="description" content="Persönliche Angaben: Vorname und E-Mail-Adresse für ein individuelles Versicherungsangebot" />
     <h3>Persönliche Angaben</h3>
     <p>Geben Sie Ihre Kontaktdaten ein, um ein individuelles Angebot zu erhalten.</p>
 
@@ -236,9 +270,10 @@ const tariffHtml = await renderLitToString(html`
   </section>
 
   <!-- ============================================ -->
-  <!-- DROPDOWN — DSD + Semantic + ARIA              -->
+  <!-- DROPDOWN — DSD + Semantic + ARIA + Microdata  -->
   <!-- ============================================ -->
-  <section aria-label="Versicherungsauswahl" style="margin: 2rem 0;">
+  <section aria-label="Versicherungsauswahl" style="margin: 2rem 0;" itemscope itemtype="https://schema.org/ItemList">
+    <meta itemprop="name" content="Versicherungstyp" />
     <h3>Versicherungstyp auswählen</h3>
     <p>Wählen Sie die gewünschte Versicherungsart aus unseren Angeboten.</p>
 
@@ -246,9 +281,10 @@ const tariffHtml = await renderLitToString(html`
   </section>
 
   <!-- ============================================ -->
-  <!-- RADIO — DSD + Semantic + ARIA                 -->
+  <!-- RADIO — DSD + Semantic + ARIA + Microdata     -->
   <!-- ============================================ -->
-  <section aria-label="Zahlungsoptionen" style="margin: 2rem 0;">
+  <section aria-label="Zahlungsoptionen" style="margin: 2rem 0;" itemscope itemtype="https://schema.org/ItemList">
+    <meta itemprop="name" content="Zahlungsweise" />
     <h3>Zahlungsweise</h3>
     <p>Wählen Sie Ihre bevorzugte Zahlungsfrequenz für Ihren Versicherungsbeitrag.</p>
 
@@ -256,9 +292,9 @@ const tariffHtml = await renderLitToString(html`
   </section>
 
   <!-- ============================================ -->
-  <!-- ACCORDION / FAQ — DSD + Semantic + ARIA       -->
+  <!-- ACCORDION / FAQ — DSD + Semantic + ARIA + Microdata -->
   <!-- ============================================ -->
-  <section aria-labelledby="faq-heading" style="margin: 2rem 0;">
+  <section aria-labelledby="faq-heading" style="margin: 2rem 0;" itemscope itemtype="https://schema.org/FAQPage">
     <h3 id="faq-heading">Häufig gestellte Fragen</h3>
     <p>Antworten auf die wichtigsten Fragen rund um unsere Versicherungsprodukte.</p>
 
@@ -273,10 +309,22 @@ const tariffHtml = await renderLitToString(html`
     <p>Finden Sie den passenden Schutz für Ihre Lebenssituation.</p>
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
-      <article aria-label="Privathaftpflicht – ab 3,50 € monatlich">
+      <article aria-label="Privathaftpflicht – ab 3,50 € monatlich" itemscope itemtype="https://schema.org/Product">
+        <meta itemprop="name" content="Privathaftpflicht" />
+        <meta itemprop="description" content="Umfassender Schutz für Ihren Alltag – ab 3,50 € im Monat." />
+        <div itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+          <meta itemprop="price" content="3.50" />
+          <meta itemprop="priceCurrency" content="EUR" />
+        </div>
         <Fragment set:html={cardHtml1} />
       </article>
-      <article aria-label="Hausratversicherung – Schutz für Hab und Gut">
+      <article aria-label="Hausratversicherung – Schutz für Hab und Gut" itemscope itemtype="https://schema.org/Product">
+        <meta itemprop="name" content="Hausratversicherung" />
+        <meta itemprop="description" content="Schützen Sie Ihr Hab und Gut gegen Einbruch, Feuer und Wasserschäden." />
+        <div itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+          <meta itemprop="price" content="4.20" />
+          <meta itemprop="priceCurrency" content="EUR" />
+        </div>
         <Fragment set:html={cardHtml2} />
       </article>
     </div>
@@ -295,7 +343,8 @@ const tariffHtml = await renderLitToString(html`
   <!-- ============================================ -->
   <!-- TARIFF COMPARISON — DSD + Semantic + ARIA     -->
   <!-- ============================================ -->
-  <section aria-labelledby="tariff-heading" style="margin: 2rem 0;">
+  <section aria-labelledby="tariff-heading" style="margin: 2rem 0;" itemscope itemtype="https://schema.org/WebPage">
+    <meta itemprop="name" content="Haftpflichtversicherung – Tarifvergleich" />
     <h3 id="tariff-heading">Unsere Tarife im Vergleich</h3>
     <p>Wählen Sie den passenden Schutz für Ihre Bedürfnisse. Alle Preise verstehen sich als monatliche Beiträge.</p>
 
@@ -305,7 +354,8 @@ const tariffHtml = await renderLitToString(html`
   <aside style="margin-top: 2rem; padding: 1rem; background: #e8f5e9; border-left: 4px solid #43a047;">
     <strong>GAIO-Maßnahmen auf dieser Seite:</strong>
     <ul style="margin: 0.5rem 0 0;">
-      <li><strong>JSON-LD:</strong> FAQPage-Schema, Offer-Schema für jeden Tarif, WebPage-Schema</li>
+      <li><strong>JSON-LD + Entity Linking:</strong> FAQPage-, Offer-, WebPage-Schema mit <code>sameAs</code>-Verweisen auf Wikipedia/Wikidata</li>
+      <li><strong>Microdata:</strong> <code>itemscope</code>, <code>itemtype</code>, <code>itemprop</code> auf semantischen Wrappern</li>
       <li><strong>Semantisches HTML:</strong> <code>&lt;section&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;address&gt;</code> statt <code>&lt;div&gt;</code></li>
       <li><strong>ARIA:</strong> <code>aria-label</code>, <code>aria-labelledby</code>, <code>role="group"</code> auf Host-Elementen</li>
       <li><strong>Declarative Shadow DOM:</strong> <code>@lit-labs/ssr</code> rendert Shadow-Inhalte als <code>&lt;template shadowrootmode="open"&gt;</code></li>
