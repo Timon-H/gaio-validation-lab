@@ -230,11 +230,7 @@ const tariffHtml = await renderLitToString(html`
   description="Vergleichen Sie unsere Haftpflicht-, Hausrat- und Kaskoversicherungen. GAIO-optimierte DXP-Komponenten mit JSON-LD, semantischem HTML, ARIA-Attributen und Declarative Shadow DOM."
   schemaData={gaioSchema}
 >
-  <!-- Client-side Lit hydration — hydrate-support MUST load before element definitions -->
-  <script>
-    import '@lit-labs/ssr-client/lit-element-hydrate-support.js';
-    import '../../components/baseline/index.ts';
-  </script>
+  <!-- SSR-only: hydration intentionally omitted to avoid duplicate late client rendering. -->
 
   <section aria-labelledby="page-heading" style="margin-top: 1.5rem;">
     <h2 id="page-heading">GAIO-optimierte DXP-Komponenten</h2>
