@@ -1,0 +1,372 @@
+---
+/**
+ * Combined — GAIO-Optimized Components (Full Combo)
+ * 
+ * The SAME web components as Baseline, but with ALL GAIO countermeasures:
+ * - JSON-LD structured data describing each component's content
+ * - Semantic HTML wrappers (<section>, <article>) around every component
+ * - ARIA attributes on host elements for additional context
+ * - Declarative Shadow DOM via @lit-labs/ssr (shadow content in initial HTML)
+ * - robots meta + canonical URL for optimal crawler directives
+ * 
+ * NOTE: <noscript> fallbacks are NOT included here because DSD makes them
+ * redundant — the shadow content is already in the initial HTML without JS.
+ * The noscript technique is tested in isolation at /test-noscript-only.
+ * 
+ * Crawlers and LLMs can now parse the page content even though the
+ * interactive rendering still lives inside Shadow DOM.
+ * DSD supersedes <noscript> as a content accessibility mechanism.
+ */
+import { renderLitToString } from '../../lib/lit-ssr.ts';
+import { html } from 'lit';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// Import all component side-effects (registers custom elements for SSR)
+import '../../components/baseline/dxp-button.ts';
+import '../../components/baseline/dxp-text-input.ts';
+import '../../components/baseline/dxp-dropdown.ts';
+import '../../components/baseline/dxp-input-radio.ts';
+import '../../components/baseline/dxp-accordion.ts';
+import '../../components/baseline/dxp-accordion-element.ts';
+import '../../components/baseline/dxp-card.ts';
+import '../../components/baseline/dxp-flyout.ts';
+import '../../components/baseline/dxp-tariff-comparison.ts';
+
+const gaioSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "DXP Versicherungen – Tarifvergleich & Übersicht",
+  "description": "Vergleichen Sie unsere Haftpflicht-, Hausrat- und Kaskoversicherungen. Berechnen Sie Ihren individuellen Beitrag online.",
+  "about": {
+    "@type": "FinancialProduct",
+    "name": "Haftpflichtversicherung",
+    "sameAs": [
+      "https://de.wikipedia.org/wiki/Haftpflichtversicherung",
+      "https://www.wikidata.org/wiki/Q1377051"
+    ]
+  },
+  "provider": {
+    "@type": "InsuranceAgency",
+    "name": "DXP Versicherungen",
+    "sameAs": [
+      "https://de.wikipedia.org/wiki/Versicherungsunternehmen"
+    ]
+  },
+  "mainEntity": {
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Was ist eine Haftpflichtversicherung?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Eine Haftpflichtversicherung schützt Sie vor Schadensersatzansprüchen Dritter. Sie übernimmt die Kosten, wenn Sie versehentlich Schäden an Personen oder deren Eigentum verursachen."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Wie berechne ich meinen Beitrag?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Ihr Beitrag hängt von verschiedenen Faktoren ab, wie z.B. Ihrem Alter, Ihrem Wohnort und dem gewünschten Versicherungsschutz. Nutzen Sie unseren Online-Rechner für eine individuelle Berechnung."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Kann ich meine Versicherung online kündigen?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit."
+        }
+      }
+    ]
+  },
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "Haftpflicht Basis",
+      "price": "3.50",
+      "priceCurrency": "EUR",
+      "description": "Grundschutz – Deckungssumme 5 Mio. €, Selbstbeteiligung 150 €",
+      "itemOffered": {
+        "@type": "Product",
+        "name": "Privathaftpflichtversicherung Basis",
+        "category": "Haftpflichtversicherung",
+        "sameAs": "https://de.wikipedia.org/wiki/Privathaftpflichtversicherung"
+      }
+    },
+    {
+      "@type": "Offer",
+      "name": "Haftpflicht Komfort",
+      "price": "5.90",
+      "priceCurrency": "EUR",
+      "description": "Erweiterter Schutz – Deckungssumme 10 Mio. €, keine Selbstbeteiligung",
+      "itemOffered": {
+        "@type": "Product",
+        "name": "Privathaftpflichtversicherung Komfort",
+        "category": "Haftpflichtversicherung",
+        "sameAs": "https://de.wikipedia.org/wiki/Privathaftpflichtversicherung"
+      }
+    },
+    {
+      "@type": "Offer",
+      "name": "Haftpflicht Premium",
+      "price": "9.80",
+      "priceCurrency": "EUR",
+      "description": "Rundum-Sorglos – Deckungssumme 50 Mio. €, keine Selbstbeteiligung",
+      "itemOffered": {
+        "@type": "Product",
+        "name": "Privathaftpflichtversicherung Premium",
+        "category": "Haftpflichtversicherung",
+        "sameAs": "https://de.wikipedia.org/wiki/Privathaftpflichtversicherung"
+      }
+    }
+  ]
+};
+
+// Server-render each component section to DSD HTML strings
+const buttonHtml = await renderLitToString(html`
+  <dxp-button aria-label="Beitrag jetzt online berechnen">Jetzt berechnen</dxp-button>
+  <dxp-button variant="secondary" aria-label="Mehr über unsere Versicherungsprodukte erfahren">Mehr erfahren</dxp-button>
+  <dxp-button disabled aria-label="Derzeit nicht verfügbar">Nicht verfügbar</dxp-button>
+`);
+
+const textInputHtml = await renderLitToString(html`
+  <dxp-text-input
+    label="Vorname"
+    name="vorname"
+    placeholder="Max"
+    required
+    required-error-text="Bitte geben Sie Ihren Vornamen ein."
+    aria-required="true"
+  ></dxp-text-input>
+  <dxp-text-input
+    label="E-Mail"
+    name="email"
+    type="email"
+    placeholder="max@example.de"
+    regex="^[^@]+@[^@]+\.[^@]+$"
+    regex-error-text="Bitte geben Sie eine gültige E-Mail-Adresse ein."
+  ></dxp-text-input>
+`);
+
+const dropdownHtml = await renderLitToString(html`
+  <dxp-dropdown-v1
+    label="Versicherungstyp"
+    name="versicherungstyp"
+    placeholder="Bitte wählen..."
+    options='[{"key":"haftpflicht","value":"Haftpflichtversicherung"},{"key":"kasko","value":"Kaskoversicherung"},{"key":"teilkasko","value":"Teilkaskoversicherung"}]'
+    required
+    aria-label="Versicherungstyp auswählen: Haftpflicht, Kasko oder Teilkasko"
+  ></dxp-dropdown-v1>
+`);
+
+const radioHtml = await renderLitToString(html`
+  <dxp-input-radio
+    label="Zahlungsweise"
+    name="zahlungsweise"
+    options='[{"value":"monatlich","label":"Monatlich"},{"value":"quartal","label":"Vierteljährlich"},{"value":"jaehrlich","label":"Jährlich"}]'
+    default="monatlich"
+    aria-label="Zahlungsweise: Monatlich, Vierteljährlich oder Jährlich"
+  ></dxp-input-radio>
+`);
+
+const accordionHtml = await renderLitToString(html`
+  <dxp-accordion aria-label="FAQ-Bereich mit 3 Fragen">
+    <dxp-accordion-element id="faq-1" aria-label="Was ist eine Haftpflichtversicherung?">
+      <span slot="headline">Was ist eine Haftpflichtversicherung?</span>
+      <p>Eine Haftpflichtversicherung schützt Sie vor Schadensersatzansprüchen Dritter. Sie übernimmt die Kosten, wenn Sie versehentlich Schäden an Personen oder deren Eigentum verursachen.</p>
+    </dxp-accordion-element>
+    <dxp-accordion-element id="faq-2" aria-label="Wie berechne ich meinen Beitrag?">
+      <span slot="headline">Wie berechne ich meinen Beitrag?</span>
+      <p>Ihr Beitrag hängt von verschiedenen Faktoren ab, wie z.B. Ihrem Alter, Ihrem Wohnort und dem gewünschten Versicherungsschutz. Nutzen Sie unseren Online-Rechner für eine individuelle Berechnung.</p>
+    </dxp-accordion-element>
+    <dxp-accordion-element id="faq-3" aria-label="Kann ich meine Versicherung online kündigen?">
+      <span slot="headline">Kann ich meine Versicherung online kündigen?</span>
+      <p>Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit.</p>
+    </dxp-accordion-element>
+  </dxp-accordion>
+`);
+
+const cardHtml1 = await renderLitToString(html`
+  <dxp-card aria-label="Privathaftpflicht – ab 3,50 € monatlich, empfohlen">
+    <span slot="badge" style="background: #e3f2fd; color: #0066cc;">Empfohlen</span>
+    <h4 slot="header-title">Privathaftpflicht</h4>
+    <p slot="teaser-text">Umfassender Schutz für Ihren Alltag – ab 3,50 € im Monat.</p>
+    <dxp-button slot="buttons">Jetzt abschließen</dxp-button>
+  </dxp-card>
+`);
+
+const cardHtml2 = await renderLitToString(html`
+  <dxp-card aria-label="Hausratversicherung – Schutz gegen Einbruch, Feuer und Wasserschäden">
+    <h4 slot="header-title">Hausratversicherung</h4>
+    <p slot="teaser-text">Schützen Sie Ihr Hab und Gut gegen Einbruch, Feuer und Wasserschäden.</p>
+    <dxp-button slot="buttons" variant="secondary">Details ansehen</dxp-button>
+  </dxp-card>
+`);
+
+const flyoutHtml = await renderLitToString(html`
+  <dxp-flyout flyout-position="left" aria-label="Kontaktinformationen einblenden">
+    <dxp-button slot="content" variant="secondary">Hilfe & Kontakt</dxp-button>
+    <div slot="flyout" style="padding: 0.5rem;">
+      <p style="margin: 0 0 0.5rem;"><strong>Kundenservice</strong></p>
+      <p style="margin: 0;">Telefon: 0800 123 456 789</p>
+      <p style="margin: 0;">Mo–Fr: 8:00–18:00 Uhr</p>
+    </div>
+  </dxp-flyout>
+`);
+
+const tariffHtml = await renderLitToString(html`
+  <dxp-tariff-comparison
+    headline="Unsere Tarife im Vergleich"
+    sub-headline="Wählen Sie den passenden Schutz für Ihre Bedürfnisse"
+    aria-label="Tarifvergleich: Basis ab 3,50 €, Komfort ab 5,90 €, Premium ab 9,80 € monatlich"
+    tariffs='{"prefix":"ab","productName":"Haftpflicht","suffix":"€","tariffData":[{"id":"basis","name":"Basis","period":"monthly","premium":"3,50","description":"Grundschutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"5 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"150 €"}}]},{"id":"komfort","name":"Komfort","period":"monthly","premium":"5,90","highlighted":true,"overline":"Beliebteste Wahl","description":"Erweiterter Schutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"10 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]},{"id":"premium","name":"Premium","period":"monthly","premium":"9,80","description":"Rundum-Sorglos","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"50 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]}],"moduleGroups":[{"name":"Leistungen","modules":[{"moduleName":"deckung","name":"Deckungssumme","uuid":"1"},{"moduleName":"selbstbeteiligung","name":"Selbstbeteiligung","uuid":"2"}]}]}'
+  ></dxp-tariff-comparison>
+`);
+---
+
+<BaseLayout 
+  title="GAIO-Optimized DXP Components – Versicherungsvergleich"
+  description="Vergleichen Sie unsere Haftpflicht-, Hausrat- und Kaskoversicherungen. GAIO-optimierte DXP-Komponenten mit JSON-LD, semantischem HTML, ARIA-Attributen und Declarative Shadow DOM."
+  schemaData={gaioSchema}
+>
+  <!-- Client-side Lit hydration — hydrate-support MUST load before element definitions -->
+  <script>
+    import '@lit-labs/ssr-client/lit-element-hydrate-support.js';
+    import '../../components/baseline/index.ts';
+  </script>
+
+  <section aria-labelledby="page-heading" style="margin-top: 1.5rem;">
+    <h2 id="page-heading">GAIO-optimierte DXP-Komponenten</h2>
+    <p>
+      Dieselben Web Components wie in <a href="/control">Baseline</a>, aber mit <strong>allen GAIO-Maßnahmen</strong>: 
+      JSON-LD, semantisches HTML, ARIA-Attribute und Declarative Shadow DOM 
+      machen den Shadow-DOM-Inhalt für Crawler und AI-Systeme sichtbar.
+    </p>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- BUTTON — DSD + Semantic + ARIA               -->
+  <!-- ============================================ -->
+  <section aria-label="Call-to-Action Buttons" style="margin: 2rem 0;">
+    <h3>Aktionen</h3>
+    <p>Starten Sie Ihre Versicherungsberechnung oder erfahren Sie mehr über unsere Produkte.</p>
+
+    <Fragment set:html={buttonHtml} />
+  </section>
+
+  <!-- ============================================ -->
+  <!-- TEXT INPUT — DSD + Semantic + ARIA + Microdata -->
+  <!-- ============================================ -->
+  <section aria-label="Kontaktformular" style="margin: 2rem 0;" itemscope itemtype="https://schema.org/Person">
+    <meta itemprop="description" content="Persönliche Angaben: Vorname und E-Mail-Adresse für ein individuelles Versicherungsangebot" />
+    <h3>Persönliche Angaben</h3>
+    <p>Geben Sie Ihre Kontaktdaten ein, um ein individuelles Angebot zu erhalten.</p>
+
+    <div role="group" aria-label="Ihre Daten">
+      <Fragment set:html={textInputHtml} />
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- DROPDOWN — DSD + Semantic + ARIA + Microdata  -->
+  <!-- ============================================ -->
+  <section aria-label="Versicherungsauswahl" style="margin: 2rem 0;" itemscope itemtype="https://schema.org/ItemList">
+    <meta itemprop="name" content="Versicherungstyp" />
+    <h3>Versicherungstyp auswählen</h3>
+    <p>Wählen Sie die gewünschte Versicherungsart aus unseren Angeboten.</p>
+
+    <Fragment set:html={dropdownHtml} />
+  </section>
+
+  <!-- ============================================ -->
+  <!-- RADIO — DSD + Semantic + ARIA + Microdata     -->
+  <!-- ============================================ -->
+  <section aria-label="Zahlungsoptionen" style="margin: 2rem 0;" itemscope itemtype="https://schema.org/ItemList">
+    <meta itemprop="name" content="Zahlungsweise" />
+    <h3>Zahlungsweise</h3>
+    <p>Wählen Sie Ihre bevorzugte Zahlungsfrequenz für Ihren Versicherungsbeitrag.</p>
+
+    <Fragment set:html={radioHtml} />
+  </section>
+
+  <!-- ============================================ -->
+  <!-- ACCORDION / FAQ — DSD + Semantic + ARIA + Microdata -->
+  <!-- ============================================ -->
+  <section aria-labelledby="faq-heading" style="margin: 2rem 0;" itemscope itemtype="https://schema.org/FAQPage">
+    <h3 id="faq-heading">Häufig gestellte Fragen</h3>
+    <p>Antworten auf die wichtigsten Fragen rund um unsere Versicherungsprodukte.</p>
+
+    <Fragment set:html={accordionHtml} />
+  </section>
+
+  <!-- ============================================ -->
+  <!-- CARD — DSD + Semantic + ARIA                  -->
+  <!-- ============================================ -->
+  <section aria-labelledby="products-heading" style="margin: 2rem 0;">
+    <h3 id="products-heading">Unsere Versicherungsprodukte</h3>
+    <p>Finden Sie den passenden Schutz für Ihre Lebenssituation.</p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+      <article aria-label="Privathaftpflicht – ab 3,50 € monatlich" itemscope itemtype="https://schema.org/Product">
+        <meta itemprop="name" content="Privathaftpflicht" />
+        <meta itemprop="description" content="Umfassender Schutz für Ihren Alltag – ab 3,50 € im Monat." />
+        <div itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+          <meta itemprop="price" content="3.50" />
+          <meta itemprop="priceCurrency" content="EUR" />
+        </div>
+        <Fragment set:html={cardHtml1} />
+      </article>
+      <article aria-label="Hausratversicherung – Schutz für Hab und Gut" itemscope itemtype="https://schema.org/Product">
+        <meta itemprop="name" content="Hausratversicherung" />
+        <meta itemprop="description" content="Schützen Sie Ihr Hab und Gut gegen Einbruch, Feuer und Wasserschäden." />
+        <div itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+          <meta itemprop="price" content="4.20" />
+          <meta itemprop="priceCurrency" content="EUR" />
+        </div>
+        <Fragment set:html={cardHtml2} />
+      </article>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- FLYOUT — DSD + Semantic + ARIA                -->
+  <!-- ============================================ -->
+  <section aria-label="Hilfe und Kontakt" style="margin: 2rem 0;">
+    <h3>Brauchen Sie Hilfe?</h3>
+    <p>Unser Kundenservice steht Ihnen gerne zur Verfügung.</p>
+
+    <Fragment set:html={flyoutHtml} />
+  </section>
+
+  <!-- ============================================ -->
+  <!-- TARIFF COMPARISON — DSD + Semantic + ARIA     -->
+  <!-- ============================================ -->
+  <section aria-labelledby="tariff-heading" style="margin: 2rem 0;" itemscope itemtype="https://schema.org/WebPage">
+    <meta itemprop="name" content="Haftpflichtversicherung – Tarifvergleich" />
+    <h3 id="tariff-heading">Unsere Tarife im Vergleich</h3>
+    <p>Wählen Sie den passenden Schutz für Ihre Bedürfnisse. Alle Preise verstehen sich als monatliche Beiträge.</p>
+
+    <Fragment set:html={tariffHtml} />
+  </section>
+
+  <aside style="margin-top: 2rem; padding: 1rem; background: #e8f5e9; border-left: 4px solid #43a047;">
+    <strong>GAIO-Maßnahmen auf dieser Seite:</strong>
+    <ul style="margin: 0.5rem 0 0;">
+      <li><strong>JSON-LD + Entity Linking:</strong> FAQPage-, Offer-, WebPage-Schema mit <code>sameAs</code>-Verweisen auf Wikipedia/Wikidata</li>
+      <li><strong>Microdata:</strong> <code>itemscope</code>, <code>itemtype</code>, <code>itemprop</code> auf semantischen Wrappern</li>
+      <li><strong>Semantisches HTML:</strong> <code>&lt;section&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;address&gt;</code> statt <code>&lt;div&gt;</code></li>
+      <li><strong>ARIA:</strong> <code>aria-label</code>, <code>aria-labelledby</code>, <code>role="group"</code> auf Host-Elementen</li>
+      <li><strong>Declarative Shadow DOM:</strong> <code>@lit-labs/ssr</code> rendert Shadow-Inhalte als <code>&lt;template shadowrootmode="open"&gt;</code></li>
+    </ul>
+    <p style="margin-top: 0.75rem; font-size: 0.875rem; color: #555;">
+      <strong>Hinweis:</strong> <code>&lt;noscript&gt;</code>-Fallbacks werden hier bewusst weggelassen,
+      da DSD den Shadow-Inhalt bereits ohne JavaScript im initialen HTML bereitstellt.
+      Die Noscript-Technik wird isoliert unter <a href="/test-noscript-only" style="color: #2e7d32;">/test-noscript-only</a> getestet.
+    </p>
+    <br>
+    <a href="/control" style="color: #2e7d32;">→ Vergleich mit Standard-Version (Baseline)</a>
+  </aside>
+</BaseLayout>
+

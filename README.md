@@ -1,7 +1,7 @@
 # gaio-validation-lab
 Minimalist environment to validate and benchmark generative AI optimization approaches on web-components
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # Install dependencies
@@ -12,56 +12,92 @@ npm run dev
 
 # Build for production
 npm run build
-
-# Preview production build
-npm run preview
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 /src
+  /components/baseline   ← 9 Lit web components (Shadow DOM)
+  /layouts
+    BaseLayout.astro     ← Neutral page shell (shared styling, SEO constants)
+  /lib
+    lit-ssr.ts           ← @lit-labs/ssr helper for Declarative Shadow DOM
   /pages
-    /control-group-a  ← Standard DXP Components (baseline)
-    /test-group-b     ← Optimized GAIO Components (AI-optimized)
-    index.astro       ← Landing page
-  /middleware.ts      ← Logging and tracking middleware
-/public               ← Static assets
-astro.config.mjs      ← Astro configuration with Vercel adapter
+    index.astro          ← Landing page with links to all variants
+    /control             ← Baseline — no GAIO measures
+    /combined            ← All GAIO measures combined
+    /test-jsonld-only    ← Isolated: JSON-LD only
+    /test-semantic-only  ← Isolated: Semantic HTML wrappers only
+    /test-noscript-only  ← Isolated: <noscript> Light DOM fallbacks only
+    /test-aria-only      ← Isolated: ARIA attributes on hosts only
+    /test-dsd            ← Isolated: Declarative Shadow DOM via @lit-labs/ssr
+  /middleware.ts         ← AI bot detection + Supabase logging
+/scripts
+  test-bots.sh           ← Bot UA simulation tests
+  test-content-extraction.sh ← Content extraction + optional Supabase persist
+/supabase
+  schema.sql             ← DDL for bot_logs, extraction_results
 ```
 
-## 🧪 Testing Groups
+## Multi-Arm Test Design
 
-### Control Group A
-- **Purpose**: Baseline implementation without AI optimization
-- **URL**: `/control-group-a`
-- **Use Case**: Standard DXP components for comparison
+Seven variants of the same insurance page content. Each isolates a single GAIO variable for scientific measurement.
 
-### Test Group B
-- **Purpose**: AI-optimized components for validation
-- **URL**: `/test-group-b`
-- **Use Case**: GAIO (Gen-AI Optimized) components
+| Variant | JSON-LD | Semantic HTML | ARIA | Noscript | DSD |
+|---------|:-------:|:------------:|:----:|:--------:|:---:|
+| `/control` | — | — | — | — | — |
+| `/test-jsonld-only` | ✅ | — | — | — | — |
+| `/test-semantic-only` | — | ✅ | — | — | — |
+| `/test-aria-only` | — | — | ✅ | — | — |
+| `/test-noscript-only` | — | — | — | ✅ | — |
+| `/test-dsd` | — | — | — | — | ✅ |
+| `/combined` | ✅ | ✅ | ✅ | — | ✅ |
 
-## 📊 Middleware Logging
+**Hydration parity note:** `/test-dsd` also loads `@lit-labs/ssr-client/lit-element-hydrate-support.js` and `components/baseline/index.ts` on the client (same as `/combined`). This avoids introducing a second variable (missing custom-element upgrade) and keeps the isolated effect focused on DSD in the initial HTML.
 
-The middleware automatically logs:
-- Request method and URL
-- Response time
-- Test group identification
-- Custom headers for tracking (`X-Test-Group`, `X-Response-Time`)
+### Constants across all variants
+- Same 9 Lit web components with Shadow DOM encapsulation
+- Same content (insurance FAQ, tariff comparison, form fields, product cards)
+- Traditional SEO signals (robots meta, canonical URL) on every page
+- Same BaseLayout styling shell
 
-## 🌐 Vercel Deployment
+### BaseLayout
 
-This project is configured for easy deployment to Vercel:
+`BaseLayout.astro` is a neutral shell providing shared `<head>` boilerplate, styling, and navigation. It applies `robots` and `canonical` as constants on every page (these are not experimental variables). Only `schemaData` is optional — pages that test JSON-LD pass it in.
 
-1. Push to GitHub
-2. Import repository in Vercel
-3. Deploy (zero configuration needed)
+```astro
+<BaseLayout
+  title="Page Title"
+  description="Page description"
+  schemaData={optionalJsonLd}
+>
+  <!-- page content with its own GAIO measures -->
+</BaseLayout>
+```
 
-The project uses `@astrojs/vercel` adapter for serverless deployment.
+## Testing
 
-## 🛠️ Technologies
+```bash
+# Simulate AI bot visits across all 7 variants
+npm run test:bots
 
-- **Astro**: Modern static site generator with server-side rendering
-- **TypeScript**: Type-safe development
-- **Vercel**: Serverless deployment platform
+# Extract content and compare structural markers
+npm run test:extract
+
+# Extract + persist results to Supabase
+npm run test:extract:persist
+```
+
+## Middleware
+
+The middleware detects 6 AI crawlers (GPTBot, Claude-Web, Google-Extended, PerplexityBot, CCBot, Applebot-Extended) and logs visits to Supabase `bot_logs` with variant path, latency, and status code.
+
+## Technologies
+
+- **Astro 5**: SSR mode with `@astrojs/vercel` adapter
+- **Lit 3**: Web components with Shadow DOM encapsulation
+- **@lit-labs/ssr**: Server-side rendering to Declarative Shadow DOM
+- **TypeScript**: Strict mode
+- **Supabase**: Bot logging + extraction results
+- **Vercel**: Serverless deployment

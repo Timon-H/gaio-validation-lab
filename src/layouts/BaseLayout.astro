@@ -1,0 +1,84 @@
+---
+/**
+ * BaseLayout — Neutral page shell
+ * 
+ * Provides shared styling, <head> boilerplate, and navigation.
+ * Traditional SEO signals (robots, canonical) are constants applied
+ * to every page — they are NOT experimental variables.
+ * 
+ * Only JSON-LD is optional because it IS one of the GAIO variables
+ * under test and must be absent from baseline/non-JSON-LD pages.
+ */
+interface Props {
+  title: string;
+  description: string;
+  schemaData?: object;
+  lang?: string;
+}
+
+const { title, description, schemaData, lang = 'en' } = Astro.props;
+const schemaJson = schemaData
+  ? JSON.stringify(schemaData).replace(/</g, '\\u003c')
+  : undefined;
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- Constant SEO baseline — not an experimental variable -->
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+    <link rel="canonical" href={Astro.url} />
+
+    {schemaJson && (
+      <script type="application/ld+json" set:html={schemaJson} />
+    )}
+
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        background-color: #f5f5f5;
+      }
+      .container {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      h1 {
+        color: #333;
+        border-bottom: 3px solid #667eea;
+        padding-bottom: 0.5rem;
+      }
+      nav {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid #ddd;
+      }
+      nav a {
+        color: #667eea;
+        text-decoration: none;
+        margin-right: 1rem;
+      }
+      nav a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>{title}</h1>
+      <slot />
+      <nav>
+        <a href="/">Home</a>
+      </nav>
+    </div>
+  </body>
+</html>
