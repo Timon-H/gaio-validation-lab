@@ -22,6 +22,7 @@ import '@lit-labs/ssr/lib/install-global-dom-shim.js';
 import { render } from '@lit-labs/ssr/lib/render.js';
 import { collectResult } from '@lit-labs/ssr/lib/render-result.js';
 import type { TemplateResult } from 'lit';
+export { html } from 'lit';
 
 /**
  * Renders a Lit html`` template to a string containing Declarative Shadow DOM.
