@@ -1,13 +1,14 @@
+#!/usr/bin/env node
+
 import fs from 'fs';
 import { OpenAI } from 'openai';
 
-// Konfiguration
-const API_KEY = process.env.OPENAI_API_KEY; // Stelle sicher, dass diese Umgebungsvariable gesetzt ist (.env)
-const BASE_URL = 'http://localhost:4321'; // Nutze deinen lokalen Astro-Server für die Tests
-const REPETITIONS = 1; // n=5 für statistische Signifikanz
+// Configuration
+const API_KEY = process.env.OPENAI_API_KEY;
+const BASE_URL = 'http://localhost:4321';
+const REPETITIONS = 1; // n=5 for statistical significance
 const OUTPUT_FILE = './results/gaio_evaluation_results.csv';
 
-// Deine 8 Test-Arme (Passe die Pfade an dein tatsächliches Routing an)
 const VARIANTS = [
   { id: 'control', path: '/control' },
   { id: 'jsonld', path: '/test-jsonld-only' },
@@ -21,14 +22,13 @@ const VARIANTS = [
 
 const openai = new OpenAI({ apiKey: API_KEY });
 
-// Der System-Prompt zwingt die KI in die Rolle eines deterministischen Parsers
+// System prompt forces the LLM to extract specific data from the HTML, ensuring consistency across runs and variants.
 const SYSTEM_PROMPT = `
 Du bist ein automatisierter Web-Scraper und Daten-Extraktor.
 Deine Aufgabe ist es, das übergebene HTML-Dokument zu analysieren und folgende Informationen zu extrahieren:
-- Alle angebotenen Versicherungstarife (Name und Preis)
-- Alle Überschriften (h1-h6)
-- Alle Links (Text und href)
-- Ob folgende Merkmale vorhanden sind: JSON-LD, ARIA-Attribute, semantische HTML-Tags, <noscript>, Declarative Shadow DOM, Microdata
+1. Alle angebotenen Versicherungstarife (Name und Preis)
+2. Alle inhaltlichen Überschriften (h1-h6)
+3. Alle Navigations-Links (Text und href)
 
 Antworte im validen JSON-Format, exakt nach folgendem Schema:
 {
@@ -36,7 +36,7 @@ Antworte im validen JSON-Format, exakt nach folgendem Schema:
   "headings": [ "..." ],
   "links": [ { "text": "...", "href": "..." } ],Is
 }
-Wenn du keine Daten findest, gib leere Arrays und false zurück.
+Wenn du keine Daten findest, gib leere Arrays zurück.
 `;
 
 async function fetchHtml(url) {
@@ -47,16 +47,16 @@ async function fetchHtml(url) {
 
 async function evaluateVariant(variant, runIndex) {
   const url = `${BASE_URL}${variant.path}`;
-  console.log(`⏳ Teste Variante ${variant.id} (Durchlauf ${runIndex}/${REPETITIONS})...`);
+  console.log(`⏳ Testing variant ${variant.id} (Run ${runIndex}/${REPETITIONS})...`);
 
   try {
     const htmlContent = await fetchHtml(url);
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini", // Nutze das kleinste Modell für schnelle und kostengünstige Tests
-      temperature: 0.0, // Absolut wichtig für die Reproduzierbarkeit!
-      seed: 42,         // Fixer Seed minimiert Varianzen
-      response_format: { type: "json_object" }, // Zwingt das LLM zu JSON
+      model: "gpt-4o-mini", // Smaller model for cost-effective evaluation; switch to "gpt-4" for more accuracy if budget allows
+      temperature: 0.0, // Deterministic output for consistent evaluation
+      seed: 42,         // Fixed seed for reproducibility (if supported by the model)
+      response_format: { type: "json_object" }, // Force JSON output for easier parsing
       messages: [
         { role: "system", "content": SYSTEM_PROMPT },
         { role: "user", "content": htmlContent }
@@ -71,39 +71,38 @@ async function evaluateVariant(variant, runIndex) {
       variantId: variant.id,
       run: runIndex,
       extractedTariffs: extractedCount,
-      rawOutput: JSON.stringify(parsedData).replace(/"/g, '""') // CSV-sicheres Escaping
+      rawOutput: JSON.stringify(parsedData).replace(/"/g, '""')
     };
   } catch (error) {
-    console.error(`❌ Fehler bei Variante ${variant.id}:`, error.message);
+    console.error(`❌ Error in variant ${variant.id}:`, error.message);
     return { variantId: variant.id, run: runIndex, extractedTariffs: 'ERROR', rawOutput: error.message };
   }
 }
 
 async function runEvaluation() {
   if (!API_KEY) {
-    console.error("❌ Fehler: OPENAI_API_KEY ist nicht gesetzt.");
+    console.error("❌ Error: OPENAI_API_KEY is not set.");
     return;
   }
 
-  console.log("🚀 Starte GAIO-Evaluation Pipeline...");
+  console.log("🚀 Starting GAIO evaluation pipeline...");
   const results = [];
 
-  // Sequenzielle Ausführung, um Rate-Limits der API zu vermeiden
+  // Sequential testing to avoid overwhelming the server and to respect rate limits
   for (const variant of VARIANTS) {
     for (let i = 1; i <= REPETITIONS; i++) {
       const res = await evaluateVariant(variant, i);
       results.push(res);
-      // Kurze Pause zwischen den Calls (hilft bei Free-Tier Limits)
+      // Pause between requests to avoid rate limits and give the server time to recover
       await new Promise(r => setTimeout(r, 1000)); 
     }
   }
 
-  // CSV Generierung
   const csvHeader = "Variant_ID,Run,Extracted_Count,Raw_JSON_Output\n";
   const csvRows = results.map(r => `${r.variantId},${r.run},${r.extractedTariffs},"${r.rawOutput}"`).join('\n');
   
   fs.writeFileSync(OUTPUT_FILE, csvHeader + csvRows);
-  console.log(`\n✅ Evaluation abgeschlossen! Ergebnisse gespeichert unter: ${OUTPUT_FILE}`);
+  console.log(`\n✅ Evaluation complete! Results saved to: ${OUTPUT_FILE}`);
 }
 
 runEvaluation();
