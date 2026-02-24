@@ -223,8 +223,6 @@ const tariffHtml = await renderLitToString(html`
     tariffs='{"prefix":"ab","productName":"Haftpflicht","suffix":"€","tariffData":[{"id":"basis","name":"Basis","period":"monthly","premium":"3,50","description":"Grundschutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"5 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"150 €"}}]},{"id":"komfort","name":"Komfort","period":"monthly","premium":"5,90","highlighted":true,"overline":"Beliebteste Wahl","description":"Erweiterter Schutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"10 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]},{"id":"premium","name":"Premium","period":"monthly","premium":"9,80","description":"Rundum-Sorglos","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"50 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]}],"moduleGroups":[{"name":"Leistungen","modules":[{"moduleName":"deckung","name":"Deckungssumme","uuid":"1"},{"moduleName":"selbstbeteiligung","name":"Selbstbeteiligung","uuid":"2"}]}]}'
   ></dxp-tariff-comparison>
 `);
-
-const enableHydration = Astro.url.searchParams.get('hydrate') === '1';
 ---
 
 <BaseLayout 
@@ -232,15 +230,7 @@ const enableHydration = Astro.url.searchParams.get('hydrate') === '1';
   description="Vergleichen Sie unsere Haftpflicht-, Hausrat- und Kaskoversicherungen. GAIO-optimierte DXP-Komponenten mit JSON-LD, semantischem HTML, ARIA-Attributen und Declarative Shadow DOM."
   schemaData={gaioSchema}
 >
-  {enableHydration && (
-    <script>
-      import '@lit-labs/ssr-client/lit-element-hydrate-support.js';
-      import '../../components/baseline/index.ts';
-    </script>
-  )}
-
-  <!-- Default mode is SSR-only to avoid duplicate late client rendering.
-       Use ?hydrate=1 to re-enable hydration for debugging/comparison. -->
+  <!-- SSR-only: hydration intentionally omitted to avoid duplicate late client rendering. -->
 
   <section aria-labelledby="page-heading" style="margin-top: 1.5rem;">
     <h2 id="page-heading">GAIO-optimierte DXP-Komponenten</h2>

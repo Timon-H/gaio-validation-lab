@@ -54,7 +54,7 @@ Seven variants of the same insurance page content. Each isolates a single GAIO v
 | `/test-dsd` | — | — | — | — | ✅ |
 | `/combined` | ✅ | ✅ | ✅ | — | ✅ |
 
-**Hydration toggle note:** `/combined` and `/test-dsd` default to SSR-only to avoid duplicate late client rendering in production. For interactive comparison, append `?hydrate=1` to enable Lit hydration and element upgrades on-demand.
+**Hydration note:** `/combined` and `/test-dsd` are SSR-only in this lab to keep the initial HTML deterministic for crawler/LLM evaluation and to avoid client-side re-rendering artifacts.
 
 ### Constants across all variants
 - Same 9 Lit web components with Shadow DOM encapsulation
