@@ -62,10 +62,17 @@ const schemaJson = schemaData
         padding-top: 1rem;
         border-top: 1px solid #ddd;
       }
+      .nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem 1rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
       nav a {
         color: #667eea;
         text-decoration: none;
-        margin-right: 1rem;
       }
       nav a:hover {
         text-decoration: underline;
@@ -77,7 +84,17 @@ const schemaJson = schemaData
       <h1>{title}</h1>
       <slot />
       <nav>
-        <a href="/">Home</a>
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/control">Control</a></li>
+          <li><a href="/combined">Combined</a></li>
+          <li><a href="/test-jsonld-only">JSON-LD</a></li>
+          <li><a href="/test-semantic-only">Semantic</a></li>
+          <li><a href="/test-noscript-only">Noscript</a></li>
+          <li><a href="/test-aria-only">ARIA</a></li>
+          <li><a href="/test-dsd">DSD</a></li>
+          <li><a href="/test-microdata-only">Microdata</a></li>
+        </ul>
       </nav>
     </div>
   </body>
