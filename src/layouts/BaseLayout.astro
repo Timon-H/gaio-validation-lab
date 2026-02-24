@@ -13,16 +13,17 @@ interface Props {
   title: string;
   description: string;
   schemaData?: object;
+  lang?: string;
 }
 
-const { title, description, schemaData } = Astro.props;
+const { title, description, group, schemaData, lang = 'en' } = Astro.props;
 ---
 
 <!DOCTYPE html>
-<html lang="de">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
 

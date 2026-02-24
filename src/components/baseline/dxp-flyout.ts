@@ -83,7 +83,7 @@ export class DxpFlyout extends LitElement {
       display: none;
     }
 
-    :host(:not([hide-triangle])) :host([open]) .triangle {
+    :host([open]:not([hide-triangle])) .triangle {
       display: block;
       position: absolute;
       width: 0;

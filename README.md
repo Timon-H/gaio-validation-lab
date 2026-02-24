@@ -52,7 +52,7 @@ Seven variants of the same insurance page content. Each isolates a single GAIO v
 | `/test-aria-only` | — | — | ✅ | — | — |
 | `/test-noscript-only` | — | — | — | ✅ | — |
 | `/test-dsd` | — | — | — | — | ✅ |
-| `/combined` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `/combined` | ✅ | ✅ | ✅ | — | ✅ |
 
 ### Constants across all variants
 - Same 9 Lit web components with Shadow DOM encapsulation
