@@ -19,6 +19,8 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 
+let textInputIdCounter = 0;
+
 @customElement('dxp-text-input')
 export class DxpTextInput extends LitElement {
 
@@ -139,7 +141,7 @@ export class DxpTextInput extends LitElement {
   placeholder: string = '';
 
   @property({ type: String, attribute: 'ref-id', reflect: true })
-  refId: string = `dxp-text-input-${Math.random().toString(36).slice(2, 9)}`;
+  refId: string = '';
 
   @property({ type: String, attribute: 'regex' })
   regex: string = '';
@@ -156,7 +158,7 @@ export class DxpTextInput extends LitElement {
   @property({ type: String, attribute: 'type' })
   type: string = 'text';
 
-  @state() 
+  @property({ type: Boolean, attribute: 'invalid', reflect: true })
   private _invalid: boolean = false;
 
   @query('input') 
@@ -185,6 +187,14 @@ export class DxpTextInput extends LitElement {
       }
     }
     return 'Ungültige Eingabe';
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    if (!this.refId) {
+      textInputIdCounter += 1;
+      this.refId = `dxp-text-input-${textInputIdCounter}`;
+    }
   }
 
   firstUpdated() {

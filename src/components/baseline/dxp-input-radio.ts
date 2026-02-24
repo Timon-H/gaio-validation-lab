@@ -120,7 +120,8 @@ export class DxpInputRadio extends LitElement {
   @property({ type: String, attribute: 'required-error-text' })
   requiredErrorText: string = 'Bitte wählen Sie eine Option.';
 
-  @state() private _error: boolean = false;
+  @property({ type: Boolean, attribute: 'error', reflect: true })
+  private _error: boolean = false;
 
   private get _isRequired(): boolean {
     return this.required || this.mandatory;

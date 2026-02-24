@@ -158,7 +158,8 @@ export class DxpDropdown extends LitElement {
   disabled: boolean = false;
 
   @state() private selectedKey: string = '';
-  @state() private _invalid: boolean = false;
+  @property({ type: Boolean, attribute: 'invalid', reflect: true })
+  private _invalid: boolean = false;
 
   get value(): string {
     return this.selectedKey;
