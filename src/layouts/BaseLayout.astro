@@ -35,7 +35,7 @@ const schemaJson = schemaData
     <link rel="canonical" href={Astro.url} />
 
     {schemaJson && (
-      <script type="application/ld+json" set:html={schemaJson} />
+      <script is:inline type="application/ld+json" set:html={schemaJson} />
     )}
 
     <style>
