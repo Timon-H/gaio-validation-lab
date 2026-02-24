@@ -44,15 +44,16 @@ npm run build
 
 Seven variants of the same insurance page content. Each isolates a single GAIO variable for scientific measurement.
 
-| Variant | JSON-LD | Semantic HTML | ARIA | Noscript | DSD |
-|---------|:-------:|:------------:|:----:|:--------:|:---:|
-| `/control` | — | — | — | — | — |
-| `/test-jsonld-only` | ✅ | — | — | — | — |
-| `/test-semantic-only` | — | ✅ | — | — | — |
-| `/test-aria-only` | — | — | ✅ | — | — |
-| `/test-noscript-only` | — | — | — | ✅ | — |
-| `/test-dsd` | — | — | — | — | ✅ |
-| `/combined` | ✅ | ✅ | ✅ | — | ✅ |
+| Variant | JSON-LD | Semantic HTML | ARIA | Noscript | DSD | Microdata |
+|---------|:-------:|:------------:|:----:|:--------:|:---:|:---------:|
+| `/control` | — | — | — | — | — | — |
+| `/test-jsonld-only` | ✅ | — | — | — | — | — |
+| `/test-semantic-only` | — | ✅ | — | — | — | — |
+| `/test-aria-only` | — | — | ✅ | — | — | — |
+| `/test-noscript-only` | — | — | — | ✅ | — | — |
+| `/test-dsd` | — | — | — | — | ✅ | — |
+| `/test-microdata-only` | — | — | — | — | — | ✅ |
+| `/combined` | ✅ | ✅ | ✅ | — | ✅ | ✅ |
 
 **Hydration note:** `/combined` and `/test-dsd` are SSR-only in this lab to keep the initial HTML deterministic for crawler/LLM evaluation and to avoid client-side re-rendering artifacts.
 
@@ -61,6 +62,7 @@ Seven variants of the same insurance page content. Each isolates a single GAIO v
 - Same content (insurance FAQ, tariff comparison, form fields, product cards)
 - Traditional SEO signals (robots meta, canonical URL) on every page
 - Same BaseLayout styling shell
+- All 8 variants (including microdata) are covered by the extraction and bot test scripts.
 
 ### BaseLayout
 
@@ -82,7 +84,7 @@ Seven variants of the same insurance page content. Each isolates a single GAIO v
 Measure how different GAIO measures affect crawler/LLM extraction from the **initial HTML response** of Shadow DOM components.
 
 **Variables**
-- **Independent variables:** JSON-LD, Semantic HTML, ARIA on hosts, `<noscript>` fallbacks, Declarative Shadow DOM (DSD).
+- **Independent variables:** JSON-LD, Semantic HTML, ARIA on hosts, `<noscript>` fallbacks, Declarative Shadow DOM (DSD), Microdata.
 - **Dependent variables:** extraction quality and structure (word count, headings, links, entity mentions, schema capture, etc.).
 - **Controls:** identical content, component set, layout, and SEO constants across all variants.
 
