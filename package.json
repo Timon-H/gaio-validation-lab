@@ -7,9 +7,9 @@
     "dev": "astro dev",
     "build": "astro check && astro build",
     "astro": "astro",
-    "test:bots": "./scripts/test-bots.sh",
-    "test:extract": "./scripts/test-content-extraction.sh",
-    "test:extract:persist": "source .env 2>/dev/null; ./scripts/test-content-extraction.sh --persist",
+    "test:bots": "node ./scripts/test-bots.mjs",
+    "test:extract": "node ./scripts/test-content-extraction.mjs",
+    "test:extract:persist": "dotenv -e .env -- node ./scripts/test-content-extraction.mjs --persist",
     "test:all": "npm run test:bots && npm run test:extract",
     "preview": "astro build && astro preview"
   },
@@ -29,12 +29,12 @@
     "@astrojs/vercel": "^9.0.4",
     "@lit-labs/ssr": "^4.0.0",
     "@lit-labs/ssr-client": "^1.1.8",
-
     "astro": "^5.17.1",
     "lit": "^3.3.2"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.6",
+    "dotenv-cli": "^8.0.0",
     "typescript": "^5.9.3"
   },
   "overrides": {
