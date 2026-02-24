@@ -1,14 +1,16 @@
-# Prioritize AI Bots
+# 1. Prioritize AI Bots & Main Search Bots
 User-agent: GPTBot
 User-agent: OAI-SearchBot
 User-agent: Claude-Web
 User-agent: AnthropicAI
 User-agent: Google-Extended
+User-agent: Googlebot
 User-agent: PerplexityBot
 User-agent: CCBot
+User-agent: Bingbot
 Allow: /
 
-# 2. Block SEO Bots
+# 2. Block SEO Bots (Spart Vercel-Traffic und Datenbank-Müll)
 User-agent: AhrefsBot
 User-agent: SemrushBot
 User-agent: DotBot
