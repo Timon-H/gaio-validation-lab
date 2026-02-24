@@ -130,6 +130,13 @@ const tariffHtml = await renderLitToString(html`
   title="Isolated Test: Declarative Shadow DOM"
   description="DXP components rendered via @lit-labs/ssr Declarative Shadow DOM – server-side shadow content visible to crawlers without JavaScript."
 >
+  <!-- Client-side Lit hydration intentionally enabled for parity with /combined.
+       The isolated variable in this arm is DSD in initial HTML, not missing CE upgrade/hydration. -->
+  <script>
+    import '@lit-labs/ssr-client/lit-element-hydrate-support.js';
+    import '../../components/baseline/index.ts';
+  </script>
+
   <div style="margin-top: 1.5rem;">
     <h2>Isolated Variable: Declarative Shadow DOM (DSD)</h2>
     <p>
