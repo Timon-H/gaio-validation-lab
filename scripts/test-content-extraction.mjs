@@ -24,6 +24,7 @@ const variants = [
   'test-noscript-only',
   'test-aria-only',
   'test-dsd',
+  'test-microdata-only',
 ];
 
 const bots = [
@@ -62,6 +63,7 @@ const header = [
   'SEM'.padStart(5),
   'NOSC'.padStart(5),
   'DSD'.padStart(5),
+  'MD'.padStart(4),
   'DB',
 ].join(' | ');
 
@@ -84,7 +86,7 @@ for (const variant of variants) {
     const html = await fetchHtml(url, bot.ua);
 
     if (!html) {
-      logRow(variant, bot.name, ['ERR', '-', '-', '-', '-', '-', '-', '-', '-']);
+      logRow(variant, bot.name, ['ERR', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
       failed += 1;
       continue;
     }
@@ -99,6 +101,7 @@ for (const variant of variants) {
     const hasSemantic = /<(section|article|address|aside|nav|main)\b/i.test(html);
     const hasNoscript = /<noscript>/i.test(html);
     const hasDsd = /shadowrootmode/i.test(html);
+    const hasMicrodata = /\b(itemscope|itemtype|itemprop)\b/i.test(html);
 
     const labels = [
       hasJsonLd ? 'YES' : 'no',
@@ -106,6 +109,7 @@ for (const variant of variants) {
       hasSemantic ? 'YES' : 'no',
       hasNoscript ? 'YES' : 'no',
       hasDsd ? 'YES' : 'no',
+      hasMicrodata ? 'YES' : 'no',
     ];
 
     let dbStatus = '-';
@@ -129,6 +133,7 @@ for (const variant of variants) {
         has_semantic: hasSemantic,
         has_jsonld: hasJsonLd,
         has_dsd: hasDsd,
+        has_microdata: hasMicrodata,
       };
 
       const persistedOk = await persistResult(payload);
@@ -157,6 +162,8 @@ console.log('  test-noscript-only→ no  / no  / no  / YES / no');
 console.log('  test-aria-only    → no  / YES / no  / no  / no');
 console.log('  test-dsd          → no  / no  / no  / no  / YES');
 console.log('  combined          → YES / YES / YES / no  / YES (DSD supersedes noscript)');
+console.log('  test-microdata-only → no / no  / no  / no  / no  / YES (microdata)');
+console.log('        MD=microdata (itemscope/itemtype/itemprop)');
 console.log('');
 console.log('NOTE: SEM/ARIA may show infrastructure positives (BaseLayout <nav>, DSD');
 console.log('      template internals). These are constant across all pages and cancel');
@@ -225,22 +232,32 @@ function extractFirstJsonLd(html) {
 }
 
 async function persistResult(payload) {
-  const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/extraction_results`, {
-    method: 'POST',
-    headers: {
-      apikey: process.env.SUPABASE_ANON_KEY,
-      Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
-      'Content-Type': 'application/json',
-      Prefer: 'return=minimal',
-    },
-    body: JSON.stringify(payload),
-  }).catch(() => null);
+  try {
+    const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/extraction_results`, {
+      method: 'POST',
+      headers: {
+        apikey: process.env.SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify(payload),
+    });
 
-  return response?.status === 201;
+    if (response?.status === 201) return true;
+
+    // Diagnostic output for failures
+    const text = await response.text().catch(() => '(no body)');
+    console.error('Persist failed:', response.status, text);
+    return false;
+  } catch (err) {
+    console.error('Persist exception:', err);
+    return false;
+  }
 }
 
 function logRow(variant, botName, values) {
-  const [words, heads, links, ld, aria, sem, nosc, dsd, db] = values;
+  const [words, heads, links, ld, aria, sem, nosc, dsd, md, db] = values;
   const row = [
     variant.padEnd(22),
     botName.padEnd(10),
@@ -252,6 +269,7 @@ function logRow(variant, botName, values) {
     String(sem).padStart(5),
     String(nosc).padStart(5),
     String(dsd).padStart(5),
+    String(md).padStart(4),
     db,
   ].join(' | ');
 

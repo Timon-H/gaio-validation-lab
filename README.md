@@ -76,6 +76,32 @@ Seven variants of the same insurance page content. Each isolates a single GAIO v
 </BaseLayout>
 ```
 
+## Methodology (Thesis)
+
+**Objective**
+Measure how different GAIO measures affect crawler/LLM extraction from the **initial HTML response** of Shadow DOM components.
+
+**Variables**
+- **Independent variables:** JSON-LD, Semantic HTML, ARIA on hosts, `<noscript>` fallbacks, Declarative Shadow DOM (DSD).
+- **Dependent variables:** extraction quality and structure (word count, headings, links, entity mentions, schema capture, etc.).
+- **Controls:** identical content, component set, layout, and SEO constants across all variants.
+
+**Scope and constraints**
+- SSR-only is used for `/combined` and `/test-dsd` to keep HTML deterministic and avoid client re-render artifacts.
+- Client-side interactivity is **not** part of the measurement scope.
+
+**Measurement approach**
+- Use the extraction script to capture text content, structural markers, and schema presence per variant.
+- Compare variant outputs against baseline to quantify the impact of each GAIO measure.
+
+**Threats to validity**
+- Hydration or client-side rendering changes the DOM post-load and can confound results.
+- Language mismatch between content and schema can bias extraction.
+
+**Reporting**
+- Report results per variant and summarize deltas vs. baseline.
+- Note that findings apply to initial HTML visibility rather than interactive behavior.
+
 ## Testing
 
 ```bash
