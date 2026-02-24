@@ -30,7 +30,8 @@
     "@lit-labs/ssr": "^4.0.0",
     "@lit-labs/ssr-client": "^1.1.8",
     "astro": "^5.17.1",
-    "lit": "^3.3.2"
+    "lit": "^3.3.2",
+    "openai": "^6.25.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.6",
