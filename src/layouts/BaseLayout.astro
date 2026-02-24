@@ -16,7 +16,10 @@ interface Props {
   lang?: string;
 }
 
-const { title, description, group, schemaData, lang = 'en' } = Astro.props;
+const { title, description, schemaData, lang = 'en' } = Astro.props;
+const schemaJson = schemaData
+  ? JSON.stringify(schemaData).replace(/</g, '\\u003c')
+  : undefined;
 ---
 
 <!DOCTYPE html>
@@ -31,8 +34,8 @@ const { title, description, group, schemaData, lang = 'en' } = Astro.props;
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
     <link rel="canonical" href={Astro.url} />
 
-    {schemaData && (
-      <script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
+    {schemaJson && (
+      <script type="application/ld+json" set:html={schemaJson} />
     )}
 
     <style>
