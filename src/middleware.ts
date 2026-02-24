@@ -59,7 +59,7 @@ if (isAiBot) {
     const timeoutId = setTimeout(() => controller.abort(), 1000); // 1 second timeout
 
     try {
-      await fetch(`${supabaseUrl}/rest/v1/bot_logs`, {
+      const resp = await fetch(`${supabaseUrl}/rest/v1/bot_logs`, {
         method: 'POST',
         headers: {
           'apikey': supabaseKey,
@@ -70,7 +70,13 @@ if (isAiBot) {
         body: JSON.stringify(logData),
         signal: controller.signal
       });
-      console.log(`GAIO_LOG_SUCCESS: ${detectedBot?.name} recorded.`);
+
+      if (resp?.ok) {
+        console.log(`GAIO_LOG_SUCCESS: ${detectedBot?.name} recorded.`);
+      } else {
+        const body = await resp.text().catch(() => '(no body)');
+        console.error('GAIO_LOG_ERROR (Supabase):', resp.status, body);
+      }
     } catch (err) {
       console.error("GAIO_LOG_ERROR (Supabase):", err instanceof Error && err.name === 'AbortError' 
         ? "Timeout reached" 

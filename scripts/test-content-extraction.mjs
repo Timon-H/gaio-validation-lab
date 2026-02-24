@@ -232,18 +232,28 @@ function extractFirstJsonLd(html) {
 }
 
 async function persistResult(payload) {
-  const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/extraction_results`, {
-    method: 'POST',
-    headers: {
-      apikey: process.env.SUPABASE_ANON_KEY,
-      Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
-      'Content-Type': 'application/json',
-      Prefer: 'return=minimal',
-    },
-    body: JSON.stringify(payload),
-  }).catch(() => null);
+  try {
+    const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/extraction_results`, {
+      method: 'POST',
+      headers: {
+        apikey: process.env.SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify(payload),
+    });
 
-  return response?.status === 201;
+    if (response?.status === 201) return true;
+
+    // Diagnostic output for failures
+    const text = await response.text().catch(() => '(no body)');
+    console.error('Persist failed:', response.status, text);
+    return false;
+  } catch (err) {
+    console.error('Persist exception:', err);
+    return false;
+  }
 }
 
 function logRow(variant, botName, values) {
