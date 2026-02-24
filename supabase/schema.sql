@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS extraction_results (
   has_aria      BOOLEAN DEFAULT FALSE,   -- whether aria-label/aria-labelledby found
   has_semantic  BOOLEAN DEFAULT FALSE,   -- whether <section>/<article> found
   has_jsonld    BOOLEAN DEFAULT FALSE,   -- whether JSON-LD script tag found
+  has_microdata BOOLEAN DEFAULT FALSE,  -- whether microdata (itemscope/itemtype) found
   has_dsd       BOOLEAN DEFAULT FALSE    -- whether <template shadowrootmode> found
 );
 
