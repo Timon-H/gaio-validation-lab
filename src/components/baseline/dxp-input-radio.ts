@@ -17,7 +17,7 @@
  * - Form label integration
  */
 import { LitElement, html, css, nothing } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 
 export interface RadioOption {
   value: string;
