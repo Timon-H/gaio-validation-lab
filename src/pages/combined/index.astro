@@ -265,6 +265,15 @@ const tariffHtml = await renderLitToString(html`
   </section>
 
   <!-- ============================================ -->
+  <!-- SLIDER: Deckungssumme — ARIA-Label vorhanden  -->
+  <!-- ============================================ -->
+  <div style="margin: 1rem 0 0.5rem;">
+    <input type="range" min="100000" max="10000000" step="500000" value="5000000"
+           aria-label="Gewünschte Deckungssumme in Euro"
+           style="width: 100%; accent-color: #0066cc;">
+  </div>
+
+  <!-- ============================================ -->
   <!-- DROPDOWN — DSD + Semantic + ARIA + Microdata  -->
   <!-- ============================================ -->
   <section aria-label="Versicherungsauswahl" style="margin: 2rem 0;" itemscope itemtype="https://schema.org/ItemList">
@@ -285,6 +294,15 @@ const tariffHtml = await renderLitToString(html`
 
     <Fragment set:html={radioHtml} />
   </section>
+
+  <!-- ============================================ -->
+  <!-- GEBURTSJAHR — ARIA-Label vorhanden           -->
+  <!-- ============================================ -->
+  <div style="margin: 0.5rem 0 2rem;">
+    <input type="text" name="geburtsjahr" inputmode="numeric" pattern="\d{4}" maxlength="4"
+           aria-label="Geburtsjahr eingeben"
+           style="border: 1px solid #ccc; padding: 0.4rem 0.6rem; border-radius: 4px; width: 120px;">
+  </div>
 
   <!-- ============================================ -->
   <!-- ACCORDION / FAQ — DSD + Semantic + ARIA + Microdata -->
@@ -342,9 +360,29 @@ const tariffHtml = await renderLitToString(html`
     <meta itemprop="name" content="Haftpflichtversicherung – Tarifvergleich" />
     <h3 id="tariff-heading">Unsere Tarife im Vergleich</h3>
     <p>Wählen Sie den passenden Schutz für Ihre Bedürfnisse. Alle Preise verstehen sich als monatliche Beiträge.</p>
-
+    <!-- Testimonial — semantisch als <figure>/<blockquote> markiert -->
+    <figure style="margin: 0.5rem 0; padding: 0.5rem 0.75rem; border-left: 3px solid #ddd;">
+      <blockquote><p style="font-size: 0.875rem; color: #555; margin: 0;"><em>„Ich spare jetzt <strong>12 € pro Monat</strong> gegenüber meinem alten Anbieter – super Preis-Leistung!“</em></p></blockquote>
+      <figcaption style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">– Kundin Lisa M., München</figcaption>
+    </figure>
+    <!-- Veralteter Tarif — semantisch als <s> markiert -->
+    <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 0.75rem;">
+      <s>Früherer Einsteiger-Tarif: ab <strong>1,99 €</strong> / Monat – nicht mehr buchbar.</s>
+    </p>
     <Fragment set:html={tariffHtml} />
   </section>
+
+  <!-- ============================================ -->
+  <!-- CROSS-SELL — semantisch als <aside> markiert  -->
+  <!-- ============================================ -->
+  <aside style="margin: 2rem 0; padding: 1rem; background: #f9f9f9; border: 1px dashed #bbb; border-radius: 4px;">
+    <p style="margin: 0 0 0.5rem; font-weight: 600; font-size: 0.875rem; color: #555;">Das könnte Sie auch interessieren</p>
+    <p style="margin: 0 0 0.5rem;">Kombinieren Sie Ihren Schutz – <strong>KFZ-Haftpflicht</strong> bereits ab <strong>39,00 €</strong> monatlich verfügbar.</p>
+    <ul style="margin: 0.25rem 0 0; padding-left: 1.5rem; font-size: 0.875rem;">
+      <li>KFZ Basis – 39,00 € / Monat · Selbstbeteiligung: 500 €</li>
+      <li>KFZ Komfort – 59,00 € / Monat · Selbstbeteiligung: 0 €</li>
+    </ul>
+  </aside>
 
   <aside style="margin-top: 2rem; padding: 1rem; background: #e8f5e9; border-left: 4px solid #43a047;">
     <strong>GAIO-Maßnahmen auf dieser Seite:</strong>
