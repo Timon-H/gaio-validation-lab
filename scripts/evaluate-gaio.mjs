@@ -76,7 +76,7 @@ const PROVIDER_CONFIG = {
   },
   gemini: {
     envVar: 'GEMINI_API_KEY',
-    model: 'gemini-3.0-flash', // switch to 'gemini-3.0-pro' for higher accuracy
+    model: 'gemini-3-flash-preview', // switch to 'gemini-3-pro-preview' for higher accuracy
   },
 };
 
