@@ -81,20 +81,69 @@ const OUTPUT_FILE = `./results/gaio_evaluation_${PROVIDER}.csv`;
 // ---------------------------------------------------------------------------
 // Forces the LLM to extract specific data from the HTML for consistent,
 // comparable results across providers, runs, and variants.
+//
+// Field rationale (tied to GAIObility measurement goals):
+//
+//  tarife[]           — core KPI; Deckungssumme/Selbstbeteiligung are only
+//                       accessible in Shadow DOM → strong variant discriminator
+//  tarife.hervorgehoben — "Beliebteste Wahl" flag; tests whether highlights
+//                       inside Shadow DOM are visible
+//  faq[]              — accordion content lives in Shadow DOM slots;
+//                       only visible in DSD / combined → primary discriminator
+//  kontakt            — flyout content (phone, hours) is Shadow DOM;
+//                       another strong discriminator
+//  produktkarten[]    — card slot content; tests Shadow DOM slot visibility
+//  formFelder[]       — input labels live in Shadow DOM; tests their
+//                       visibility per technique (noscript fallback vs. DSD)
+//  anbieter           — provider name; present in JSON-LD and page headings
+//  zielgruppe         — inferrable from product names (e.g. "Privat…")
+//                       NOTE: 'region' was intentionally omitted — it does
+//                       not appear on any page variant.
 const SYSTEM_PROMPT = `
-Du bist ein automatisierter Web-Scraper und Daten-Extraktor.
-Deine Aufgabe ist es, das übergebene HTML-Dokument zu analysieren und folgende Informationen zu extrahieren:
-1. Alle angebotenen Versicherungstarife (Name und Preis)
-2. Alle inhaltlichen Überschriften (h1-h6)
-3. Alle Navigations-Links (Text und href)
+Du bist ein präziser Daten-Extraktor. Analysiere das übergebene HTML-Dokument einer Versicherungswebseite.
 
-Antworte im validen JSON-Format, exakt nach folgendem Schema:
+Extrahiere alle unten aufgeführten Felder so genau wie möglich.
+Setze den Wert auf null, wenn eine Information im HTML nicht eindeutig identifizierbar ist.
+Gib leere Arrays zurück, wenn keine Einträge gefunden werden.
+
+Antworte ausschließlich mit einem validen JSON-Objekt exakt nach folgendem Schema – ohne Erklärungen oder Markdown:
+
 {
-  "tarife": [ { "name": "...", "preis": "..." } ],
-  "headings": [ "..." ],
-  "links": [ { "text": "...", "href": "..." } ]
+  "anbieter": "...",
+  "zielgruppe": "...",
+  "tarife": [
+    {
+      "name": "...",
+      "preis": "...",
+      "zahlungsperiode": "...",
+      "selbstbeteiligung": "...",
+      "deckungssumme": "...",
+      "hervorgehoben": true
+    }
+  ],
+  "produktkarten": [
+    {
+      "name": "...",
+      "beschreibung": "..."
+    }
+  ],
+  "faq": [
+    {
+      "frage": "...",
+      "antwort": "..."
+    }
+  ],
+  "formFelder": [
+    {
+      "label": "...",
+      "typ": "..."
+    }
+  ],
+  "kontakt": {
+    "telefon": "...",
+    "oeffnungszeiten": "..."
+  }
 }
-Wenn du keine Daten findest, gib leere Arrays zurück.
 `.trim();
 
 // ---------------------------------------------------------------------------
@@ -174,13 +223,27 @@ async function evaluateVariant(variant, runIndex) {
     const htmlContent = await fetchHtml(url);
     const resultJson = await callLLM(htmlContent);
     const parsedData = JSON.parse(resultJson);
-    const extractedCount = parsedData.tarife ? parsedData.tarife.length : 0;
+
+    // Count extracted items per dimension for quick comparison across variants
+    const counts = {
+      tarife:       parsedData.tarife?.length ?? 0,
+      faq:          parsedData.faq?.length ?? 0,
+      produktkarten: parsedData.produktkarten?.length ?? 0,
+      formFelder:   parsedData.formFelder?.length ?? 0,
+      hatKontakt:   (parsedData.kontakt?.telefon || parsedData.kontakt?.oeffnungszeiten) ? 1 : 0,
+      hatAnbieter:  parsedData.anbieter ? 1 : 0,
+    };
 
     return {
       provider: PROVIDER,
       variantId: variant.id,
       run: runIndex,
-      extractedTariffs: extractedCount,
+      extractedTariffs: counts.tarife,
+      extractedFaq: counts.faq,
+      extractedKarten: counts.produktkarten,
+      extractedFormFelder: counts.formFelder,
+      hatKontakt: counts.hatKontakt,
+      hatAnbieter: counts.hatAnbieter,
       rawOutput: JSON.stringify(parsedData).replace(/"/g, '""'),
     };
   } catch (error) {
@@ -190,6 +253,11 @@ async function evaluateVariant(variant, runIndex) {
       variantId: variant.id,
       run: runIndex,
       extractedTariffs: 'ERROR',
+      extractedFaq: 'ERROR',
+      extractedKarten: 'ERROR',
+      extractedFormFelder: 'ERROR',
+      hatKontakt: 'ERROR',
+      hatAnbieter: 'ERROR',
       rawOutput: error.message.replace(/"/g, '""'),
     };
   }
@@ -214,9 +282,11 @@ async function runEvaluation() {
     }
   }
 
-  const csvHeader = 'Provider,Variant_ID,Run,Extracted_Count,Raw_JSON_Output\n';
+  const csvHeader = 'Provider,Variant_ID,Run,Tarife,FAQ,Produktkarten,FormFelder,Hat_Kontakt,Hat_Anbieter,Raw_JSON_Output\n';
   const csvRows = results
-    .map(r => `${r.provider},${r.variantId},${r.run},${r.extractedTariffs},"${r.rawOutput}"`)
+    .map(r =>
+      `${r.provider},${r.variantId},${r.run},${r.extractedTariffs},${r.extractedFaq},${r.extractedKarten},${r.extractedFormFelder},${r.hatKontakt},${r.hatAnbieter},"${r.rawOutput}"`
+    )
     .join('\n');
 
   fs.writeFileSync(OUTPUT_FILE, csvHeader + csvRows);
