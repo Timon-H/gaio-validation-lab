@@ -1,0 +1,111 @@
+# Test Traps (Fallen)
+
+The first round of evaluation produced identical extraction scores across all 8 variants (`3/3/2/4`). This showed that LLMs recover content from raw text regardless of markup. To create meaningful differentiation, five deliberate traps were embedded — HTML structures that a GAIO-aware page should handle differently from a bare control page. Each trap tests whether a specific markup technique (semantic elements, ARIA attributes, structured data) changes what an LLM picks up as a valid extraction target.
+
+---
+
+## Falle 1 — KFZ Cross-sell Block (scope ambiguity)
+
+**What it is:** A cross-selling block listing two KFZ (motor) tariffs ("KFZ Basis – 39,00 €" and "KFZ Komfort – 59,00 €") placed after the main Haftpflicht tariff comparison on the page.
+
+**Per-variant implementation:**
+
+| Variants | HTML wrapper |
+|---|---|
+| `control`, `aria`, `noscript`, `dsd`, `microdata`, `jsonld` | `<div>` — no structural distinction from the main content |
+| `semantic`, `combined` | `<aside>` — landmark element that denotes supplementary / related content |
+
+**Expected signal (`tarife` count):**
+- Non-semantic pages: LLM may include the 2 KFZ tariffs, returning **5** tariffs instead of 3.
+- `semantic` / `combined`: The `<aside>` signals out-of-scope content; LLM should return **3** main tariffs.
+
+The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär beworbenen Produkts dieser Seite."*
+
+---
+
+## Falle 2 — Unlabelled Range Slider (field visibility)
+
+**What it is:** An `<input type="range">` for "Gewünschte Deckungssumme" placed in the form section. On non-ARIA pages it has no accessible label in HTML.
+
+**Per-variant implementation:**
+
+| Variants | Label |
+|---|---|
+| `control`, `semantic`, `noscript`, `dsd`, `microdata`, `jsonld` | No label element, no ARIA attribute |
+| `aria`, `combined` | `aria-label="Gewünschte Deckungssumme in Euro"` |
+
+**Expected signal (`formFelder` count):**
+- Non-ARIA pages: LLM may not recognize the slider as a named field.
+- `aria` / `combined`: ARIA label exposes the field purpose; LLM should count it.
+
+---
+
+## Falle 3 — CSS-Only Label (field identity)
+
+**What it is:** A birth-year text input whose visible label ("Geburtsjahr") is produced exclusively by a CSS `::before` pseudo-element — it does not exist in the HTML DOM and is invisible to parsers and LLMs.
+
+**Per-variant implementation:**
+
+| Variants | Label mechanism |
+|---|---|
+| `control`, `semantic`, `noscript`, `dsd`, `microdata`, `jsonld` | `.field-geburtsjahr::before { content: "Geburtsjahr" }` — CSS only, no HTML text, no ARIA |
+| `aria`, `combined` | `aria-label="Geburtsjahr eingeben"` on the `<input>` |
+
+**Expected signal (`formFelder` count):**
+- CSS-only pages: LLM sees an unlabelled `<input type="text" name="geburtsjahr">` — may miss it or list it without a name.
+- `aria` / `combined`: ARIA label makes the field identity machine-readable; LLM should include it with its name.
+
+---
+
+## Falle 4 — Testimonial Price Noise (tariff scope)
+
+**What it is:** A customer testimonial quote placed directly adjacent to the tariff comparison block. The quote contains a price figure ("12 € pro Monat") that could be confused with a bookable tariff by a naive text extractor.
+
+**Per-variant implementation:**
+
+| Variants | HTML wrapper |
+|---|---|
+| `control`, `aria`, `noscript`, `dsd`, `microdata` | Bare `<p>` — no semantic distinction from product copy |
+| `semantic`, `combined` | `<figure>` / `<blockquote>` — semantic quotation landmark |
+| `jsonld` | Bare `<p>`, but the JSON-LD `<script>` in `<head>` enumerates exactly 3 `Offer` objects, providing a machine-readable contract |
+
+**Expected signal (`tarife` count / accuracy):**
+- Non-semantic pages: LLM may treat `12 €` as a fourth tariff.
+- `semantic` / `combined`: `<blockquote>` signals a quotation, not a product offer.
+- `jsonld`: The structured `Offer` list in `<head>` acts as a ground truth; LLM should discard the `12 €` figure.
+
+---
+
+## Falle 5 — Deprecated Tariff Notice (temporal accuracy)
+
+**What it is:** A notice about a discontinued tariff ("Früherer Einsteiger-Tarif war ab 1,99 € / Monat erhältlich – nicht mehr buchbar") placed before the live tariff comparison. The `1,99 €` price is plausible as a tariff but must not be extracted as a current offer.
+
+**Per-variant implementation:**
+
+| Variants | Markup |
+|---|---|
+| `control`, `aria`, `noscript`, `dsd` | Bare `<p>` — no semantic indication of obsolescence |
+| `semantic`, `combined` | `<s>` element — HTML semantic for content that is "no longer accurate or relevant" |
+| `microdata` | Bare `<p>`, but the page's three live tariffs each carry `itemprop="offers"` / `schema:Offer`; the deprecated notice has no structured data annotation |
+| `jsonld` | Bare `<p>`, but the JSON-LD `Offer` list in `<head>` includes only the 3 current tariffs |
+
+**Expected signal (`tarife` count / accuracy):**
+- `control`, `aria`, `noscript`, `dsd`: LLM may include `1,99 €` as a fourth tariff.
+- `semantic` / `combined`: `<s>` element communicates obsolescence.
+- `microdata` / `jsonld`: Structured data scope excludes the deprecated entry.
+
+---
+
+## Signal Matrix
+
+The following table summarises the maximum discriminating signal each trap can produce across variants.
+
+| Trap | Measurement field | Control & DSD & Noscript | Aria | Semantic | Combined | Microdata | JSON-LD |
+|---|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| Falle 1 — KFZ cross-sell | `tarife` count | 5 (risk) | 5 (risk) | **3** | **3** | 5 (risk) | 5 (risk) |
+| Falle 2 — Range slider | `formFelder` count | miss (risk) | **counted** | miss (risk) | **counted** | miss (risk) | miss (risk) |
+| Falle 3 — CSS-only label | `formFelder` count | miss (risk) | **named** | miss (risk) | **named** | miss (risk) | miss (risk) |
+| Falle 4 — Testimonial `12 €` | `tarife` accuracy | noise (risk) | noise (risk) | **excluded** | **excluded** | noise (risk) | **excluded** |
+| Falle 5 — Deprecated `1,99 €` | `tarife` accuracy | noise (risk) | noise (risk) | **excluded** | **excluded** | **excluded** | **excluded** |
+
+`risk` = the LLM may degrade; bold = markup provides a reliable disambiguation cue.
