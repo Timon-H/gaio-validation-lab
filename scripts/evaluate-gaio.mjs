@@ -36,9 +36,9 @@ if (!PROVIDER) {
 Usage: node evaluate-gaio.mjs --provider <provider> [--persist]
 
 Providers:
-  openai   → uses OPENAI_API_KEY    (model: gpt-4o-mini)
-  claude   → uses ANTHROPIC_API_KEY  (model: claude-3-5-haiku-20241022)
-  gemini   → uses GEMINI_API_KEY     (model: gemini-2.0-flash)
+  openai   → uses OPENAI_API_KEY    (model: gpt-4.1-mini)
+  claude   → uses ANTHROPIC_API_KEY  (model: claude-haiku-4-5)
+  gemini   → uses GEMINI_API_KEY     (model: gemini-3.0-flash)
 
 Options:
   --persist   Write results to Supabase in addition to CSV output.
@@ -66,15 +66,17 @@ if (!SUPPORTED_PROVIDERS.includes(PROVIDER)) {
 const PROVIDER_CONFIG = {
   openai: {
     envVar: 'OPENAI_API_KEY',
-    model: 'gpt-4o-mini', // switch to 'gpt-4o' for higher accuracy
+    model: 'gpt-4.1-mini', // switch to 'gpt-4.1' for higher accuracy
+    // NOTE: GPT-5 models are intentionally excluded — they do not support
+    // the temperature parameter, which is required for deterministic output.
   },
   claude: {
     envVar: 'ANTHROPIC_API_KEY',
-    model: 'claude-3-5-haiku-20241022', // switch to 'claude-opus-4-5' for higher accuracy
+    model: 'claude-haiku-4-5', // switch to 'claude-opus-4-5' for higher accuracy
   },
   gemini: {
     envVar: 'GEMINI_API_KEY',
-    model: 'gemini-2.0-flash', // switch to 'gemini-2.5-pro' for higher accuracy
+    model: 'gemini-3.0-flash', // switch to 'gemini-3.0-pro' for higher accuracy
   },
 };
 

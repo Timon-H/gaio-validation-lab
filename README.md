@@ -155,9 +155,9 @@ Add the relevant keys to your `.env` file. The `dotenv-cli` package loads them a
 
 | Provider | Default model | Swap for higher accuracy |
 |---|---|---|
-| OpenAI | `gpt-4o-mini` | `gpt-4o` |
-| Claude | `claude-3-5-haiku-20241022` | `claude-opus-4-5` |
-| Gemini | `gemini-2.0-flash` | `gemini-2.5-pro` |
+| OpenAI | `gpt-4.1-mini` | `gpt-4.1` |
+| Claude | `claude-haiku-4-5` | `claude-opus-4-5` |
+| Gemini | `gemini-3.0-flash` | `gemini-3.0-pro` |
 
 Models can be changed in the `PROVIDER_CONFIG` table at the top of `evaluate-gaio.mjs`.
 
