@@ -237,6 +237,42 @@ async function callLLM(htmlContent) {
 }
 
 // ---------------------------------------------------------------------------
+// Retry wrapper — handles 429 rate-limit responses from any provider.
+// Parses the retryDelay the API suggests (e.g. Gemini's "retryDelay":"52s")
+// and waits that long before retrying. Falls back to exponential backoff.
+// ---------------------------------------------------------------------------
+const MAX_RETRIES = 3;
+
+function parseRetryDelayMs(errorMessage) {
+  // Gemini embeds retryDelay in the error JSON, e.g. "retryDelay":"52s"
+  const match = errorMessage.match(/"retryDelay"\s*:\s*"(\d+(?:\.\d+)?)s"/);
+  if (match) return Math.ceil(parseFloat(match[1]) * 1000) + 2000; // +2s buffer
+  return null;
+}
+
+async function callLLMWithRetry(htmlContent) {
+  let lastError;
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      return await callLLM(htmlContent);
+    } catch (err) {
+      lastError = err;
+      const msg = err.message ?? '';
+      const is429 = msg.includes('429') || msg.includes('Too Many Requests') || msg.includes('quota');
+
+      if (!is429 || attempt === MAX_RETRIES) throw err;
+
+      const suggestedMs = parseRetryDelayMs(msg);
+      const waitMs = suggestedMs ?? (attempt * 15_000); // fallback: 15s, 30s, 45s
+      const waitSec = Math.round(waitMs / 1000);
+      console.warn(`  ⏸  Rate limited (attempt ${attempt}/${MAX_RETRIES}). Waiting ${waitSec}s before retry...`);
+      await new Promise(r => setTimeout(r, waitMs));
+    }
+  }
+  throw lastError;
+}
+
+// ---------------------------------------------------------------------------
 // Supabase persistence
 // ---------------------------------------------------------------------------
 
@@ -280,7 +316,7 @@ async function evaluateVariant(variant, runIndex) {
 
   try {
     const htmlContent = await fetchHtml(url);
-    const resultJson = await callLLM(htmlContent);
+    const resultJson = await callLLMWithRetry(htmlContent);
     const parsedData = JSON.parse(resultJson);
 
     // Count extracted items per dimension for quick comparison across variants
