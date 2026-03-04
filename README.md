@@ -34,10 +34,11 @@ npm run build
     /test-dsd            ← Isolated: Declarative Shadow DOM via @lit-labs/ssr
   /middleware.ts         ← AI bot detection + Supabase logging
 /scripts
-  test-bots.sh           ← Bot UA simulation tests
-  test-content-extraction.sh ← Content extraction + optional Supabase persist
+  test-bots.mjs              ← Bot UA simulation tests
+  test-content-extraction.mjs ← Content extraction + optional Supabase persist
+  evaluate-gaio.mjs          ← Multi-provider LLM extraction benchmark (OpenAI / Claude / Gemini)
 /supabase
-  schema.sql             ← DDL for bot_logs, extraction_results
+  schema.sql             ← DDL for bot_logs, extraction_results, llm_evaluation_results
 ```
 
 ## Multi-Arm Test Design
@@ -107,7 +108,7 @@ Measure how different GAIO measures affect crawler/LLM extraction from the **ini
 ## Testing
 
 ```bash
-# Simulate AI bot visits across all 7 variants
+# Simulate AI bot visits across all 8 variants
 npm run test:bots
 
 # Extract content and compare structural markers
@@ -117,9 +118,60 @@ npm run test:extract
 npm run test:extract:persist
 ```
 
+## LLM Evaluation
+
+`evaluate-gaio.mjs` runs the structured extraction benchmark against all 8 page variants using a chosen LLM provider. Each run fetches the live HTML and asks the model to extract a fixed set of fields — tariffs (name, price, Deckungssumme, Selbstbeteiligung, payment period, highlighted flag), FAQ entries, product cards, form fields, contact details, and provider name — returning structured JSON. Because most of these fields live inside Shadow DOM, results differ significantly across variants, making extraction counts the primary GAIObility metric.
+
+```bash
+# Run with the default provider (OpenAI)
+npm run evaluate
+
+# Run with a specific provider
+npm run evaluate:openai
+npm run evaluate:claude
+npm run evaluate:gemini
+
+# Persist results to Supabase (requires SUPABASE_URL + SUPABASE_ANON_KEY)
+npm run evaluate:openai:persist
+npm run evaluate:claude:persist
+npm run evaluate:gemini:persist
+```
+
+Results are always written to `results/gaio_evaluation_<provider>.csv`. With `--persist`, each run is also inserted into the `llm_evaluation_results` Supabase table, enabling cross-provider and cross-run comparisons via SQL.
+
+### Required environment variables
+
+An LLM provider API key is **always required** — there is no credential-free mode for this script. Running with `--persist` additionally requires `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
+
+| Provider | Variable |
+|---|---|
+| OpenAI | `OPENAI_API_KEY` |
+| Anthropic Claude | `ANTHROPIC_API_KEY` |
+| Google Gemini | `GEMINI_API_KEY` |
+
+Add the relevant keys to your `.env` file. The `dotenv-cli` package loads them automatically via the `npm run evaluate:*` scripts.
+
+### Default models
+
+| Provider | Default model | Swap for higher accuracy |
+|---|---|---|
+| OpenAI | `gpt-4.1-mini` | `gpt-4.1` |
+| Claude | `claude-haiku-4-5` | `claude-opus-4-5` |
+| Gemini | `gemini-3.0-flash` | `gemini-3.0-pro` |
+
+Models can be changed in the `PROVIDER_CONFIG` table at the top of `evaluate-gaio.mjs`.
+
 ## Middleware
 
 The middleware detects 6 AI crawlers (GPTBot, Claude-Web, Google-Extended, PerplexityBot, CCBot, Applebot-Extended) and logs visits to Supabase `bot_logs` with variant path, latency, and status code.
+
+`SUPABASE_URL` and `SUPABASE_ANON_KEY` are **optional** for this feature — bot detection and the `X-AI-Bot-Detected` / `X-Test-Group` response headers work regardless. Logging is silently skipped when the keys are absent.
+
+## Content Extraction (`test-content-extraction.mjs`)
+
+Runs in two modes:
+- **Dry-run** (`npm run test:extract`) — fetches and analyses all 8 variants locally. No Supabase credentials needed; does not call any LLM API.
+- **Persist** (`npm run test:extract:persist`) — same as dry-run, but also writes results to the Supabase `extraction_results` table. Requires `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
 
 ## Technologies
 
@@ -129,3 +181,6 @@ The middleware detects 6 AI crawlers (GPTBot, Claude-Web, Google-Extended, Perpl
 - **TypeScript**: Strict mode
 - **Supabase**: Bot logging + extraction results
 - **Vercel**: Serverless deployment
+- **openai**: OpenAI GPT API client
+- **@anthropic-ai/sdk**: Anthropic Claude API client
+- **@google/generative-ai**: Google Gemini API client

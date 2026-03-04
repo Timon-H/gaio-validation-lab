@@ -11,6 +11,13 @@
     "test:extract": "node ./scripts/test-content-extraction.mjs",
     "test:extract:persist": "dotenv -e .env -- node ./scripts/test-content-extraction.mjs --persist",
     "test:all": "npm run test:bots && npm run test:extract",
+    "evaluate": "node -e \"console.log('Usage: npm run evaluate:<provider> [-- --persist]\\n  Providers: openai | claude | gemini\\n  Examples:\\n    npm run evaluate:openai\\n    npm run evaluate:claude:persist');\"",
+    "evaluate:openai": "dotenv -e .env -- node ./scripts/evaluate-gaio.mjs --provider openai",
+    "evaluate:claude": "dotenv -e .env -- node ./scripts/evaluate-gaio.mjs --provider claude",
+    "evaluate:gemini": "dotenv -e .env -- node ./scripts/evaluate-gaio.mjs --provider gemini",
+    "evaluate:openai:persist": "dotenv -e .env -- node ./scripts/evaluate-gaio.mjs --provider openai --persist",
+    "evaluate:claude:persist": "dotenv -e .env -- node ./scripts/evaluate-gaio.mjs --provider claude --persist",
+    "evaluate:gemini:persist": "dotenv -e .env -- node ./scripts/evaluate-gaio.mjs --provider gemini --persist",
     "preview": "astro build && astro preview"
   },
   "repository": {
@@ -25,8 +32,10 @@
   },
   "homepage": "https://github.com/Timon-H/gaio-validation-lab#readme",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
     "@astrojs/sitemap": "^3.7.0",
     "@astrojs/vercel": "^9.0.4",
+    "@google/generative-ai": "^0.24.1",
     "@lit-labs/ssr": "^4.0.0",
     "@lit-labs/ssr-client": "^1.1.8",
     "astro": "^5.17.1",
