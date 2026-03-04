@@ -173,12 +173,17 @@ async function callClaude(htmlContent) {
     temperature: 0.0,
     system: SYSTEM_PROMPT,
     messages: [
-      { role: 'user', content: htmlContent },
+      { role: 'user',      content: htmlContent },
+      // Prefilling: seeding the assistant turn with '{' forces Claude to continue
+      // writing valid JSON rather than adding conversational text before the object.
+      // The opening brace must be prepended to the response when parsing.
+      { role: 'assistant', content: '{' },
     ],
   });
   // Claude returns an array of content blocks; grab the first text block
   const textBlock = message.content.find(b => b.type === 'text');
-  return textBlock ? textBlock.text : '{}';
+  // Re-attach the prefilled '{' that Claude was forced to continue from
+  return '{' + (textBlock ? textBlock.text : '}');
 }
 
 async function callGemini(htmlContent) {
