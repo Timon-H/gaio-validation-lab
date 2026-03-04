@@ -28,4 +28,4 @@ pnpm-debug.log*
 .vercel
 
 # Evaluation results
-results/
+results*/
