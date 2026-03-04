@@ -26,9 +26,35 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 // ---------------------------------------------------------------------------
 const args = process.argv.slice(2);
 const providerFlagIndex = args.indexOf('--provider');
-const PROVIDER = providerFlagIndex !== -1 ? args[providerFlagIndex + 1] : 'openai';
+const PROVIDER = providerFlagIndex !== -1 ? args[providerFlagIndex + 1] : null;
+const PERSIST = args.includes('--persist');
 
 const SUPPORTED_PROVIDERS = ['openai', 'claude', 'gemini'];
+
+if (!PROVIDER) {
+  console.log(`
+Usage: node evaluate-gaio.mjs --provider <provider> [--persist]
+
+Providers:
+  openai   → uses OPENAI_API_KEY    (model: gpt-4o-mini)
+  claude   → uses ANTHROPIC_API_KEY  (model: claude-3-5-haiku-20241022)
+  gemini   → uses GEMINI_API_KEY     (model: gemini-2.0-flash)
+
+Options:
+  --persist   Write results to Supabase in addition to CSV output.
+              Requires SUPABASE_URL and SUPABASE_ANON_KEY.
+
+Npm shortcuts:
+  npm run evaluate:openai
+  npm run evaluate:claude
+  npm run evaluate:gemini
+  npm run evaluate:openai:persist
+  npm run evaluate:claude:persist
+  npm run evaluate:gemini:persist
+`);
+  process.exit(0);
+}
+
 if (!SUPPORTED_PROVIDERS.includes(PROVIDER)) {
   console.error(`❌ Unknown provider "${PROVIDER}". Choose from: ${SUPPORTED_PROVIDERS.join(', ')}`);
   process.exit(1);
@@ -211,6 +237,34 @@ async function callLLM(htmlContent) {
 }
 
 // ---------------------------------------------------------------------------
+// Supabase persistence
+// ---------------------------------------------------------------------------
+
+async function persistEvalResult(payload) {
+  try {
+    const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/llm_evaluation_results`, {
+      method: 'POST',
+      headers: {
+        apikey: process.env.SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (response.status === 201) return true;
+
+    const text = await response.text().catch(() => '(no body)');
+    console.error('Persist failed:', response.status, text);
+    return false;
+  } catch (err) {
+    console.error('Persist exception:', err);
+    return false;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Core evaluation logic
 // ---------------------------------------------------------------------------
 
@@ -231,13 +285,31 @@ async function evaluateVariant(variant, runIndex) {
 
     // Count extracted items per dimension for quick comparison across variants
     const counts = {
-      tarife:       parsedData.tarife?.length ?? 0,
-      faq:          parsedData.faq?.length ?? 0,
+      tarife:        parsedData.tarife?.length ?? 0,
+      faq:           parsedData.faq?.length ?? 0,
       produktkarten: parsedData.produktkarten?.length ?? 0,
-      formFelder:   parsedData.formFelder?.length ?? 0,
-      hatKontakt:   (parsedData.kontakt?.telefon || parsedData.kontakt?.oeffnungszeiten) ? 1 : 0,
-      hatAnbieter:  parsedData.anbieter ? 1 : 0,
+      formFelder:    parsedData.formFelder?.length ?? 0,
+      hatKontakt:    (parsedData.kontakt?.telefon || parsedData.kontakt?.oeffnungszeiten) ? 1 : 0,
+      hatAnbieter:   parsedData.anbieter ? 1 : 0,
     };
+
+    let dbStatus = '-';
+    if (PERSIST) {
+      const ok = await persistEvalResult({
+        provider:            PROVIDER,
+        model:               config.model,
+        variant_id:          variant.id,
+        run:                 runIndex,
+        tarife_count:        counts.tarife,
+        faq_count:           counts.faq,
+        produktkarten_count: counts.produktkarten,
+        form_felder_count:   counts.formFelder,
+        hat_kontakt:         counts.hatKontakt === 1,
+        hat_anbieter:        counts.hatAnbieter === 1,
+        raw_output:          parsedData,
+      });
+      dbStatus = ok ? 'OK' : 'ERR';
+    }
 
     return {
       provider: PROVIDER,
@@ -249,6 +321,7 @@ async function evaluateVariant(variant, runIndex) {
       extractedFormFelder: counts.formFelder,
       hatKontakt: counts.hatKontakt,
       hatAnbieter: counts.hatAnbieter,
+      dbStatus,
       rawOutput: JSON.stringify(parsedData).replace(/"/g, '""'),
     };
   } catch (error) {
@@ -263,6 +336,7 @@ async function evaluateVariant(variant, runIndex) {
       extractedFormFelder: 'ERROR',
       hatKontakt: 'ERROR',
       hatAnbieter: 'ERROR',
+      dbStatus: 'ERROR',
       rawOutput: error.message.replace(/"/g, '""'),
     };
   }
@@ -272,6 +346,14 @@ async function runEvaluation() {
   if (!API_KEY) {
     console.error(`❌ Error: ${config.envVar} is not set.`);
     process.exit(1);
+  }
+
+  if (PERSIST) {
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+      console.error('❌ Error: --persist requires SUPABASE_URL and SUPABASE_ANON_KEY to be set.');
+      process.exit(1);
+    }
+    console.log(`💾 Persist mode: results will be written to Supabase (${process.env.SUPABASE_URL})`);
   }
 
   console.log(`🚀 Starting GAIO evaluation pipeline  [provider: ${PROVIDER}, model: ${config.model}]`);
@@ -287,15 +369,22 @@ async function runEvaluation() {
     }
   }
 
-  const csvHeader = 'Provider,Variant_ID,Run,Tarife,FAQ,Produktkarten,FormFelder,Hat_Kontakt,Hat_Anbieter,Raw_JSON_Output\n';
+  const csvHeader = 'Provider,Variant_ID,Run,Tarife,FAQ,Produktkarten,FormFelder,Hat_Kontakt,Hat_Anbieter,DB,Raw_JSON_Output\n';
   const csvRows = results
     .map(r =>
-      `${r.provider},${r.variantId},${r.run},${r.extractedTariffs},${r.extractedFaq},${r.extractedKarten},${r.extractedFormFelder},${r.hatKontakt},${r.hatAnbieter},"${r.rawOutput}"`
+      `${r.provider},${r.variantId},${r.run},${r.extractedTariffs},${r.extractedFaq},${r.extractedKarten},${r.extractedFormFelder},${r.hatKontakt},${r.hatAnbieter},${r.dbStatus},"${r.rawOutput}"`
     )
     .join('\n');
 
   fs.writeFileSync(OUTPUT_FILE, csvHeader + csvRows);
   console.log(`\n✅ Evaluation complete! Results saved to: ${OUTPUT_FILE}`);
+
+  if (PERSIST) {
+    const persisted = results.filter(r => r.dbStatus === 'OK').length;
+    const failed    = results.filter(r => r.dbStatus === 'ERR').length;
+    console.log(`💾 Database: ${persisted} persisted / ${failed} failed`);
+    console.log(`   Query: SELECT * FROM llm_evaluation_results ORDER BY created_at DESC;`);
+  }
 }
 
 runEvaluation();

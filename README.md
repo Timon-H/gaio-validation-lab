@@ -38,7 +38,7 @@ npm run build
   test-content-extraction.mjs ← Content extraction + optional Supabase persist
   evaluate-gaio.mjs          ← Multi-provider LLM extraction benchmark (OpenAI / Claude / Gemini)
 /supabase
-  schema.sql             ← DDL for bot_logs, extraction_results
+  schema.sql             ← DDL for bot_logs, extraction_results, llm_evaluation_results
 ```
 
 ## Multi-Arm Test Design
@@ -130,13 +130,18 @@ npm run evaluate
 npm run evaluate:openai
 npm run evaluate:claude
 npm run evaluate:gemini
+
+# Persist results to Supabase (requires SUPABASE_URL + SUPABASE_ANON_KEY)
+npm run evaluate:openai:persist
+npm run evaluate:claude:persist
+npm run evaluate:gemini:persist
 ```
 
-Results are written to `results/gaio_evaluation_<provider>.csv`.
+Results are always written to `results/gaio_evaluation_<provider>.csv`. With `--persist`, each run is also inserted into the `llm_evaluation_results` Supabase table, enabling cross-provider and cross-run comparisons via SQL.
 
 ### Required environment variables
 
-An LLM provider API key is **always required** — there is no credential-free mode for this script.
+An LLM provider API key is **always required** — there is no credential-free mode for this script. Running with `--persist` additionally requires `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
 
 | Provider | Variable |
 |---|---|

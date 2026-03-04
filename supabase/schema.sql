@@ -61,7 +61,39 @@ FROM bot_logs
 GROUP BY test_group
 ORDER BY test_group;
 
--- 4. Row-level security
+-- 4. LLM evaluation results (populated by evaluate-gaio.mjs --persist)
+-- Stores structured extraction output per variant and provider run
+CREATE TABLE IF NOT EXISTS llm_evaluation_results (
+  id                   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  created_at           TIMESTAMPTZ DEFAULT now(),
+  provider             TEXT NOT NULL,           -- 'openai', 'claude', 'gemini'
+  model                TEXT NOT NULL,           -- exact model name used
+  variant_id           TEXT NOT NULL,           -- 'control', 'jsonld', 'combined', etc.
+  run                  INT NOT NULL DEFAULT 1,  -- repetition index (1-based)
+  tarife_count         INT DEFAULT 0,
+  faq_count            INT DEFAULT 0,
+  produktkarten_count  INT DEFAULT 0,
+  form_felder_count    INT DEFAULT 0,
+  hat_kontakt          BOOLEAN DEFAULT FALSE,
+  hat_anbieter         BOOLEAN DEFAULT FALSE,
+  raw_output           JSONB                    -- full parsed extraction JSON
+);
+
+CREATE INDEX IF NOT EXISTS idx_llm_eval_provider_variant
+  ON llm_evaluation_results (provider, variant_id);
+
+CREATE INDEX IF NOT EXISTS idx_llm_eval_created
+  ON llm_evaluation_results (created_at DESC);
+
+ALTER TABLE llm_evaluation_results ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow anon insert" ON llm_evaluation_results
+  FOR INSERT TO anon WITH CHECK (true);
+
+CREATE POLICY "Allow anon read" ON llm_evaluation_results
+  FOR SELECT TO anon USING (true);
+
+-- 5. Row-level security
 -- NOTE: Intentionally permissive (WITH CHECK (true) / USING (true)).
 -- This is a thesis validation lab — not a production system.
 -- The data (bot visit logs, extraction markers) is non-sensitive and

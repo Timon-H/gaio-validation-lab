@@ -11,10 +11,13 @@
     "test:extract": "node ./scripts/test-content-extraction.mjs",
     "test:extract:persist": "dotenv -e .env -- node ./scripts/test-content-extraction.mjs --persist",
     "test:all": "npm run test:bots && npm run test:extract",
-    "evaluate": "dotenv -e .env -- node ./scripts/evaluate-gaio.mjs",
+    "evaluate": "node -e \"console.log('Usage: npm run evaluate:<provider> [-- --persist]\\n  Providers: openai | claude | gemini\\n  Examples:\\n    npm run evaluate:openai\\n    npm run evaluate:claude:persist');\"",
     "evaluate:openai": "dotenv -e .env -- node ./scripts/evaluate-gaio.mjs --provider openai",
     "evaluate:claude": "dotenv -e .env -- node ./scripts/evaluate-gaio.mjs --provider claude",
     "evaluate:gemini": "dotenv -e .env -- node ./scripts/evaluate-gaio.mjs --provider gemini",
+    "evaluate:openai:persist": "dotenv -e .env -- node ./scripts/evaluate-gaio.mjs --provider openai --persist",
+    "evaluate:claude:persist": "dotenv -e .env -- node ./scripts/evaluate-gaio.mjs --provider claude --persist",
+    "evaluate:gemini:persist": "dotenv -e .env -- node ./scripts/evaluate-gaio.mjs --provider gemini --persist",
     "preview": "astro build && astro preview"
   },
   "repository": {
