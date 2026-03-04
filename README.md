@@ -34,8 +34,9 @@ npm run build
     /test-dsd            ← Isolated: Declarative Shadow DOM via @lit-labs/ssr
   /middleware.ts         ← AI bot detection + Supabase logging
 /scripts
-  test-bots.sh           ← Bot UA simulation tests
-  test-content-extraction.sh ← Content extraction + optional Supabase persist
+  test-bots.mjs              ← Bot UA simulation tests
+  test-content-extraction.mjs ← Content extraction + optional Supabase persist
+  evaluate-gaio.mjs          ← Multi-provider LLM extraction benchmark (OpenAI / Claude / Gemini)
 /supabase
   schema.sql             ← DDL for bot_logs, extraction_results
 ```
@@ -117,6 +118,42 @@ npm run test:extract
 npm run test:extract:persist
 ```
 
+## LLM Evaluation
+
+`evaluate-gaio.mjs` runs the structured extraction benchmark against all 8 page variants using a chosen LLM provider. Each run fetches the live HTML and asks the model to extract tariffs, headings, and navigation links in a fixed JSON schema, making results directly comparable across providers.
+
+```bash
+# Run with the default provider (OpenAI)
+npm run evaluate
+
+# Run with a specific provider
+npm run evaluate:openai
+npm run evaluate:claude
+npm run evaluate:gemini
+```
+
+Results are written to `results/gaio_evaluation_<provider>.csv`.
+
+### Required environment variables
+
+| Provider | Variable |
+|---|---|
+| OpenAI | `OPENAI_API_KEY` |
+| Anthropic Claude | `ANTHROPIC_API_KEY` |
+| Google Gemini | `GEMINI_API_KEY` |
+
+Add the relevant keys to your `.env` file. The `dotenv-cli` package loads them automatically via the `npm run evaluate:*` scripts.
+
+### Default models
+
+| Provider | Default model | Swap for higher accuracy |
+|---|---|---|
+| OpenAI | `gpt-4o-mini` | `gpt-4o` |
+| Claude | `claude-3-5-haiku-20241022` | `claude-opus-4-5` |
+| Gemini | `gemini-2.0-flash` | `gemini-2.5-pro` |
+
+Models can be changed in the `PROVIDER_CONFIG` table at the top of `evaluate-gaio.mjs`.
+
 ## Middleware
 
 The middleware detects 6 AI crawlers (GPTBot, Claude-Web, Google-Extended, PerplexityBot, CCBot, Applebot-Extended) and logs visits to Supabase `bot_logs` with variant path, latency, and status code.
@@ -129,3 +166,6 @@ The middleware detects 6 AI crawlers (GPTBot, Claude-Web, Google-Extended, Perpl
 - **TypeScript**: Strict mode
 - **Supabase**: Bot logging + extraction results
 - **Vercel**: Serverless deployment
+- **openai**: OpenAI GPT API client
+- **@anthropic-ai/sdk**: Anthropic Claude API client
+- **@google/generative-ai**: Google Gemini API client
