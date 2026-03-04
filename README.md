@@ -108,7 +108,7 @@ Measure how different GAIO measures affect crawler/LLM extraction from the **ini
 ## Testing
 
 ```bash
-# Simulate AI bot visits across all 7 variants
+# Simulate AI bot visits across all 8 variants
 npm run test:bots
 
 # Extract content and compare structural markers
@@ -120,7 +120,7 @@ npm run test:extract:persist
 
 ## LLM Evaluation
 
-`evaluate-gaio.mjs` runs the structured extraction benchmark against all 8 page variants using a chosen LLM provider. Each run fetches the live HTML and asks the model to extract tariffs, headings, and navigation links in a fixed JSON schema, making results directly comparable across providers.
+`evaluate-gaio.mjs` runs the structured extraction benchmark against all 8 page variants using a chosen LLM provider. Each run fetches the live HTML and asks the model to extract a fixed set of fields — tariffs (name, price, Deckungssumme, Selbstbeteiligung, payment period, highlighted flag), FAQ entries, product cards, form fields, contact details, and provider name — returning structured JSON. Because most of these fields live inside Shadow DOM, results differ significantly across variants, making extraction counts the primary GAIObility metric.
 
 ```bash
 # Run with the default provider (OpenAI)
@@ -135,6 +135,8 @@ npm run evaluate:gemini
 Results are written to `results/gaio_evaluation_<provider>.csv`.
 
 ### Required environment variables
+
+An LLM provider API key is **always required** — there is no credential-free mode for this script.
 
 | Provider | Variable |
 |---|---|
@@ -157,6 +159,14 @@ Models can be changed in the `PROVIDER_CONFIG` table at the top of `evaluate-gai
 ## Middleware
 
 The middleware detects 6 AI crawlers (GPTBot, Claude-Web, Google-Extended, PerplexityBot, CCBot, Applebot-Extended) and logs visits to Supabase `bot_logs` with variant path, latency, and status code.
+
+`SUPABASE_URL` and `SUPABASE_ANON_KEY` are **optional** for this feature — bot detection and the `X-AI-Bot-Detected` / `X-Test-Group` response headers work regardless. Logging is silently skipped when the keys are absent.
+
+## Content Extraction (`test-content-extraction.mjs`)
+
+Runs in two modes:
+- **Dry-run** (`npm run test:extract`) — fetches and analyses all 8 variants locally. No Supabase credentials needed; does not call any LLM API.
+- **Persist** (`npm run test:extract:persist`) — same as dry-run, but also writes results to the Supabase `extraction_results` table. Requires `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
 
 ## Technologies
 
