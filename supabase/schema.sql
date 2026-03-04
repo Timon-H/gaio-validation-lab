@@ -85,6 +85,26 @@ CREATE INDEX IF NOT EXISTS idx_llm_eval_provider_variant
 CREATE INDEX IF NOT EXISTS idx_llm_eval_created
   ON llm_evaluation_results (created_at DESC);
 
+-- Comparison view: aggregate per provider × variant
+-- Use this in the Supabase Table Editor "Views" tab or query it via REST as
+--   GET /rest/v1/llm_eval_comparison?select=*
+CREATE OR REPLACE VIEW llm_eval_comparison AS
+SELECT
+  variant_id,
+  provider,
+  model,
+  COUNT(*)                                                  AS runs,
+  ROUND(AVG(tarife_count)::numeric,        2)               AS avg_tarife,
+  ROUND(AVG(faq_count)::numeric,           2)               AS avg_faq,
+  ROUND(AVG(produktkarten_count)::numeric, 2)               AS avg_produktkarten,
+  ROUND(AVG(form_felder_count)::numeric,   2)               AS avg_form_felder,
+  ROUND(100.0 * SUM(hat_kontakt::int)  / COUNT(*), 0)       AS pct_kontakt,
+  ROUND(100.0 * SUM(hat_anbieter::int) / COUNT(*), 0)       AS pct_anbieter,
+  MAX(created_at)                                           AS last_run_at
+FROM llm_evaluation_results
+GROUP BY variant_id, provider, model
+ORDER BY variant_id, provider;
+
 ALTER TABLE llm_evaluation_results ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow anon insert" ON llm_evaluation_results
