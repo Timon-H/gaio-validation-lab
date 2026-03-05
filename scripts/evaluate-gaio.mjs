@@ -130,9 +130,9 @@ const OUTPUT_FILE = `./results/gaio_evaluation_${PROVIDER}.csv`;
 const SYSTEM_PROMPT = `
 Du bist ein präziser Daten-Extraktor. Analysiere das übergebene HTML-Dokument einer Versicherungswebseite.
 
-Extrahiere alle unten aufgeführten Felder so genau wie möglich.
-Setze den Wert auf null, wenn eine Information im HTML nicht eindeutig identifizierbar ist.
-Gib leere Arrays zurück, wenn keine Einträge gefunden werden.
+Deine Aufgabe ist es, die aktuell angebotenen Haupttarife, Kontaktinformationen und Formularfelder aus dem Quelltext zu extrahieren.
+Setze den Wert auf null, wenn eine Information im HTML nicht eindeutig identifizierbar ist oder das Label fehlt.
+Gib leere Arrays zurück, wenn keine passenden Einträge gefunden werden.
 
 Antworte ausschließlich mit einem validen JSON-Objekt exakt nach folgendem Schema – ohne Erklärungen oder Markdown:
 

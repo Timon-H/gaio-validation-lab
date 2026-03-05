@@ -59,6 +59,14 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     </noscript>
   </div>
 
+  <!-- ============================================ -->
+  <!-- SLIDER: Deckungssumme — kein ARIA-Label       -->
+  <!-- ============================================ -->
+  <div style="margin: 1rem 0 0.5rem;">
+    <input type="range" min="100000" max="10000000" step="500000" value="5000000"
+           style="width: 100%; accent-color: #0066cc;">
+  </div>
+
   <!-- DROPDOWN -->
   <div style="margin: 2rem 0;">
     <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Dropdown</div>
@@ -85,6 +93,28 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         <label><input type="radio" name="zahlungsweise" value="quartal" /> Vierteljährlich</label>
         <label><input type="radio" name="zahlungsweise" value="jaehrlich" /> Jährlich</label>
       </fieldset>
+    </noscript>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- GEBURTSJAHR — Label nur via CSS, kein HTML-Label -->
+  <!-- ============================================ -->
+  <style>
+    .field-geburtsjahr::before {
+      content: "Geburtsjahr";
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 0.25rem;
+    }
+  </style>
+  <div class="field-geburtsjahr" style="margin: 0.5rem 0 2rem;">
+    <input type="text" name="geburtsjahr" inputmode="numeric" pattern="\d{4}" maxlength="4"
+           style="border: 1px solid #ccc; padding: 0.4rem 0.6rem; border-radius: 4px; width: 120px;">
+    <noscript>
+      <label for="fallback-geburtsjahr">Geburtsjahr</label>
+      <input id="fallback-geburtsjahr" type="text" name="geburtsjahr" maxlength="4">
     </noscript>
   </div>
 
@@ -170,6 +200,15 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   <!-- TARIFF COMPARISON -->
   <div style="margin: 2rem 0;">
     <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Tariff Comparison</div>
+    <!-- Testimonial — Preis-Rauschen nahe Tarifbereich -->
+    <p style="font-size: 0.875rem; color: #555; border-left: 3px solid #ddd; padding: 0.5rem 0.75rem; margin: 0.5rem 0;">
+      <em>„Ich spare jetzt <strong>12 € pro Monat</strong> gegenüber meinem alten Anbieter – super Preis-Leistung!“</em><br>
+      <small>– Kundin Lisa M., München</small>
+    </p>
+    <!-- Veralteter Tarif — kein semantischer Kontext -->
+    <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 0.75rem;">
+      Unser früherer Einsteiger-Tarif war ab <strong>1,99 €</strong> / Monat erhältlich – dieser Tarif ist nicht mehr buchbar.
+    </p>
     <dxp-tariff-comparison headline="Unsere Tarife im Vergleich" sub-headline="Wählen Sie den passenden Schutz für Ihre Bedürfnisse" tariffs='{"prefix":"ab","productName":"Haftpflicht","suffix":"€","tariffData":[{"id":"basis","name":"Basis","period":"monthly","premium":"3,50","description":"Grundschutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"5 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"150 €"}}]},{"id":"komfort","name":"Komfort","period":"monthly","premium":"5,90","highlighted":true,"overline":"Beliebteste Wahl","description":"Erweiterter Schutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"10 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]},{"id":"premium","name":"Premium","period":"monthly","premium":"9,80","description":"Rundum-Sorglos","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"50 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]}],"moduleGroups":[{"name":"Leistungen","modules":[{"moduleName":"deckung","name":"Deckungssumme","uuid":"1"},{"moduleName":"selbstbeteiligung","name":"Selbstbeteiligung","uuid":"2"}]}]}'></dxp-tariff-comparison>
     <noscript>
       <table>
@@ -184,6 +223,18 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         </tbody>
       </table>
     </noscript>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- CROSS-SELL — kein semantischer Kontext (<div>)-->
+  <!-- ============================================ -->
+  <div style="margin: 2rem 0; padding: 1rem; background: #f9f9f9; border: 1px dashed #bbb; border-radius: 4px;">
+    <p style="margin: 0 0 0.5rem; font-weight: 600; font-size: 0.875rem; color: #555;">Das könnte Sie auch interessieren</p>
+    <p style="margin: 0 0 0.5rem;">Kombinieren Sie Ihren Schutz – <strong>KFZ-Haftpflicht</strong> bereits ab <strong>39,00 €</strong> monatlich verfügbar.</p>
+    <ul style="margin: 0.25rem 0 0; padding-left: 1.5rem; font-size: 0.875rem;">
+      <li>KFZ Basis – 39,00 € / Monat · Selbstbeteiligung: 500 €</li>
+      <li>KFZ Komfort – 59,00 € / Monat · Selbstbeteiligung: 0 €</li>
+    </ul>
   </div>
 
   <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #e91e63;">
