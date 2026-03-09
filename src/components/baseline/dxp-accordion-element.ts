@@ -106,7 +106,6 @@ export class DxpAccordionElement extends LitElement {
     if (changedProperties.has('expanded') && this.expanded) {
       this.updateComplete.then(() => {
         const content = this.shadowRoot?.getElementById('accordion-body');
-        content?.setAttribute('tabindex', '-1');
         content?.focus();
       });
     }
@@ -135,7 +134,7 @@ export class DxpAccordionElement extends LitElement {
           class="accordion-body ${this.expanded ? 'show-content' : ''}"
           role="region"
           aria-labelledby="accordion-header"
-          tabindex="0"
+          tabindex="-1"
         >
           <slot></slot>
         </div>

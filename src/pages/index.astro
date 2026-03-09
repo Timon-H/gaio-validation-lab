@@ -26,16 +26,16 @@ const homeSchema = {
     <p>8 variants of the same page content — each isolates a single GAIO variable for scientific measurement.</p>
 
     <div style="display: grid; gap: 1rem; margin-top: 1rem;">
-      <div style="padding: 1rem; border: 2px solid #d32f2f; border-radius: 8px;">
-        <h4 style="color: #d32f2f; margin-top: 0;">Baseline — Control</h4>
+      <div style="padding: 1rem; border: 2px solid #b71c1c; border-radius: 8px;">
+        <h4 style="color: #b71c1c; margin-top: 0;">Baseline — Control</h4>
         <p>Standard DXP components with Shadow DOM. No GAIO measures. <strong>Poor GAIObility.</strong></p>
-        <a href="/control" style="color: #d32f2f; font-weight: bold;">View Baseline →</a>
+        <a href="/control" style="color: #b71c1c; font-weight: bold;">View Baseline →</a>
       </div>
 
-      <div style="padding: 1rem; border: 2px solid #43a047; border-radius: 8px;">
-        <h4 style="color: #43a047; margin-top: 0;">Full Combo — Combined</h4>
+      <div style="padding: 1rem; border: 2px solid #2e7d32; border-radius: 8px;">
+        <h4 style="color: #2e7d32; margin-top: 0;">Full Combo — Combined</h4>
         <p>All GAIO measures combined: JSON-LD (+ Entity Linking) + Semantic HTML + ARIA + Microdata + DSD.</p>
-        <a href="/combined" style="color: #43a047; font-weight: bold;">View Full Combo →</a>
+        <a href="/combined" style="color: #2e7d32; font-weight: bold;">View Full Combo →</a>
       </div>
     </div>
 
@@ -43,29 +43,29 @@ const homeSchema = {
     <p>Each page applies <strong>exactly one</strong> GAIO measure to the same components:</p>
 
     <div style="display: grid; gap: 0.75rem; margin-top: 1rem;">
-      <div style="padding: 0.75rem 1rem; border-left: 4px solid #ff9800; background: #fff8e1; border-radius: 4px;">
+      <div style="padding: 0.75rem 1rem; border-left: 4px solid #e65100; background: #fff8e1; border-radius: 4px;">
         <strong>JSON-LD Only</strong> — Structured data in &lt;head&gt;, no other changes.
-        <a href="/test-jsonld-only" style="color: #ff9800; margin-left: 1rem;">View →</a>
+        <a href="/test-jsonld-only" style="color: #e65100; margin-left: 1rem;">View →</a>
       </div>
       <div style="padding: 0.75rem 1rem; border-left: 4px solid #3f51b5; background: #e8eaf6; border-radius: 4px;">
         <strong>Semantic HTML Only</strong> — &lt;section&gt;, &lt;article&gt; wrappers, no other changes.
         <a href="/test-semantic-only" style="color: #3f51b5; margin-left: 1rem;">View →</a>
       </div>
-      <div style="padding: 0.75rem 1rem; border-left: 4px solid #e91e63; background: #fce4ec; border-radius: 4px;">
+      <div style="padding: 0.75rem 1rem; border-left: 4px solid #880e4f; background: #fce4ec; border-radius: 4px;">
         <strong>&lt;noscript&gt; Fallbacks Only</strong> — Light DOM content for no-JS crawlers.
-        <a href="/test-noscript-only" style="color: #e91e63; margin-left: 1rem;">View →</a>
+        <a href="/test-noscript-only" style="color: #880e4f; margin-left: 1rem;">View →</a>
       </div>
-      <div style="padding: 0.75rem 1rem; border-left: 4px solid #009688; background: #e0f2f1; border-radius: 4px;">
+      <div style="padding: 0.75rem 1rem; border-left: 4px solid #00695c; background: #e0f2f1; border-radius: 4px;">
         <strong>ARIA Only</strong> — aria-label/aria-labelledby on host elements.
-        <a href="/test-aria-only" style="color: #009688; margin-left: 1rem;">View →</a>
+        <a href="/test-aria-only" style="color: #00695c; margin-left: 1rem;">View →</a>
       </div>
-      <div style="padding: 0.75rem 1rem; border-left: 4px solid #9c27b0; background: #f3e5f5; border-radius: 4px;">
+      <div style="padding: 0.75rem 1rem; border-left: 4px solid #6a1b9a; background: #f3e5f5; border-radius: 4px;">
         <strong>Declarative Shadow DOM</strong> — Server-rendered shadow content, no JavaScript.
-        <a href="/test-dsd" style="color: #9c27b0; margin-left: 1rem;">View →</a>
+        <a href="/test-dsd" style="color: #6a1b9a; margin-left: 1rem;">View →</a>
       </div>
-      <div style="padding: 0.75rem 1rem; border-left: 4px solid #795548; background: #efebe9; border-radius: 4px;">
+      <div style="padding: 0.75rem 1rem; border-left: 4px solid #4e342e; background: #efebe9; border-radius: 4px;">
         <strong>Microdata Only</strong> — Inline schema.org attributes (itemscope/itemprop), no JSON-LD.
-        <a href="/test-microdata-only" style="color: #795548; margin-left: 1rem;">View →</a>
+        <a href="/test-microdata-only" style="color: #4e342e; margin-left: 1rem;">View →</a>
       </div>
     </div>
 
