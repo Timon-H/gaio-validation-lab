@@ -39,7 +39,7 @@ An LLM provider API key is **always required** — there is no credential-free m
 | `SUPABASE_URL` | `--persist` flag |
 | `SUPABASE_ANON_KEY` | `--persist` flag |
 
-Add the relevant keys to your `.env` file. The `dotenv-cli` package loads them automatically via the `npm run evaluate:*` scripts.
+Add the relevant keys to your `.env` file. The npm scripts load them automatically via Node's native `--env-file` flag.
 
 ## Default Models
 

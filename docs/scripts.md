@@ -2,7 +2,7 @@
 
 ## Bot Simulation (`test-bots.mjs`)
 
-Simulates AI crawler visits across all 8 variants using known bot user-agent strings (GPTBot, Claude-Web, Google-Extended, PerplexityBot, CCBot, Applebot-Extended).
+Simulates AI crawler visits across all 8 variants using known bot user-agent strings (GPTBot, ChatGPT-User, OAI-SearchBot, ClaudeBot, Claude-Web, anthropic-ai, Google-Extended, Applebot-Extended, meta-externalagent, PerplexityBot, CCBot).
 
 ```bash
 npm run test:bots
@@ -28,10 +28,30 @@ npm run test:extract:persist
 
 Structured multi-provider extraction benchmark. See [docs/evaluation.md](evaluation.md) for full reference.
 
+## IndexNow Submission (`indexnow.mjs`)
+
+Submits all 8 variant URLs to the IndexNow API (Bing). Run this after deploying content changes to trigger re-crawling.
+
+```bash
+npm run indexnow
+```
+
+Requires the key file `public/292555bae5aa48bcb6f7a67f3c4c0a62.txt` to be deployed and reachable at the site root. Expects a `202 Accepted` response.
+
 ---
 
 ## Middleware (`src/middleware.ts`)
 
-Detects 6 AI crawlers by user-agent and logs visits to Supabase `bot_logs` with variant path, latency, and status code.
+Detects 7 AI crawler groups by user-agent and logs visits to Supabase `bot_logs` with variant path, latency, and status code.
+
+| Group | User-agent tokens |
+|---|---|
+| ChatGPT | `GPTBot`, `ChatGPT-User`, `OAI-SearchBot` |
+| Claude | `ClaudeBot`, `Claude-Web`, `anthropic-ai` |
+| Gemini | `Google-Extended` |
+| Applebot | `Applebot-Extended` |
+| Meta | `meta-externalagent` |
+| Perplexity | `PerplexityBot` |
+| CommonCrawl | `CCBot` |
 
 `SUPABASE_URL` and `SUPABASE_ANON_KEY` are **optional** — bot detection and the `X-AI-Bot-Detected` / `X-Test-Group` response headers work regardless. Logging is silently skipped when the keys are absent.

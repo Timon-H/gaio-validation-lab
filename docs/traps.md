@@ -1,10 +1,10 @@
-# Test Traps (Fallen)
+# Test Traps
 
 The first round of evaluation produced identical extraction scores across all 8 variants (`3/3/2/4`). This showed that LLMs recover content from raw text regardless of markup. To create meaningful differentiation, five deliberate traps were embedded — HTML structures that a GAIO-aware page should handle differently from a bare control page. Each trap tests whether a specific markup technique (semantic elements, ARIA attributes, structured data) changes what an LLM picks up as a valid extraction target.
 
 ---
 
-## Falle 1 — KFZ Cross-sell Block (scope ambiguity)
+## Trap 1 — KFZ Cross-sell Block (scope ambiguity)
 
 **What it is:** A cross-selling block listing two KFZ (motor) tariffs ("KFZ Basis – 39,00 €" and "KFZ Komfort – 59,00 €") placed after the main Haftpflicht tariff comparison on the page.
 
@@ -23,7 +23,7 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 
 ---
 
-## Falle 2 — Unlabelled Range Slider (field visibility)
+## Trap 2 — Unlabelled Range Slider (field visibility)
 
 **What it is:** An `<input type="range">` for "Gewünschte Deckungssumme" placed in the form section. On non-ARIA pages it has no accessible label in HTML.
 
@@ -40,7 +40,7 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 
 ---
 
-## Falle 3 — CSS-Only Label (field identity)
+## Trap 3 — CSS-Only Label (field identity)
 
 **What it is:** A birth-year text input whose visible label ("Geburtsjahr") is produced exclusively by a CSS `::before` pseudo-element — it does not exist in the HTML DOM and is invisible to parsers and LLMs.
 
@@ -57,7 +57,7 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 
 ---
 
-## Falle 4 — Testimonial Price Noise (tariff scope)
+## Trap 4 — Testimonial Price Noise (tariff scope)
 
 **What it is:** A customer testimonial quote placed directly adjacent to the tariff comparison block. The quote contains a price figure ("12 € pro Monat") that could be confused with a bookable tariff by a naive text extractor.
 
@@ -76,7 +76,7 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 
 ---
 
-## Falle 5 — Deprecated Tariff Notice (temporal accuracy)
+## Trap 5 — Deprecated Tariff Notice (temporal accuracy)
 
 **What it is:** A notice about a discontinued tariff ("Früherer Einsteiger-Tarif war ab 1,99 € / Monat erhältlich – nicht mehr buchbar") placed before the live tariff comparison. The `1,99 €` price is plausible as a tariff but must not be extracted as a current offer.
 

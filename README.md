@@ -1,6 +1,17 @@
 # gaio-validation-lab
 
-Minimalist environment to validate and benchmark generative AI optimization (GAIO) approaches on web components with Shadow DOM encapsulation.
+A scientific test environment for measuring how different HTML markup techniques affect content extraction by AI crawlers and large language models from **Web Components with Shadow DOM encapsulation**.
+
+Shadow DOM — used extensively in component-driven DXP architectures — is opaque to most AI crawlers by default. This lab benchmarks six GAIO (Generative AI Optimization) measures that make Shadow DOM content machine-readable:
+
+| Measure | Technique |
+|---|---|
+| **JSON-LD** | Structured `schema.org` data in `<head>` |
+| **Semantic HTML** | `<section>`, `<article>`, `<aside>` landmark wrappers |
+| **ARIA** | `aria-label` / `aria-labelledby` on custom element hosts |
+| `<noscript>` | Light DOM fallbacks for no-JS parsers |
+| **Declarative Shadow DOM** | SSR-rendered shadow content via `@lit-labs/ssr` |
+| **Microdata** | Inline `itemscope` / `itemprop` attributes |
 
 ## Live Deployment
 
@@ -46,6 +57,7 @@ scripts/
   evaluate-gaio.mjs           ← Multi-provider LLM extraction benchmark
   test-bots.mjs               ← Bot UA simulation
   test-content-extraction.mjs ← Structural content extraction
+  indexnow.mjs                ← Submit all variant URLs to IndexNow (Bing)
 supabase/
   schema.sql             ← DDL: bot_logs, extraction_results, llm_evaluation_results
 docs/
@@ -60,7 +72,7 @@ docs/
 | Document | Contents |
 |---|---|
 | [docs/test-design.md](docs/test-design.md) | Multi-arm variant design, constants, BaseLayout, methodology |
-| [docs/traps.md](docs/traps.md) | Five embedded test traps (Fallen) with per-variant implementation and signal matrix |
+| [docs/traps.md](docs/traps.md) | Five embedded test traps with per-variant implementation and signal matrix |
 | [docs/evaluation.md](docs/evaluation.md) | LLM evaluation script — commands, models, env vars, Supabase schema |
 | [docs/scripts.md](docs/scripts.md) | Bot simulation, content extraction, middleware reference |
 
