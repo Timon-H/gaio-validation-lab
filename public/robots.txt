@@ -1,26 +1,27 @@
-# 1. Prioritize AI Bots & Main Search Bots
 User-agent: GPTBot
+User-agent: ChatGPT-User
 User-agent: OAI-SearchBot
+User-agent: ClaudeBot
 User-agent: Claude-Web
-User-agent: AnthropicAI
+User-agent: anthropic-ai
 User-agent: Google-Extended
 User-agent: Googlebot
+User-agent: Applebot-Extended
+User-agent: meta-externalagent
 User-agent: PerplexityBot
 User-agent: CCBot
 User-agent: Bingbot
 Allow: /
 
-# 2. Block SEO Bots (Spart Vercel-Traffic und Datenbank-Müll)
 User-agent: AhrefsBot
 User-agent: SemrushBot
 User-agent: DotBot
 User-agent: Rogerbot
 User-agent: MJ12bot
+User-agent: Bytespider
 Disallow: /
 
-# 3. Allow Unknown users
 User-agent: *
 Allow: /
 
-# Link to Sitemap
 Sitemap: https://gaio-validation-lab.vercel.app/sitemap-index.xml

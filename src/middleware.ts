@@ -2,12 +2,13 @@ import type { MiddlewareHandler } from 'astro';
 
 // Definition of relevant AI crawlers
 const AI_BOTS = [
-  { name: 'ChatGPT', regex: /GPTBot|OAI-SearchBot/i },
-  { name: 'Claude', regex: /Claude-Web|AnthropicAI/i },
+  { name: 'ChatGPT', regex: /GPTBot|OAI-SearchBot|ChatGPT-User/i },
+  { name: 'Claude', regex: /ClaudeBot|Claude-Web|anthropic-ai/i },
   { name: 'Gemini', regex: /Google-Extended/i },
   { name: 'Perplexity', regex: /PerplexityBot/i },
   { name: 'CommonCrawl', regex: /CCBot/i },
-  { name: 'Applebot', regex: /Applebot-Extended/i }
+  { name: 'Applebot', regex: /Applebot-Extended/i },
+  { name: 'Meta', regex: /meta-externalagent/i },
 ];
 
 export const onRequest: MiddlewareHandler = async (context, next) => {
