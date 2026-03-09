@@ -55,7 +55,7 @@ const schemaJson = schemaData
       }
       h1 {
         color: #333;
-        border-bottom: 3px solid #667eea;
+        border-bottom: 3px solid #4a5dc9;
         padding-bottom: 0.5rem;
       }
       nav {
@@ -72,7 +72,7 @@ const schemaJson = schemaData
         list-style: none;
       }
       nav a {
-        color: #667eea;
+        color: #4a5dc9;
         text-decoration: none;
       }
       nav a:hover {
@@ -83,7 +83,9 @@ const schemaJson = schemaData
   <body>
     <div class="container">
       <h1>{title}</h1>
-      <slot />
+      <main>
+        <slot />
+      </main>
       <nav>
         <ul class="nav-links">
           <li><a href="/">Home</a></li>

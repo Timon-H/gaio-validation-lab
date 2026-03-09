@@ -123,7 +123,7 @@ export class DxpDropdown extends LitElement {
     }
 
     select.placeholder {
-      color: #aaa;
+      color: #6b6b6b;
     }
   `;
 
@@ -217,12 +217,13 @@ export class DxpDropdown extends LitElement {
     return html`
       ${this.label ? html`
         <div class="label-row">
-          <label>${this.label}</label>
+          <label for="select-${this.name}">${this.label}</label>
           ${this.tooltipText ? html`<span class="tooltip" title=${this.tooltipText}>ⓘ</span>` : nothing}
         </div>
       ` : nothing}
       <div class="dropdown-wrapper">
         <select
+          id="select-${this.name}"
           .value=${this.selectedKey}
           ?disabled=${this.disabled}
           ?required=${this.required}

@@ -143,7 +143,7 @@ export class DxpTariffComparison extends LitElement {
       font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: #888;
+      color: #6b6b6b;
       margin-bottom: 0.25rem;
     }
 
@@ -166,14 +166,14 @@ export class DxpTariffComparison extends LitElement {
 
     .tariff-anchoring {
       font-size: 0.875rem;
-      color: #888;
+      color: #6b6b6b;
       text-decoration: line-through;
       margin-bottom: 0.25rem;
     }
 
     .tariff-anchoring-subline {
       font-size: 0.75rem;
-      color: #888;
+      color: #6b6b6b;
     }
 
     .tariff-price {
@@ -201,7 +201,7 @@ export class DxpTariffComparison extends LitElement {
 
     .tariff-period {
       font-size: 0.75rem;
-      color: #999;
+      color: #6b6b6b;
       margin-top: 0.25rem;
     }
 
