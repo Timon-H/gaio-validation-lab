@@ -2,6 +2,21 @@
 
 Minimalist environment to validate and benchmark generative AI optimization (GAIO) approaches on web components with Shadow DOM encapsulation.
 
+## Live Deployment
+
+Eight variants of the same insurance page content, each isolating a single GAIO variable:
+
+| Variant | GAIO Measure | URL |
+|---|---|---|
+| Control | None — bare Shadow DOM baseline | [/control](https://gaio-validation-lab.vercel.app/control) |
+| Combined | All measures combined | [/combined](https://gaio-validation-lab.vercel.app/combined) |
+| JSON-LD only | Structured data in `<head>` | [/test-jsonld-only](https://gaio-validation-lab.vercel.app/test-jsonld-only) |
+| Semantic HTML only | `<section>`, `<article>`, `<aside>` wrappers | [/test-semantic-only](https://gaio-validation-lab.vercel.app/test-semantic-only) |
+| ARIA only | `aria-label` / `aria-labelledby` on host elements | [/test-aria-only](https://gaio-validation-lab.vercel.app/test-aria-only) |
+| `<noscript>` only | Light DOM fallbacks for no-JS crawlers | [/test-noscript-only](https://gaio-validation-lab.vercel.app/test-noscript-only) |
+| Declarative Shadow DOM | SSR-rendered shadow content via `@lit-labs/ssr` | [/test-dsd](https://gaio-validation-lab.vercel.app/test-dsd) |
+| Microdata only | Inline `schema.org` `itemscope`/`itemprop` attributes | [/test-microdata-only](https://gaio-validation-lab.vercel.app/test-microdata-only) |
+
 ## Quick Start
 
 ```bash
