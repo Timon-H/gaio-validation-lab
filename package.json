@@ -18,7 +18,8 @@
     "evaluate:openai:persist": "node --env-file=.env ./scripts/evaluate-gaio.mjs --provider openai --persist",
     "evaluate:claude:persist": "node --env-file=.env ./scripts/evaluate-gaio.mjs --provider claude --persist",
     "evaluate:gemini:persist": "node --env-file=.env ./scripts/evaluate-gaio.mjs --provider gemini --persist",
-    "preview": "astro build && astro preview"
+    "preview": "astro build && astro preview",
+    "indexnow": "node ./scripts/indexnow.mjs"
   },
   "repository": {
     "type": "git",
