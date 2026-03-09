@@ -15,9 +15,14 @@ const variants = [
 
 const bots = [
   { userAgent: 'GPTBot', expected: 'ChatGPT' },
+  { userAgent: 'ChatGPT-User', expected: 'ChatGPT' },
   { userAgent: 'OAI-SearchBot', expected: 'ChatGPT' },
+  { userAgent: 'ClaudeBot', expected: 'Claude' },
   { userAgent: 'Claude-Web', expected: 'Claude' },
+  { userAgent: 'anthropic-ai', expected: 'Claude' },
   { userAgent: 'Google-Extended', expected: 'Gemini' },
+  { userAgent: 'Applebot-Extended', expected: 'Applebot' },
+  { userAgent: 'meta-externalagent', expected: 'Meta' },
   { userAgent: 'PerplexityBot', expected: 'Perplexity' },
   { userAgent: 'CCBot', expected: 'CommonCrawl' },
   { userAgent: 'Mozilla/5.0 (Chrome)', expected: 'false' },
