@@ -1,4 +1,4 @@
----
+﻿---
 /**
  * Control — Standard DXP Components
  * 
@@ -12,6 +12,11 @@
  * This represents the "poor GAIObility" baseline.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import TrapDeckungssumme from '../../components/traps/TrapDeckungssumme.astro';
+import TrapGeburtsjahr from '../../components/traps/TrapGeburtsjahr.astro';
+import TrapTestimonial from '../../components/traps/TrapTestimonial.astro';
+import TrapDeprecatedTariff from '../../components/traps/TrapDeprecatedTariff.astro';
+import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 ---
 
 <BaseLayout 
@@ -62,13 +67,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     ></dxp-text-input>
   </div>
 
-  <!-- ============================================ -->
-  <!-- SLIDER: Deckungssumme — kein ARIA-Label       -->
-  <!-- ============================================ -->
-  <div style="margin: 1rem 0 0.5rem;">
-    <input type="range" min="100000" max="10000000" step="500000" value="5000000"
-           style="width: 100%; accent-color: #0066cc;">
-  </div>
+  <TrapDeckungssumme /> 
 
   <!-- ============================================ -->
   <!-- DROPDOWN — Shadow DOM, options in attributes  -->
@@ -97,23 +96,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     ></dxp-input-radio>
   </div>
 
-  <!-- ============================================ -->
-  <!-- GEBURTSJAHR — Label nur via CSS, kein HTML-Label -->
-  <!-- ============================================ -->
-  <style>
-    .field-geburtsjahr::before {
-      content: "Geburtsjahr";
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 0.25rem;
-    }
-  </style>
-  <div class="field-geburtsjahr" style="margin: 0.5rem 0 2rem;">
-    <input type="text" name="geburtsjahr" inputmode="numeric" pattern="\d{4}" maxlength="4"
-           style="border: 1px solid #ccc; padding: 0.4rem 0.6rem; border-radius: 4px; width: 120px;">
-  </div>
+   <TrapGeburtsjahr /> 
 
   <!-- ============================================ -->
   <!-- ACCORDION — Shadow DOM, content hidden        -->
@@ -176,15 +159,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   <!-- ============================================ -->
   <div style="margin: 2rem 0;">
     <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Tariff Comparison</div>
-    <!-- Testimonial — Preis-Rauschen nahe Tarifbereich -->
-    <p style="font-size: 0.875rem; color: #555; border-left: 3px solid #ddd; padding: 0.5rem 0.75rem; margin: 0.5rem 0;">
-      <em>„Ich spare jetzt <strong>12 € pro Monat</strong> gegenüber meinem alten Anbieter – super Preis-Leistung!“</em><br>
-      <small>– Kundin Lisa M., München</small>
-    </p>
-    <!-- Veralteter Tarif — kein semantischer Kontext -->
-    <p style="font-size: 0.8rem; color: #767676; margin-bottom: 0.75rem;">
-      Unser früherer Einsteiger-Tarif war ab <strong>1,99 €</strong> / Monat erhältlich – dieser Tarif ist nicht mehr buchbar.
-    </p>
+    <TrapTestimonial />  
+    <TrapDeprecatedTariff />  
     <dxp-tariff-comparison
       headline="Unsere Tarife im Vergleich"
       sub-headline="Wählen Sie den passenden Schutz für Ihre Bedürfnisse"
@@ -192,17 +168,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     ></dxp-tariff-comparison>
   </div>
 
-  <!-- ============================================ -->
-  <!-- CROSS-SELL — kein semantischer Kontext (<div>)-->
-  <!-- ============================================ -->
-  <div style="margin: 2rem 0; padding: 1rem; background: #f9f9f9; border: 1px dashed #bbb; border-radius: 4px;">
-    <p style="margin: 0 0 0.5rem; font-weight: 600; font-size: 0.875rem; color: #555;">Das könnte Sie auch interessieren</p>
-    <p style="margin: 0 0 0.5rem;">Kombinieren Sie Ihren Schutz – <strong>KFZ-Haftpflicht</strong> bereits ab <strong>39,00 €</strong> monatlich verfügbar.</p>
-    <ul style="margin: 0.25rem 0 0; padding-left: 1.5rem; font-size: 0.875rem;">
-      <li>KFZ Basis – 39,00 € / Monat · Selbstbeteiligung: 500 €</li>
-      <li>KFZ Komfort – 59,00 € / Monat · Selbstbeteiligung: 0 €</li>
-    </ul>
-  </div>
+   <TrapKfzCrossSell />
 
   <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #0066cc;">
     <strong>GAIObility-Problem:</strong> All diese Komponenten nutzen Shadow DOM. 

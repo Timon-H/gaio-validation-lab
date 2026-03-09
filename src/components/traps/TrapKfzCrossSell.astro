@@ -1,0 +1,42 @@
+---
+/**
+ * Trap 1 — KFZ Cross-sell Block (scope ambiguity)
+ *
+ * A cross-selling block listing KFZ tariffs placed after the main Haftpflicht
+ * tariff comparison. The trap tests whether semantic HTML can signal to an LLM
+ * that this block is supplementary content and should NOT be counted as main tariffs.
+ *
+ * Remediation: `semantic` pages wrap with <aside> (landmark for supplementary content).
+ * Non-semantic pages use a plain <div>, giving the LLM no structural cue.
+ *
+ * Expected signal (tarife count):
+ *   - semantic=false: LLM may include the 2 KFZ tariffs → returns 5 instead of 3
+ *   - semantic=true:  <aside> signals out-of-scope content → LLM returns 3 main tariffs
+ */
+interface Props {
+  /** Apply semantic remediation: wraps in <aside> instead of <div> */
+  semantic?: boolean;
+}
+
+const { semantic = false } = Astro.props;
+---
+
+{semantic ? (
+  <aside style="margin: 2rem 0; padding: 1rem; background: #f9f9f9; border: 1px dashed #bbb; border-radius: 4px;">
+    <p style="margin: 0 0 0.5rem; font-weight: 600; font-size: 0.875rem; color: #555;">Das könnte Sie auch interessieren</p>
+    <p style="margin: 0 0 0.5rem;">Kombinieren Sie Ihren Schutz – <strong>KFZ-Haftpflicht</strong> bereits ab <strong>39,00 €</strong> monatlich verfügbar.</p>
+    <ul style="margin: 0.25rem 0 0; padding-left: 1.5rem; font-size: 0.875rem;">
+      <li>KFZ Basis – 39,00 € / Monat · Selbstbeteiligung: 500 €</li>
+      <li>KFZ Komfort – 59,00 € / Monat · Selbstbeteiligung: 0 €</li>
+    </ul>
+  </aside>
+) : (
+  <div style="margin: 2rem 0; padding: 1rem; background: #f9f9f9; border: 1px dashed #bbb; border-radius: 4px;">
+    <p style="margin: 0 0 0.5rem; font-weight: 600; font-size: 0.875rem; color: #555;">Das könnte Sie auch interessieren</p>
+    <p style="margin: 0 0 0.5rem;">Kombinieren Sie Ihren Schutz – <strong>KFZ-Haftpflicht</strong> bereits ab <strong>39,00 €</strong> monatlich verfügbar.</p>
+    <ul style="margin: 0.25rem 0 0; padding-left: 1.5rem; font-size: 0.875rem;">
+      <li>KFZ Basis – 39,00 € / Monat · Selbstbeteiligung: 500 €</li>
+      <li>KFZ Komfort – 59,00 € / Monat · Selbstbeteiligung: 0 €</li>
+    </ul>
+  </div>
+)}

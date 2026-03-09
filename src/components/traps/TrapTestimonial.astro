@@ -1,0 +1,43 @@
+---
+/**
+ * Trap 4 — Testimonial Price Noise (tariff scope)
+ *
+ * A customer testimonial quote placed directly adjacent to the tariff comparison
+ * block. The quote contains a price figure ("12 € pro Monat") that could be confused
+ * with a bookable tariff by a naive text extractor.
+ *
+ * Remediation: `semantic` pages wrap the quote in <figure>/<blockquote>/<figcaption>,
+ * which are semantic HTML quotation landmarks. Non-semantic pages use a bare <p>.
+ *
+ * Note: The JSON-LD variant provides an alternative signal — the schema Offer list in
+ * <head> enumerates exactly 3 offers, providing a machine-readable contract that
+ * implicitly excludes the testimonial price. This is handled in the page's JSON-LD,
+ * not in this component.
+ *
+ * Expected signal (tarife count / accuracy):
+ *   - semantic=false: LLM may treat "12 €" as a fourth tariff
+ *   - semantic=true:  <blockquote> signals a quotation, not a product offer
+ */
+interface Props {
+  /** Apply semantic remediation: wraps in <figure>/<blockquote> instead of <p> */
+  semantic?: boolean;
+}
+
+const { semantic = false } = Astro.props;
+---
+
+{semantic ? (
+  <figure style="margin: 0.5rem 0; padding: 0.5rem 0.75rem; border-left: 3px solid #ddd;">
+    <blockquote>
+      <p style="font-size: 0.875rem; color: #555; margin: 0;">
+        <em>„Ich spare jetzt <strong>12 € pro Monat</strong> gegenüber meinem alten Anbieter – super Preis-Leistung!"</em>
+      </p>
+    </blockquote>
+    <figcaption style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">– Kundin Lisa M., München</figcaption>
+  </figure>
+) : (
+  <p style="font-size: 0.875rem; color: #555; border-left: 3px solid #ddd; padding: 0.5rem 0.75rem; margin: 0.5rem 0;">
+    <em>„Ich spare jetzt <strong>12 € pro Monat</strong> gegenüber meinem alten Anbieter – super Preis-Leistung!"</em><br>
+    <small>– Kundin Lisa M., München</small>
+  </p>
+)}
