@@ -231,19 +231,15 @@ const tariffHtml = await renderLitToString(html`
 ---
 
 <BaseLayout 
-  title="GAIO-Optimized DXP Components – Versicherungsvergleich"
-  description="Vergleichen Sie unsere Haftpflicht-, Hausrat- und Kaskoversicherungen. GAIO-optimierte DXP-Komponenten mit JSON-LD, semantischem HTML, ARIA-Attributen und Declarative Shadow DOM."
+  title="DXP Versicherungen – Tarifvergleich & Übersicht"
+  description="Vergleichen Sie unsere Haftpflicht-, Hausrat- und Kaskoversicherungen. Berechnen Sie Ihren individuellen Beitrag online."
   schemaData={gaioSchema}
 >
   <!-- SSR-only: hydration intentionally omitted to avoid duplicate late client rendering. -->
 
   <section aria-labelledby="page-heading" style="margin-top: 1.5rem;">
-    <h2 id="page-heading">GAIO-optimierte DXP-Komponenten</h2>
-    <p>
-      Dieselben Web Components wie in <a href="/control">Baseline</a>, aber mit <strong>allen GAIO-Maßnahmen</strong>: 
-      JSON-LD, semantisches HTML, ARIA-Attribute und Declarative Shadow DOM 
-      machen den Shadow-DOM-Inhalt für Crawler und AI-Systeme sichtbar.
-    </p>
+    <h2 id="page-heading">Unsere Versicherungsprodukte</h2>
+    <p>Entdecken Sie unsere umfangreichen Versicherungslösungen – von der Privathaftpflicht bis zur Hausratversicherung.</p>
   </section>
 
   <!-- ============================================ -->
@@ -358,22 +354,8 @@ const tariffHtml = await renderLitToString(html`
 
   <TrapKfzCrossSell semantic />   
 
-  <aside style="margin-top: 2rem; padding: 1rem; background: #e8f5e9; border-left: 4px solid #43a047;">
-    <strong>GAIO-Maßnahmen auf dieser Seite:</strong>
-    <ul style="margin: 0.5rem 0 0;">
-      <li><strong>JSON-LD + Entity Linking:</strong> FAQPage-, Offer-, WebPage-Schema mit <code>sameAs</code>-Verweisen auf Wikipedia/Wikidata</li>
-      <li><strong>Microdata:</strong> <code>itemscope</code>, <code>itemtype</code>, <code>itemprop</code> auf semantischen Wrappern</li>
-      <li><strong>Semantisches HTML:</strong> <code>&lt;section&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;address&gt;</code> statt <code>&lt;div&gt;</code></li>
-      <li><strong>ARIA:</strong> <code>aria-label</code>, <code>aria-labelledby</code>, <code>role="group"</code> auf Host-Elementen</li>
-      <li><strong>Declarative Shadow DOM:</strong> <code>@lit-labs/ssr</code> rendert Shadow-Inhalte als <code>&lt;template shadowrootmode="open"&gt;</code></li>
-    </ul>
-    <p style="margin-top: 0.75rem; font-size: 0.875rem; color: #555;">
-      <strong>Hinweis:</strong> <code>&lt;noscript&gt;</code>-Fallbacks werden hier bewusst weggelassen,
-      da DSD den Shadow-Inhalt bereits ohne JavaScript im initialen HTML bereitstellt.
-      Die Noscript-Technik wird isoliert unter <a href="/test-noscript-only" style="color: #2e7d32;">/test-noscript-only</a> getestet.
-    </p>
-    <br>
-    <a href="/control" style="color: #2e7d32;">→ Vergleich mit Standard-Version (Baseline)</a>
+  <aside style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #43a047;">
+    <a href="/">← Zur Übersicht</a>
   </aside>
 </BaseLayout>
 

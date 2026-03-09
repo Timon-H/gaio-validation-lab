@@ -21,29 +21,20 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 ---
 
 <BaseLayout 
-  title="Isolated Test: Microdata Only"
-  description="DXP components with schema.org Microdata attributes only – no JSON-LD, no semantic HTML, no ARIA, no noscript fallbacks."
+  title="DXP Versicherungen – Tarifvergleich & Übersicht"
+  description="Vergleichen Sie unsere Haftpflicht-, Hausrat- und Kaskoversicherungen. Berechnen Sie Ihren individuellen Beitrag online."
 >
   <script>
     import '../../components/baseline/index.ts';
   </script>
 
   <div style="margin-top: 1.5rem;">
-    <h2>Isolated Variable: Microdata Only</h2>
-    <p>
-      Same components as <a href="/control">Baseline</a>, same <code>&lt;div&gt;</code> wrappers — 
-      but with <strong>schema.org Microdata</strong> (<code>itemscope</code>, <code>itemtype</code>, <code>itemprop</code>) 
-      woven into the HTML markup.
-    </p>
-    <p style="padding: 0.5rem; background: #f3e5f5; border-left: 3px solid #9c27b0; font-size: 0.875rem;">
-      <strong>Isolated variable:</strong> Microdata (inline schema.org attributes). 
-      No JSON-LD, no semantic HTML, no ARIA, no &lt;noscript&gt; fallbacks.
-    </p>
+    <h2>Unsere Versicherungsprodukte</h2>
+    <p>Entdecken Sie unsere umfangreichen Versicherungslösungen – von der Privathaftpflicht bis zur Hausratversicherung.</p>
   </div>
 
   <!-- BUTTON -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Button</div>
     <dxp-button>Jetzt berechnen</dxp-button>
     <dxp-button variant="secondary">Mehr erfahren</dxp-button>
     <dxp-button disabled>Nicht verfügbar</dxp-button>
@@ -51,7 +42,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 
   <!-- TEXT INPUT — annotated as ContactPoint expectations -->
   <div style="margin: 2rem 0;" itemscope itemtype="https://schema.org/Person">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Text Input</div>
     <meta itemprop="description" content="Persönliche Angaben: Vorname und E-Mail-Adresse für ein individuelles Versicherungsangebot" />
     <dxp-text-input label="Vorname" name="vorname" placeholder="Max" required required-error-text="Bitte geben Sie Ihren Vornamen ein."></dxp-text-input>
     <dxp-text-input label="E-Mail" name="email" type="email" placeholder="max@example.de" regex="^[^@]+@[^@]+\.[^@]+$" regex-error-text="Bitte geben Sie eine gültige E-Mail-Adresse ein."></dxp-text-input>
@@ -61,7 +51,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 
   <!-- DROPDOWN — annotated with product category -->
   <div style="margin: 2rem 0;" itemscope itemtype="https://schema.org/ItemList">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Dropdown</div>
     <meta itemprop="name" content="Versicherungstyp" />
     <meta itemprop="description" content="Auswahl der Versicherungsart: Haftpflicht-, Kasko- oder Teilkaskoversicherung" />
     <div itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
@@ -78,7 +67,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 
   <!-- RADIO — annotated with payment frequency options -->
   <div style="margin: 2rem 0;" itemscope itemtype="https://schema.org/ItemList">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Input Radio</div>
     <meta itemprop="name" content="Zahlungsweise" />
     <meta itemprop="description" content="Zahlungsfrequenz für den Versicherungsbeitrag" />
     <div itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
@@ -97,7 +85,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 
   <!-- ACCORDION / FAQ — annotated as FAQPage -->
   <div style="margin: 2rem 0;" itemscope itemtype="https://schema.org/FAQPage">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Accordion</div>
     <div itemprop="mainEntity" itemscope itemtype="https://schema.org/Question">
       <meta itemprop="name" content="Was ist eine Haftpflichtversicherung?" />
       <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
@@ -134,7 +121,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 
   <!-- CARD — annotated as Product/Offer -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Card</div>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
       <div itemscope itemtype="https://schema.org/Product">
         <meta itemprop="name" content="Privathaftpflicht" />
@@ -170,7 +156,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 
   <!-- FLYOUT — annotated as ContactPoint -->
   <div style="margin: 2rem 0;" itemscope itemtype="https://schema.org/Organization">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Flyout</div>
     <div itemprop="contactPoint" itemscope itemtype="https://schema.org/ContactPoint">
       <meta itemprop="contactType" content="customer service" />
       <meta itemprop="telephone" content="+49-800-123-456-789" />
@@ -188,7 +173,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 
   <!-- TARIFF COMPARISON — annotated as Offer list -->
   <div style="margin: 2rem 0;" itemscope itemtype="https://schema.org/WebPage">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Tariff Comparison</div>
     <meta itemprop="name" content="Haftpflichtversicherung – Tarifvergleich" />
     <TrapTestimonial />
     <TrapDeprecatedTariff /> 
@@ -216,7 +200,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
   <TrapKfzCrossSell />
 
   <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #9c27b0;">
-    <a href="/control">← Baseline (keine Maßnahmen)</a> · 
-    <a href="/combined">Alle Maßnahmen kombiniert →</a>
+    <a href="/">← Zur Übersicht</a>
   </p>
 </BaseLayout>

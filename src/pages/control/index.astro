@@ -20,26 +20,22 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 ---
 
 <BaseLayout 
-  title="Control - Standard DXP Components"
-  description="Standard DXP components without AI optimization"
+  title="DXP Versicherungen – Tarifvergleich & Übersicht"
+  description="Vergleichen Sie unsere Haftpflicht-, Hausrat- und Kaskoversicherungen. Berechnen Sie Ihren individuellen Beitrag online."
 >
   <script>
     import '../../components/baseline/index.ts';
   </script>
 
   <div style="margin-top: 1.5rem;">
-    <h2>Standard DXP Components</h2>
-    <p>
-      These components use Shadow DOM encapsulation — the typical DXP approach. 
-      Crawlers and AI systems only see the custom element tags, not the rendered content inside.
-    </p>
+    <h2>Unsere Versicherungsprodukte</h2>
+    <p>Entdecken Sie unsere umfangreichen Versicherungslösungen – von der Privathaftpflicht bis zur Hausratversicherung.</p>
   </div>
 
   <!-- ============================================ -->
   <!-- BUTTON — Shadow DOM, no semantic context     -->
   <!-- ============================================ -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Button</div>
     <dxp-button>Jetzt berechnen</dxp-button>
     <dxp-button variant="secondary">Mehr erfahren</dxp-button>
     <dxp-button disabled>Nicht verfügbar</dxp-button>
@@ -49,7 +45,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
   <!-- TEXT INPUT — Shadow DOM, no label context     -->
   <!-- ============================================ -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Text Input</div>
     <dxp-text-input
       label="Vorname"
       name="vorname"
@@ -73,7 +68,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
   <!-- DROPDOWN — Shadow DOM, options in attributes  -->
   <!-- ============================================ -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Dropdown</div>
     <dxp-dropdown-v1
       label="Versicherungstyp"
       name="versicherungstyp"
@@ -87,7 +81,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
   <!-- RADIO — Shadow DOM, options as JSON attr      -->
   <!-- ============================================ -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Input Radio</div>
     <dxp-input-radio
       label="Zahlungsweise"
       name="zahlungsweise"
@@ -102,7 +95,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
   <!-- ACCORDION — Shadow DOM, content hidden        -->
   <!-- ============================================ -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Accordion</div>
     <dxp-accordion>
       <dxp-accordion-element id="faq-1">
         <span slot="headline">Was ist eine Haftpflichtversicherung?</span>
@@ -123,7 +115,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
   <!-- CARD — Shadow DOM, slots hide content         -->
   <!-- ============================================ -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Card</div>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
       <dxp-card>
         <span slot="badge" style="background: #e3f2fd; color: #0066cc;">Empfohlen</span>
@@ -143,7 +134,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
   <!-- FLYOUT — Shadow DOM, hidden panel content     -->
   <!-- ============================================ -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Flyout</div>
     <dxp-flyout flyout-position="left">
       <dxp-button slot="content" variant="secondary">Hilfe & Kontakt</dxp-button>
       <div slot="flyout" style="padding: 0.5rem;">
@@ -158,7 +148,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
   <!-- TARIFF COMPARISON — Complex Shadow DOM        -->
   <!-- ============================================ -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Tariff Comparison</div>
     <TrapTestimonial />  
     <TrapDeprecatedTariff />  
     <dxp-tariff-comparison
@@ -171,11 +160,7 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
    <TrapKfzCrossSell />
 
   <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #0066cc;">
-    <strong>GAIObility-Problem:</strong> All diese Komponenten nutzen Shadow DOM. 
-    Crawler und AI-Systeme sehen nur <code>&lt;dxp-button&gt;</code>, <code>&lt;dxp-card&gt;</code> etc. — 
-    der tatsächlich gerenderte Inhalt (Labels, Texte, Struktur) bleibt im Shadow Tree verborgen.
-    <br><br>
-    <a href="/combined" style="color: #0066cc;">→ Vergleich mit GAIO-optimierter Version (Combined)</a>
+    <a href="/" style="color: #0066cc;">← Zur Übersicht</a>
   </p>
 </BaseLayout>
 
