@@ -102,7 +102,8 @@ const VARIANTS = [
 
 // Ensure results directory exists
 fs.mkdirSync('./results', { recursive: true });
-const OUTPUT_FILE = `./results/gaio_evaluation_${PROVIDER}.csv`;
+const RUN_TIMESTAMP = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '');
+const OUTPUT_FILE = `./results/gaio_evaluation_${PROVIDER}_${RUN_TIMESTAMP}.csv`;
 
 // ---------------------------------------------------------------------------
 // System prompt – shared across providers
