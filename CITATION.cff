@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+title: "GAIO Validation Lab"
+abstract: >
+  A scientific test environment for measuring how different HTML markup
+  techniques (JSON-LD, Semantic HTML, ARIA, noscript fallbacks, Declarative
+  Shadow DOM, Microdata) affect content extraction by AI crawlers and large
+  language models from Web Components with Shadow DOM encapsulation.
+  Eight isolated variants enable controlled benchmarking of each GAIO
+  (Generative AI Optimization) measure independently.
+authors:
+  - family-names: Hargesheimer
+    given-names: Timon
+repository-code: "https://github.com/Timon-H/gaio-validation-lab"
+url: "https://gaio-validation-lab.vercel.app"
+license: UNLICENSED
+keywords:
+  - generative AI optimization
+  - GAIO
+  - GEO
+  - AI SEO
+  - shadow DOM
+  - web components
+  - LLM extraction
+  - structured data
+  - schema.org
+  - JSON-LD
+  - declarative shadow DOM
+  - AI crawlers
+  - benchmark
