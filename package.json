@@ -25,7 +25,41 @@
     "type": "git",
     "url": "git+https://github.com/Timon-H/gaio-validation-lab.git"
   },
-  "keywords": [],
+  "keywords": [
+    "gaio",
+    "generative-ai-optimization",
+    "ai-seo",
+    "llm-seo",
+    "geo",
+    "generative-engine-optimization",
+    "aio",
+    "ai-optimization",
+    "shadow-dom",
+    "web-components",
+    "lit",
+    "lit-element",
+    "declarative-shadow-dom",
+    "dsd",
+    "astro",
+    "schema-org",
+    "json-ld",
+    "structured-data",
+    "microdata",
+    "semantic-html",
+    "aria",
+    "noscript",
+    "ai-crawlers",
+    "llm-extraction",
+    "content-extraction",
+    "gptbot",
+    "claudebot",
+    "googlebot",
+    "perplexitybot",
+    "benchmark",
+    "validation",
+    "thesis",
+    "research"
+  ],
   "author": "Timon Hargesheimer",
   "license": "UNLICENSED",
   "bugs": {
@@ -46,8 +80,11 @@
     "@astrojs/check": "^0.9.6",
     "typescript": "^5.9.3"
   },
+  "engines": {
+    "node": ">=20.10"
+  },
   "overrides": {
-    "path-to-regexp": "8.3.0",
-    "lodash": "4.17.23"
+    "path-to-regexp": ">=8.3.0",
+    "lodash": ">=4.17.23"
   }
 }
