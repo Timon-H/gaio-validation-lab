@@ -25,7 +25,7 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 
 ## Trap 2 — Unlabelled Range Slider (field visibility)
 
-**What it is:** An `<input type="range">` for "Gewünschte Deckungssumme" placed in the form section. On non-ARIA pages it has no accessible label in HTML.
+**What it is:** A number input (`<input type="number">`) for "Gewünschte Deckungssumme" placed in the form section. On non-ARIA pages it has no accessible label and an opaque `name` attribute (`f_coverage`), giving the LLM no cue to identify its purpose.
 
 **Per-variant implementation:**
 

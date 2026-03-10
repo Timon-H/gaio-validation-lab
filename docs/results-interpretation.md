@@ -125,3 +125,41 @@ GET /rest/v1/llm_eval_comparison?select=*
 Columns: `variant_id`, `provider`, `model`, `avg_tarife_count`, `avg_faq_count`, `avg_produktkarten_count`, `avg_form_felder_count`, `hat_kontakt_sum`, `hat_anbieter_sum`, `run_count`.
 
 The `run_count` column shows how many individual runs were aggregated. A higher count (e.g. 9 = 3 runs × 3 repetitions) provides more reliable averages.
+
+## GPT-4.1 Pilot Run — 2026-03-10 Observations
+
+A single-repetition pilot with `gpt-4.1` (post-fix build) produced identical aggregate counts across all 8 variants:
+
+| Metric | All Variants |
+|--------|-------------|
+| Tarife | 3 |
+| FAQ | 3 |
+| Produktkarten | 2 |
+| FormFelder | 5 |
+
+### Flat-Count Diagnosis
+
+Identical counts do **not** mean the GAIO measures have no effect; they mean this model's capability ceiling is above the discriminating threshold for the current trap configuration. Three root causes were identified:
+
+1. **Trap 2 (range slider)**: `type="range"` inputs are not classified as form fields by this model regardless of ARIA labelling. The field is excluded in every variant. → Fixed: changed to `type="number"` with opaque name `f_coverage`.
+2. **Trap 3 (CSS label)**: `name="geburtsjahr"` was present in all variants, allowing the model to identify the field by its name attribute alone without any ARIA or label. → Fixed: changed to opaque `name="f_birth"` so only ARIA exposes field identity.
+3. **Traps 1, 4, 5**: GPT-4.1 is robust enough to use in-text cues (cross-sell prose, "spare", "nicht mehr buchbar") rather than semantic signals. All three traps return correct counts despite the non-semantic variants.
+
+### Sub-Surface Signals (Qualitative)
+
+Despite flat counts, raw JSON extraction **does** vary by variant — confirming real GAIO effects:
+
+| Variant | Observable Effect |
+|---------|------------------|
+| `microdata` | Tariff names expand: `"Basis"` → `"Haftpflicht Basis"` (model reads Microdata `name` property) |
+| `microdata` | Contact phone uses `<meta>` format: `"+49-800-123-456-789"` vs. standard `"0800 123 456 789"` |
+| `jsonld` | `zielgruppe` changes from `"Privatkunden"` → `"Privathaftpflichtversicherung"` (reads `about.name` from JSON-LD graph) |
+| `combined` | `zahlungsperiode` normalises to `"pro Monat"` (text from combined JSON-LD + Microdata context) |
+
+These sub-surface effects demonstrate that GAIO measures influence **information quality and extraction fidelity** even when aggregate counts are stable. This is an important finding for RQ2.
+
+### Recommendations for Future Runs
+
+- Use a lower-capability model (e.g., `gpt-4o-mini`, `gemini-flash`) to observe count-level discrimination from the hardened traps.
+- Run `REPETITIONS=5` for statistical significance after confirming trap discrimination on a single run.
+- Report both count-level and sub-surface JSON comparisons in the final analysis.

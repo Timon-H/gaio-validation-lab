@@ -1,19 +1,24 @@
 ---
 /**
- * Trap 2 — Unlabelled Range Slider (field visibility)
+ * Trap 2 — Unlabelled Number Input (field visibility)
  *
- * An <input type="range"> for "Gewünschte Deckungssumme" with no accessible label
- * in the baseline. The trap tests whether ARIA attributes make the slider visible
+ * A number input for "Gewünschte Deckungssumme" with no accessible label
+ * in the baseline. The trap tests whether ARIA attributes make the field visible
  * to LLM extraction as a named form field.
+ *
+ * Note: type="number" is used instead of type="range" because LLMs do not
+ * reliably classify range sliders as form fields regardless of ARIA labeling.
+ * A number input without a label (non-ARIA) vs. with aria-label (ARIA) creates
+ * a clean discriminating signal.
  *
  * Remediation: `aria` pages add aria-label to the input element.
  *
  * Expected signal (formFelder count):
- *   - aria=false: LLM may not recognise the slider as a named field → not counted
+ *   - aria=false: LLM may not recognise the unlabelled number input as a named field
  *   - aria=true:  aria-label exposes the field purpose → LLM counts it
  */
 interface Props {
-  /** Apply ARIA remediation: adds aria-label to the range input */
+  /** Apply ARIA remediation: adds aria-label to the number input */
   aria?: boolean;
 }
 
@@ -22,12 +27,13 @@ const { aria = false } = Astro.props;
 
 <div style="margin: 1rem 0 0.5rem;">
   <input
-    type="range"
+    type="number"
+    name="f_coverage"
     min="100000"
     max="10000000"
     step="500000"
     value="5000000"
     aria-label={aria ? "Gewünschte Deckungssumme in Euro" : undefined}
-    style="width: 100%; accent-color: #0066cc;"
+    style="border: 1px solid #ccc; padding: 0.4rem 0.6rem; border-radius: 4px; width: 160px;"
   >
 </div>
