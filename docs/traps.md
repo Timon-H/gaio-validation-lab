@@ -59,7 +59,7 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 
 ## Trap 4 — Testimonial Price Noise (tariff scope)
 
-**What it is:** A customer testimonial quote placed directly adjacent to the tariff comparison block. The quote contains a price figure ("12 € pro Monat") that could be confused with a bookable tariff by a naive text extractor.
+**What it is:** A customer testimonial quote placed directly adjacent to the tariff comparison block. The quote contains a price figure ("12 € pro Monat") phrased as a first-person product statement (*"Bei meiner Police zahle ich nur 12 € pro Monat"*). Without `<blockquote>`, this is plausible as a tariff price. Comparative phrasing ("I save compared to…") has been intentionally removed so that `<blockquote>` is the primary disambiguation signal.
 
 **Per-variant implementation:**
 
@@ -84,13 +84,13 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 
 | Variants | Markup |
 |---|---|
-| `control`, `aria`, `noscript`, `dsd` | Bare `<p>` — no semantic indication of obsolescence |
+| `control`, `aria`, `noscript`, `dsd` | Bare `<p>` with ambiguous text ("Einsteiger-Tarif: ab 1,99 €") — no "discontinued" phrasing, so only the semantic `<s>` carries the obsolescence signal |
 | `semantic`, `combined` | `<s>` element — HTML semantic for content that is "no longer accurate or relevant" |
 | `microdata` | Bare `<p>`, but the page's three live tariffs each carry `itemprop="offers"` / `schema:Offer`; the deprecated notice has no structured data annotation |
 | `jsonld` | Bare `<p>`, but the JSON-LD `Offer` list in `<head>` includes only the 3 current tariffs |
 
 **Expected signal (`tarife` count / accuracy):**
-- `control`, `aria`, `noscript`, `dsd`: LLM may include `1,99 €` as a fourth tariff.
+- `control`, `aria`, `noscript`, `dsd`: Ambiguous text with no explicit "not bookable" cue; LLM may include `1,99 €` as a fourth tariff.
 - `semantic` / `combined`: `<s>` element communicates obsolescence.
 - `microdata` / `jsonld`: Structured data scope excludes the deprecated entry.
 

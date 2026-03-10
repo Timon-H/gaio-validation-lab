@@ -88,6 +88,8 @@ Measure how different GAIO measures affect crawler/LLM extraction from the **ini
 - **Content–language mismatch:** the system prompt is written in German to match the page content, reducing the risk of language-induced extraction bias.
 - **Single-site deployment:** all variants share the same domain and server; results reflect this controlled environment and may not generalise to other hosting configurations.
 - **Provider-specific behaviour:** different LLM providers (OpenAI, Claude, Gemini) may respond differently to identical markup signals. Cross-provider comparison is included to surface model-level confounds.
+- **Navigation context leakage:** `BaseLayout` includes a `<nav>` listing all eight variant names (e.g. "JSON-LD", "Semantic", "ARIA"). To prevent this from revealing the experimental design to the LLM evaluator, the evaluation script strips `<nav>` blocks from the HTML before submission.
+- **Host element attribute visibility:** the `tariffs` JSON attribute on `<dxp-tariff-comparison>` is visible in all variants, including the control. This reflects real-world Shadow DOM behaviour (host attributes are public). Tariff count discrimination in this study therefore relies on scope and accuracy signals (traps 1, 4, 5) rather than raw data visibility.
 
 ### Reporting
 
