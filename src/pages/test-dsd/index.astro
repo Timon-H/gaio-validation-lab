@@ -131,34 +131,23 @@ const tariffHtml = await renderLitToString(html`
 ---
 
 <BaseLayout 
-  title="Isolated Test: Declarative Shadow DOM"
-  description="DXP components rendered via @lit-labs/ssr Declarative Shadow DOM – server-side shadow content visible to crawlers without JavaScript."
+  title="DXP Versicherungen – Tarifvergleich & Übersicht"
+  description="Vergleichen Sie unsere Haftpflicht-, Hausrat- und Kaskoversicherungen. Berechnen Sie Ihren individuellen Beitrag online."
 >
   <!-- SSR-only: hydration intentionally omitted to avoid duplicate late client rendering. -->
 
   <div style="margin-top: 1.5rem;">
-    <h2>Isolated Variable: Declarative Shadow DOM (DSD)</h2>
-    <p>
-      Same Lit components as all other test pages, but <strong>server-side rendered</strong> via 
-      <code>@lit-labs/ssr</code>. Each component's Shadow DOM is serialized as 
-      <code>&lt;template shadowrootmode="open"&gt;</code> — the content is 
-      <strong>in the initial HTML response</strong>, not deferred to JavaScript.
-    </p>
-    <p style="padding: 0.5rem; background: #f3e5f5; border-left: 3px solid #9c27b0; font-size: 0.875rem;">
-      <strong>Isolated variable:</strong> Declarative Shadow DOM via <code>@lit-labs/ssr</code>. 
-      No JSON-LD, no semantic HTML wrappers, no ARIA on hosts, no &lt;noscript&gt; fallbacks.
-    </p>
+    <h2>Unsere Versicherungsprodukte</h2>
+    <p>Entdecken Sie unsere umfangreichen Versicherungslösungen – von der Privathaftpflicht bis zur Hausratversicherung.</p>
   </div>
 
   <!-- BUTTON — SSR'd with DSD -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Button</div>
     <Fragment set:html={buttonHtml} />
   </div>
 
   <!-- TEXT INPUT — SSR'd with DSD -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Text Input</div>
     <Fragment set:html={textInputHtml} />
   </div>
 
@@ -166,13 +155,11 @@ const tariffHtml = await renderLitToString(html`
 
   <!-- DROPDOWN — SSR'd with DSD -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Dropdown</div>
     <Fragment set:html={dropdownHtml} />
   </div>
 
   <!-- RADIO — SSR'd with DSD -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Input Radio</div>
     <Fragment set:html={radioHtml} />
   </div>
 
@@ -180,13 +167,11 @@ const tariffHtml = await renderLitToString(html`
 
   <!-- ACCORDION — SSR'd with DSD -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Accordion</div>
     <Fragment set:html={accordionHtml} />
   </div>
 
   <!-- CARD — SSR'd with DSD -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Card</div>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
       <Fragment set:html={cardHtml} />
       <Fragment set:html={cardHtml2} />
@@ -195,13 +180,11 @@ const tariffHtml = await renderLitToString(html`
 
   <!-- FLYOUT — SSR'd with DSD -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Flyout</div>
     <Fragment set:html={flyoutHtml} />
   </div>
 
   <!-- TARIFF COMPARISON — SSR'd with DSD -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Tariff Comparison</div>
     <TrapTestimonial />   
     <TrapDeprecatedTariff /> 
     <Fragment set:html={tariffHtml} />
@@ -210,13 +193,6 @@ const tariffHtml = await renderLitToString(html`
   <TrapKfzCrossSell /> 
 
   <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #9c27b0;">
-    <strong>Hinweis:</strong> Diese Seite nutzt <code>@lit-labs/ssr</code> zur serverseitigen Darstellung der 
-    identischen Lit-Komponenten. Der Shadow-DOM-Inhalt ist über 
-    <code>&lt;template shadowrootmode="open"&gt;</code> im initialen HTML eingebettet. 
-    Crawler sehen den vollständigen gerenderten Inhalt inkl. Lit-Hydration-Marker 
-    (<code>&lt;!--lit-part--&gt;</code>).
-    <br><br>
-    <a href="/control">← Baseline (client-side Shadow DOM)</a> · 
-    <a href="/combined">Alle Maßnahmen kombiniert →</a>
+    <a href="/">← Zur Übersicht</a>
   </p>
 </BaseLayout>

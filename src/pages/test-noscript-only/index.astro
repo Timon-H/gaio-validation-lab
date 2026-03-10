@@ -17,27 +17,20 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 ---
 
 <BaseLayout 
-  title="Isolated Test: Noscript Fallbacks Only"
-  description="DXP components with noscript Light DOM fallbacks only – no JSON-LD, no semantic HTML, no ARIA."
+  title="DXP Versicherungen – Tarifvergleich & Übersicht"
+  description="Vergleichen Sie unsere Haftpflicht-, Hausrat- und Kaskoversicherungen. Berechnen Sie Ihren individuellen Beitrag online."
 >
   <script>
     import '../../components/baseline/index.ts';
   </script>
 
   <div style="margin-top: 1.5rem;">
-    <h2>Isolated Variable: &lt;noscript&gt; Light DOM Fallbacks</h2>
-    <p>
-      Same components as <a href="/control">Baseline</a>, same <code>&lt;div&gt;</code> wrappers — 
-      but each component has a <strong>&lt;noscript&gt; fallback</strong> with static HTML content.
-    </p>
-    <p style="padding: 0.5rem; background: #fce4ec; border-left: 3px solid #e91e63; font-size: 0.875rem;">
-      <strong>Isolated variable:</strong> &lt;noscript&gt; Light DOM fallbacks. No JSON-LD, no semantic HTML, no ARIA.
-    </p>
+    <h2>Unsere Versicherungsprodukte</h2>
+    <p>Entdecken Sie unsere umfangreichen Versicherungslösungen – von der Privathaftpflicht bis zur Hausratversicherung.</p>
   </div>
 
   <!-- BUTTON -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Button</div>
     <dxp-button>Jetzt berechnen</dxp-button>
     <dxp-button variant="secondary">Mehr erfahren</dxp-button>
     <dxp-button disabled>Nicht verfügbar</dxp-button>
@@ -51,7 +44,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 
   <!-- TEXT INPUT -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Text Input</div>
     <dxp-text-input label="Vorname" name="vorname" placeholder="Max" required required-error-text="Bitte geben Sie Ihren Vornamen ein."></dxp-text-input>
     <dxp-text-input label="E-Mail" name="email" type="email" placeholder="max@example.de" regex="^[^@]+@[^@]+\.[^@]+$" regex-error-text="Bitte geben Sie eine gültige E-Mail-Adresse ein."></dxp-text-input>
     <noscript>
@@ -68,7 +60,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 
   <!-- DROPDOWN -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Dropdown</div>
     <dxp-dropdown-v1 label="Versicherungstyp" name="versicherungstyp" placeholder="Bitte wählen..." options='[{"key":"haftpflicht","value":"Haftpflichtversicherung"},{"key":"kasko","value":"Kaskoversicherung"},{"key":"teilkasko","value":"Teilkaskoversicherung"}]' required></dxp-dropdown-v1>
     <noscript>
       <label for="fallback-versicherung">Versicherungstyp</label>
@@ -83,7 +74,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 
   <!-- RADIO -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Input Radio</div>
     <dxp-input-radio label="Zahlungsweise" name="zahlungsweise" options='[{"value":"monatlich","label":"Monatlich"},{"value":"quartal","label":"Vierteljährlich"},{"value":"jaehrlich","label":"Jährlich"}]' default="monatlich"></dxp-input-radio>
     <noscript>
       <fieldset>
@@ -99,7 +89,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 
   <!-- ACCORDION -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Accordion</div>
     <dxp-accordion>
       <dxp-accordion-element id="faq-1">
         <span slot="headline">Was ist eine Haftpflichtversicherung?</span>
@@ -128,7 +117,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 
   <!-- CARD -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Card</div>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
       <div>
         <dxp-card>
@@ -158,7 +146,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 
   <!-- FLYOUT -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Flyout</div>
     <dxp-flyout flyout-position="left">
       <dxp-button slot="content" variant="secondary">Hilfe & Kontakt</dxp-button>
       <div slot="flyout" style="padding: 0.5rem;">
@@ -178,7 +165,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 
   <!-- TARIFF COMPARISON -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Tariff Comparison</div>
     <TrapTestimonial />
     <TrapDeprecatedTariff />
     <dxp-tariff-comparison headline="Unsere Tarife im Vergleich" sub-headline="Wählen Sie den passenden Schutz für Ihre Bedürfnisse" tariffs='{"prefix":"ab","productName":"Haftpflicht","suffix":"€","tariffData":[{"id":"basis","name":"Basis","period":"monthly","premium":"3,50","description":"Grundschutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"5 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"150 €"}}]},{"id":"komfort","name":"Komfort","period":"monthly","premium":"5,90","highlighted":true,"overline":"Beliebteste Wahl","description":"Erweiterter Schutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"10 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]},{"id":"premium","name":"Premium","period":"monthly","premium":"9,80","description":"Rundum-Sorglos","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"50 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]}],"moduleGroups":[{"name":"Leistungen","modules":[{"moduleName":"deckung","name":"Deckungssumme","uuid":"1"},{"moduleName":"selbstbeteiligung","name":"Selbstbeteiligung","uuid":"2"}]}]}'></dxp-tariff-comparison>
@@ -200,7 +186,6 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
   <TrapKfzCrossSell />
 
   <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #e91e63;">
-    <a href="/control">← Baseline (keine Maßnahmen)</a> · 
-    <a href="/combined">Alle Maßnahmen kombiniert →</a>
+    <a href="/">← Zur Übersicht</a>
   </p>
 </BaseLayout>
