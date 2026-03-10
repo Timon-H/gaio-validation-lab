@@ -1,4 +1,4 @@
----
+﻿---
 /**
  * Combined — GAIO-Optimized Components (Full Combo)
  * 
@@ -19,6 +19,11 @@
  */
 import { renderLitToString, html } from '../../lib/lit-ssr.ts';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import TrapDeckungssumme from '../../components/traps/TrapDeckungssumme.astro';
+import TrapGeburtsjahr from '../../components/traps/TrapGeburtsjahr.astro';
+import TrapTestimonial from '../../components/traps/TrapTestimonial.astro';
+import TrapDeprecatedTariff from '../../components/traps/TrapDeprecatedTariff.astro';
+import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 
 // Import all component side-effects (registers custom elements for SSR)
 import '../../components/baseline/dxp-button.ts';
@@ -226,19 +231,15 @@ const tariffHtml = await renderLitToString(html`
 ---
 
 <BaseLayout 
-  title="GAIO-Optimized DXP Components – Versicherungsvergleich"
-  description="Vergleichen Sie unsere Haftpflicht-, Hausrat- und Kaskoversicherungen. GAIO-optimierte DXP-Komponenten mit JSON-LD, semantischem HTML, ARIA-Attributen und Declarative Shadow DOM."
+  title="DXP Versicherungen – Tarifvergleich & Übersicht"
+  description="Vergleichen Sie unsere Haftpflicht-, Hausrat- und Kaskoversicherungen. Berechnen Sie Ihren individuellen Beitrag online."
   schemaData={gaioSchema}
 >
   <!-- SSR-only: hydration intentionally omitted to avoid duplicate late client rendering. -->
 
   <section aria-labelledby="page-heading" style="margin-top: 1.5rem;">
-    <h2 id="page-heading">GAIO-optimierte DXP-Komponenten</h2>
-    <p>
-      Dieselben Web Components wie in <a href="/control">Baseline</a>, aber mit <strong>allen GAIO-Maßnahmen</strong>: 
-      JSON-LD, semantisches HTML, ARIA-Attribute und Declarative Shadow DOM 
-      machen den Shadow-DOM-Inhalt für Crawler und AI-Systeme sichtbar.
-    </p>
+    <h2 id="page-heading">Unsere Versicherungsprodukte</h2>
+    <p>Entdecken Sie unsere umfangreichen Versicherungslösungen – von der Privathaftpflicht bis zur Hausratversicherung.</p>
   </section>
 
   <!-- ============================================ -->
@@ -264,14 +265,7 @@ const tariffHtml = await renderLitToString(html`
     </div>
   </section>
 
-  <!-- ============================================ -->
-  <!-- SLIDER: Deckungssumme — ARIA-Label vorhanden  -->
-  <!-- ============================================ -->
-  <div style="margin: 1rem 0 0.5rem;">
-    <input type="range" min="100000" max="10000000" step="500000" value="5000000"
-           aria-label="Gewünschte Deckungssumme in Euro"
-           style="width: 100%; accent-color: #0066cc;">
-  </div>
+  <TrapDeckungssumme aria />
 
   <!-- ============================================ -->
   <!-- DROPDOWN — DSD + Semantic + ARIA + Microdata  -->
@@ -295,14 +289,7 @@ const tariffHtml = await renderLitToString(html`
     <Fragment set:html={radioHtml} />
   </section>
 
-  <!-- ============================================ -->
-  <!-- GEBURTSJAHR — ARIA-Label vorhanden           -->
-  <!-- ============================================ -->
-  <div style="margin: 0.5rem 0 2rem;">
-    <input type="text" name="geburtsjahr" inputmode="numeric" pattern="\d{4}" maxlength="4"
-           aria-label="Geburtsjahr eingeben"
-           style="border: 1px solid #ccc; padding: 0.4rem 0.6rem; border-radius: 4px; width: 120px;">
-  </div>
+  <TrapGeburtsjahr aria />  
 
   <!-- ============================================ -->
   <!-- ACCORDION / FAQ — DSD + Semantic + ARIA + Microdata -->
@@ -360,46 +347,15 @@ const tariffHtml = await renderLitToString(html`
     <meta itemprop="name" content="Haftpflichtversicherung – Tarifvergleich" />
     <h3 id="tariff-heading">Unsere Tarife im Vergleich</h3>
     <p>Wählen Sie den passenden Schutz für Ihre Bedürfnisse. Alle Preise verstehen sich als monatliche Beiträge.</p>
-    <!-- Testimonial — semantisch als <figure>/<blockquote> markiert -->
-    <figure style="margin: 0.5rem 0; padding: 0.5rem 0.75rem; border-left: 3px solid #ddd;">
-      <blockquote><p style="font-size: 0.875rem; color: #555; margin: 0;"><em>„Ich spare jetzt <strong>12 € pro Monat</strong> gegenüber meinem alten Anbieter – super Preis-Leistung!“</em></p></blockquote>
-      <figcaption style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">– Kundin Lisa M., München</figcaption>
-    </figure>
-    <!-- Veralteter Tarif — semantisch als <s> markiert -->
-    <p style="font-size: 0.8rem; color: #767676; margin-bottom: 0.75rem;">
-      <s>Früherer Einsteiger-Tarif: ab <strong>1,99 €</strong> / Monat – nicht mehr buchbar.</s>
-    </p>
+    <TrapTestimonial  semantic /> 
+    <TrapDeprecatedTariff  semantic />    
     <Fragment set:html={tariffHtml} />
   </section>
 
-  <!-- ============================================ -->
-  <!-- CROSS-SELL — semantisch als <aside> markiert  -->
-  <!-- ============================================ -->
-  <aside style="margin: 2rem 0; padding: 1rem; background: #f9f9f9; border: 1px dashed #bbb; border-radius: 4px;">
-    <p style="margin: 0 0 0.5rem; font-weight: 600; font-size: 0.875rem; color: #555;">Das könnte Sie auch interessieren</p>
-    <p style="margin: 0 0 0.5rem;">Kombinieren Sie Ihren Schutz – <strong>KFZ-Haftpflicht</strong> bereits ab <strong>39,00 €</strong> monatlich verfügbar.</p>
-    <ul style="margin: 0.25rem 0 0; padding-left: 1.5rem; font-size: 0.875rem;">
-      <li>KFZ Basis – 39,00 € / Monat · Selbstbeteiligung: 500 €</li>
-      <li>KFZ Komfort – 59,00 € / Monat · Selbstbeteiligung: 0 €</li>
-    </ul>
-  </aside>
+  <TrapKfzCrossSell semantic />   
 
-  <aside style="margin-top: 2rem; padding: 1rem; background: #e8f5e9; border-left: 4px solid #43a047;">
-    <strong>GAIO-Maßnahmen auf dieser Seite:</strong>
-    <ul style="margin: 0.5rem 0 0;">
-      <li><strong>JSON-LD + Entity Linking:</strong> FAQPage-, Offer-, WebPage-Schema mit <code>sameAs</code>-Verweisen auf Wikipedia/Wikidata</li>
-      <li><strong>Microdata:</strong> <code>itemscope</code>, <code>itemtype</code>, <code>itemprop</code> auf semantischen Wrappern</li>
-      <li><strong>Semantisches HTML:</strong> <code>&lt;section&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;address&gt;</code> statt <code>&lt;div&gt;</code></li>
-      <li><strong>ARIA:</strong> <code>aria-label</code>, <code>aria-labelledby</code>, <code>role="group"</code> auf Host-Elementen</li>
-      <li><strong>Declarative Shadow DOM:</strong> <code>@lit-labs/ssr</code> rendert Shadow-Inhalte als <code>&lt;template shadowrootmode="open"&gt;</code></li>
-    </ul>
-    <p style="margin-top: 0.75rem; font-size: 0.875rem; color: #555;">
-      <strong>Hinweis:</strong> <code>&lt;noscript&gt;</code>-Fallbacks werden hier bewusst weggelassen,
-      da DSD den Shadow-Inhalt bereits ohne JavaScript im initialen HTML bereitstellt.
-      Die Noscript-Technik wird isoliert unter <a href="/test-noscript-only" style="color: #2e7d32;">/test-noscript-only</a> getestet.
-    </p>
-    <br>
-    <a href="/control" style="color: #2e7d32;">→ Vergleich mit Standard-Version (Baseline)</a>
+  <aside style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #43a047;">
+    <a href="/">← Zur Übersicht</a>
   </aside>
 </BaseLayout>
 

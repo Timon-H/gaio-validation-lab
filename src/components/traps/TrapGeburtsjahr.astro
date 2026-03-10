@@ -1,0 +1,58 @@
+---
+/**
+ * Trap 3 — CSS-Only Label (field identity)
+ *
+ * A birth-year text input whose visible label ("Geburtsjahr") is produced exclusively
+ * by a CSS ::before pseudo-element. The label does not exist in the HTML DOM and is
+ * invisible to parsers and LLMs.
+ *
+ * Remediation variants:
+ *   - aria=true:    Removes CSS-only label, adds aria-label to the input directly
+ *   - noscript=true: Keeps CSS-only label, adds a <noscript> block with an HTML label
+ *   - default:      CSS-only label only — field has no machine-readable identity
+ *
+ * Expected signal (formFelder count):
+ *   - default:      LLM sees an unlabelled input → may miss it or list it without a name
+ *   - aria=true:    aria-label makes the field identity machine-readable → LLM includes it
+ *   - noscript=true: <noscript> label is visible to no-JS parsers → LLM includes it
+ */
+interface Props {
+  /** Apply ARIA remediation: replaces CSS-only label with aria-label on the input */
+  aria?: boolean;
+  /** Apply noscript remediation: adds a <noscript> fallback label alongside CSS-only label */
+  noscript?: boolean;
+}
+
+const { aria = false, noscript: includeNoscript = false } = Astro.props;
+---
+
+{!aria && (
+  <style>
+    .field-geburtsjahr::before {
+      content: "Geburtsjahr";
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 0.25rem;
+    }
+  </style>
+)}
+
+<div class:list={[{ 'field-geburtsjahr': !aria }]} style="margin: 0.5rem 0 2rem;">
+  <input
+    type="text"
+    name="geburtsjahr"
+    inputmode="numeric"
+    pattern="\d{4}"
+    maxlength="4"
+    aria-label={aria ? "Geburtsjahr eingeben" : undefined}
+    style="border: 1px solid #ccc; padding: 0.4rem 0.6rem; border-radius: 4px; width: 120px;"
+  >
+  {includeNoscript && (
+    <noscript>
+      <label for="fallback-geburtsjahr">Geburtsjahr</label>
+      <input id="fallback-geburtsjahr" type="text" name="geburtsjahr" maxlength="4">
+    </noscript>
+  )}
+</div>

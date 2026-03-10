@@ -1,4 +1,4 @@
----
+﻿---
 /**
  * Isolated Test: Declarative Shadow DOM (DSD) via @lit-labs/ssr
  * 
@@ -16,6 +16,11 @@
  */
 import { renderLitToString, html } from '../../lib/lit-ssr.ts';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import TrapDeckungssumme from '../../components/traps/TrapDeckungssumme.astro';
+import TrapGeburtsjahr from '../../components/traps/TrapGeburtsjahr.astro';
+import TrapTestimonial from '../../components/traps/TrapTestimonial.astro';
+import TrapDeprecatedTariff from '../../components/traps/TrapDeprecatedTariff.astro';
+import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
 
 // Import all component side-effects (registers custom elements for SSR)
 import '../../components/baseline/dxp-button.ts';
@@ -126,84 +131,47 @@ const tariffHtml = await renderLitToString(html`
 ---
 
 <BaseLayout 
-  title="Isolated Test: Declarative Shadow DOM"
-  description="DXP components rendered via @lit-labs/ssr Declarative Shadow DOM – server-side shadow content visible to crawlers without JavaScript."
+  title="DXP Versicherungen – Tarifvergleich & Übersicht"
+  description="Vergleichen Sie unsere Haftpflicht-, Hausrat- und Kaskoversicherungen. Berechnen Sie Ihren individuellen Beitrag online."
 >
   <!-- SSR-only: hydration intentionally omitted to avoid duplicate late client rendering. -->
 
   <div style="margin-top: 1.5rem;">
-    <h2>Isolated Variable: Declarative Shadow DOM (DSD)</h2>
-    <p>
-      Same Lit components as all other test pages, but <strong>server-side rendered</strong> via 
-      <code>@lit-labs/ssr</code>. Each component's Shadow DOM is serialized as 
-      <code>&lt;template shadowrootmode="open"&gt;</code> — the content is 
-      <strong>in the initial HTML response</strong>, not deferred to JavaScript.
-    </p>
-    <p style="padding: 0.5rem; background: #f3e5f5; border-left: 3px solid #9c27b0; font-size: 0.875rem;">
-      <strong>Isolated variable:</strong> Declarative Shadow DOM via <code>@lit-labs/ssr</code>. 
-      No JSON-LD, no semantic HTML wrappers, no ARIA on hosts, no &lt;noscript&gt; fallbacks.
-    </p>
+    <h2>Unsere Versicherungsprodukte</h2>
+    <p>Entdecken Sie unsere umfangreichen Versicherungslösungen – von der Privathaftpflicht bis zur Hausratversicherung.</p>
   </div>
 
   <!-- BUTTON — SSR'd with DSD -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Button</div>
     <Fragment set:html={buttonHtml} />
   </div>
 
   <!-- TEXT INPUT — SSR'd with DSD -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Text Input</div>
     <Fragment set:html={textInputHtml} />
   </div>
 
-  <!-- ============================================ -->
-  <!-- SLIDER: Deckungssumme — kein ARIA-Label       -->
-  <!-- ============================================ -->
-  <div style="margin: 1rem 0 0.5rem;">
-    <input type="range" min="100000" max="10000000" step="500000" value="5000000"
-           style="width: 100%; accent-color: #0066cc;">
-  </div>
+  <TrapDeckungssumme />   
 
   <!-- DROPDOWN — SSR'd with DSD -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Dropdown</div>
     <Fragment set:html={dropdownHtml} />
   </div>
 
   <!-- RADIO — SSR'd with DSD -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Input Radio</div>
     <Fragment set:html={radioHtml} />
   </div>
 
-  <!-- ============================================ -->
-  <!-- GEBURTSJAHR — Label nur via CSS, kein HTML-Label -->
-  <!-- ============================================ -->
-  <style>
-    .field-geburtsjahr::before {
-      content: "Geburtsjahr";
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 0.25rem;
-    }
-  </style>
-  <div class="field-geburtsjahr" style="margin: 0.5rem 0 2rem;">
-    <input type="text" name="geburtsjahr" inputmode="numeric" pattern="\d{4}" maxlength="4"
-           style="border: 1px solid #ccc; padding: 0.4rem 0.6rem; border-radius: 4px; width: 120px;">
-  </div>
+  <TrapGeburtsjahr />  
 
   <!-- ACCORDION — SSR'd with DSD -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Accordion</div>
     <Fragment set:html={accordionHtml} />
   </div>
 
   <!-- CARD — SSR'd with DSD -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Card</div>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
       <Fragment set:html={cardHtml} />
       <Fragment set:html={cardHtml2} />
@@ -212,45 +180,19 @@ const tariffHtml = await renderLitToString(html`
 
   <!-- FLYOUT — SSR'd with DSD -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Flyout</div>
     <Fragment set:html={flyoutHtml} />
   </div>
 
   <!-- TARIFF COMPARISON — SSR'd with DSD -->
   <div style="margin: 2rem 0;">
-    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #666; font-size: 0.75rem; text-transform: uppercase;">Component: Tariff Comparison</div>
-    <!-- Testimonial — Preis-Rauschen nahe Tarifbereich -->
-    <p style="font-size: 0.875rem; color: #555; border-left: 3px solid #ddd; padding: 0.5rem 0.75rem; margin: 0.5rem 0;">
-      <em>„Ich spare jetzt <strong>12 € pro Monat</strong> gegenüber meinem alten Anbieter – super Preis-Leistung!“</em><br>
-      <small>– Kundin Lisa M., München</small>
-    </p>
-    <!-- Veralteter Tarif — kein semantischer Kontext -->
-    <p style="font-size: 0.8rem; color: #767676; margin-bottom: 0.75rem;">
-      Unser früherer Einsteiger-Tarif war ab <strong>1,99 €</strong> / Monat erhältlich – dieser Tarif ist nicht mehr buchbar.
-    </p>
+    <TrapTestimonial />   
+    <TrapDeprecatedTariff /> 
     <Fragment set:html={tariffHtml} />
   </div>
 
-  <!-- ============================================ -->
-  <!-- CROSS-SELL — kein semantischer Kontext (<div>)-->
-  <!-- ============================================ -->
-  <div style="margin: 2rem 0; padding: 1rem; background: #f9f9f9; border: 1px dashed #bbb; border-radius: 4px;">
-    <p style="margin: 0 0 0.5rem; font-weight: 600; font-size: 0.875rem; color: #555;">Das könnte Sie auch interessieren</p>
-    <p style="margin: 0 0 0.5rem;">Kombinieren Sie Ihren Schutz – <strong>KFZ-Haftpflicht</strong> bereits ab <strong>39,00 €</strong> monatlich verfügbar.</p>
-    <ul style="margin: 0.25rem 0 0; padding-left: 1.5rem; font-size: 0.875rem;">
-      <li>KFZ Basis – 39,00 € / Monat · Selbstbeteiligung: 500 €</li>
-      <li>KFZ Komfort – 59,00 € / Monat · Selbstbeteiligung: 0 €</li>
-    </ul>
-  </div>
+  <TrapKfzCrossSell /> 
 
   <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #9c27b0;">
-    <strong>Hinweis:</strong> Diese Seite nutzt <code>@lit-labs/ssr</code> zur serverseitigen Darstellung der 
-    identischen Lit-Komponenten. Der Shadow-DOM-Inhalt ist über 
-    <code>&lt;template shadowrootmode="open"&gt;</code> im initialen HTML eingebettet. 
-    Crawler sehen den vollständigen gerenderten Inhalt inkl. Lit-Hydration-Marker 
-    (<code>&lt;!--lit-part--&gt;</code>).
-    <br><br>
-    <a href="/control">← Baseline (client-side Shadow DOM)</a> · 
-    <a href="/combined">Alle Maßnahmen kombiniert →</a>
+    <a href="/">← Zur Übersicht</a>
   </p>
 </BaseLayout>

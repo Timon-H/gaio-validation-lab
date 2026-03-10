@@ -1,0 +1,38 @@
+---
+/**
+ * Trap 5 — Deprecated Tariff Notice (temporal accuracy)
+ *
+ * A notice about a discontinued tariff ("1,99 €") placed before the live tariff
+ * comparison. The price is plausible as a current tariff but must NOT be extracted
+ * as a bookable offer.
+ *
+ * Remediation variants:
+ *   - semantic=true:   Wraps the price in <s>, the HTML element for content that is
+ *                      "no longer accurate or relevant"
+ *   - default:         Bare <p> — no semantic indication of obsolescence
+ *
+ * Note: The Microdata and JSON-LD variants provide an alternative signal by scoping
+ * their structured data exclusively to the 3 live tariffs, implicitly excluding this
+ * notice. That scoping is handled in the page markup, not in this component.
+ *
+ * Expected signal (tarife count / accuracy):
+ *   - semantic=false: LLM may include "1,99 €" as a fourth tariff
+ *   - semantic=true:  <s> element communicates obsolescence
+ */
+interface Props {
+  /** Apply semantic remediation: wraps deprecated price in <s> element */
+  semantic?: boolean;
+}
+
+const { semantic = false } = Astro.props;
+---
+
+{semantic ? (
+  <p style="font-size: 0.8rem; color: #767676; margin-bottom: 0.75rem;">
+    <s>Früherer Einsteiger-Tarif: ab <strong>1,99 €</strong> / Monat – nicht mehr buchbar.</s>
+  </p>
+) : (
+  <p style="font-size: 0.8rem; color: #767676; margin-bottom: 0.75rem;">
+    Unser früherer Einsteiger-Tarif war ab <strong>1,99 €</strong> / Monat erhältlich – dieser Tarif ist nicht mehr buchbar.
+  </p>
+)}
