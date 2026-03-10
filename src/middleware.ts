@@ -5,7 +5,7 @@ const AI_BOTS = [
   { name: 'ChatGPT', regex: /GPTBot|OAI-SearchBot|ChatGPT-User/i },
   { name: 'Claude', regex: /ClaudeBot|Claude-Web|anthropic-ai/i },
   { name: 'Gemini', regex: /Google-Extended/i },
-  { name: 'Perplexity', regex: /PerplexityBot/i },
+  { name: 'Perplexity', regex: /PerplexityBot|Perplexity-User/i },
   { name: 'CommonCrawl', regex: /CCBot/i },
   { name: 'Applebot', regex: /Applebot-Extended/i },
   { name: 'Meta', regex: /meta-externalagent/i },

@@ -23,7 +23,8 @@ const bots = [
   { userAgent: 'Google-Extended', expected: 'Gemini' },
   { userAgent: 'Applebot-Extended', expected: 'Applebot' },
   { userAgent: 'meta-externalagent', expected: 'Meta' },
-  { userAgent: 'PerplexityBot', expected: 'Perplexity' },
+  { userAgent: 'PerplexityBot/1.0', expected: 'Perplexity' },
+  { userAgent: 'Perplexity-User/1.0', expected: 'Perplexity' },
   { userAgent: 'CCBot', expected: 'CommonCrawl' },
   { userAgent: 'Mozilla/5.0 (Chrome)', expected: 'false' },
 ];
