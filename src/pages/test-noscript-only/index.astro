@@ -9,11 +9,11 @@
  * Crawlers that don't execute JS will see the fallback content.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import TrapDeckungssumme from '../../components/traps/TrapDeckungssumme.astro';
-import TrapGeburtsjahr from '../../components/traps/TrapGeburtsjahr.astro';
+import TrapCoverageAmount from '../../components/traps/TrapCoverageAmount.astro';
+import TrapBirthYear from '../../components/traps/TrapBirthYear.astro';
 import TrapTestimonial from '../../components/traps/TrapTestimonial.astro';
 import TrapDeprecatedTariff from '../../components/traps/TrapDeprecatedTariff.astro';
-import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
+import TrapCrossSell from '../../components/traps/TrapCrossSell.astro';
 import TrapAriaHiddenBonus from '../../components/traps/TrapAriaHiddenBonus.astro';
 import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
 ---
@@ -58,7 +58,7 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
     </noscript>
   </div>
 
-  <TrapDeckungssumme />
+  <TrapCoverageAmount />
 
   <!-- DROPDOWN -->
   <div style="margin: 2rem 0;">
@@ -87,7 +87,7 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
     </noscript>
   </div>
 
-  <TrapGeburtsjahr noscript />
+  <TrapBirthYear noscript />
 
   <!-- ACCORDION -->
   <div style="margin: 2rem 0;">
@@ -187,7 +187,7 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
     </noscript>
   </div>
 
-  <TrapKfzCrossSell />
+  <TrapCrossSell />
 
   <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #e91e63;">
     <a href="/">← Zur Übersicht</a>

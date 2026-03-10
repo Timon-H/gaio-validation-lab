@@ -12,11 +12,11 @@
  * This represents the "poor GAIObility" baseline.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import TrapDeckungssumme from '../../components/traps/TrapDeckungssumme.astro';
-import TrapGeburtsjahr from '../../components/traps/TrapGeburtsjahr.astro';
+import TrapCoverageAmount from '../../components/traps/TrapCoverageAmount.astro';
+import TrapBirthYear from '../../components/traps/TrapBirthYear.astro';
 import TrapTestimonial from '../../components/traps/TrapTestimonial.astro';
 import TrapDeprecatedTariff from '../../components/traps/TrapDeprecatedTariff.astro';
-import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
+import TrapCrossSell from '../../components/traps/TrapCrossSell.astro';
 import TrapAriaHiddenBonus from '../../components/traps/TrapAriaHiddenBonus.astro';
 import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
 ---
@@ -64,7 +64,7 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
     ></dxp-text-input>
   </div>
 
-  <TrapDeckungssumme /> 
+  <TrapCoverageAmount /> 
 
   <!-- ============================================ -->
   <!-- DROPDOWN — Shadow DOM, options in attributes  -->
@@ -91,7 +91,7 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
     ></dxp-input-radio>
   </div>
 
-   <TrapGeburtsjahr /> 
+   <TrapBirthYear /> 
 
   <!-- ============================================ -->
   <!-- ACCORDION — Shadow DOM, content hidden        -->
@@ -161,7 +161,7 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
     ></dxp-tariff-comparison>
   </div>
 
-   <TrapKfzCrossSell />
+   <TrapCrossSell />
 
   <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #0066cc;">
     <a href="/" style="color: #0066cc;">← Zur Übersicht</a>

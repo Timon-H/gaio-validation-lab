@@ -76,17 +76,20 @@ if (!SUPPORTED_PROVIDERS.includes(PROVIDER)) {
 const PROVIDER_CONFIG = {
   openai: {
     envVar: 'OPENAI_API_KEY',
-    model: 'gpt-4.1-mini', // switch to 'gpt-4.1' for higher accuracy
+    model: 'gpt-4.1-mini', 
+    // switch to 'gpt-4.1' for higher accuracy and 'gpt-4.1-nano' for faster but less accurate results
     // NOTE: GPT-5 models are intentionally excluded — they do not support
     // the temperature parameter, which is required for deterministic output.
   },
   claude: {
     envVar: 'ANTHROPIC_API_KEY',
-    model: 'claude-haiku-4-5', // switch to 'claude-opus-4-5' for higher accuracy
+    model: 'claude-haiku-4-5', 
+    // switch to 'claude-opus-4-5' for higher accuracy
   },
   gemini: {
     envVar: 'GEMINI_API_KEY',
-    model: 'gemini-3-flash-preview', // switch to 'gemini-3-pro-preview' for higher accuracy
+    model: 'gemini-3-flash-preview', 
+    // switch to 'gemini-3-pro-preview' for higher accuracy
   },
 };
 

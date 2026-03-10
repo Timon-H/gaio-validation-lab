@@ -32,7 +32,7 @@ const { aria = false, noscript: includeNoscript = false } = Astro.props;
 
 {!aria && (
   <style>
-    .field-geburtsjahr::before {
+    .field-birth-year::before {
       content: "Pflichtfeld";
       display: block;
       font-size: 0.875rem;
@@ -43,7 +43,7 @@ const { aria = false, noscript: includeNoscript = false } = Astro.props;
   </style>
 )}
 
-<div class:list={[{ 'field-geburtsjahr': !aria }]} style="margin: 0.5rem 0 2rem;">
+<div class:list={[{ 'field-birth-year': !aria }]} style="margin: 0.5rem 0 2rem;">
   <input
     type="text"
     name="f_birth"

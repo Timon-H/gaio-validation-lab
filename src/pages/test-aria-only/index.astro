@@ -9,11 +9,11 @@
  * ARIA attributes on custom elements to understand their purpose?
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import TrapDeckungssumme from '../../components/traps/TrapDeckungssumme.astro';
-import TrapGeburtsjahr from '../../components/traps/TrapGeburtsjahr.astro';
+import TrapCoverageAmount from '../../components/traps/TrapCoverageAmount.astro';
+import TrapBirthYear from '../../components/traps/TrapBirthYear.astro';
 import TrapTestimonial from '../../components/traps/TrapTestimonial.astro';
 import TrapDeprecatedTariff from '../../components/traps/TrapDeprecatedTariff.astro';
-import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
+import TrapCrossSell from '../../components/traps/TrapCrossSell.astro';
 import TrapAriaHiddenBonus from '../../components/traps/TrapAriaHiddenBonus.astro';
 import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
 ---
@@ -46,7 +46,7 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
     </div>
   </div>
 
-   <TrapDeckungssumme aria /> 
+   <TrapCoverageAmount aria /> 
 
   <!-- DROPDOWN -->
   <div style="margin: 2rem 0;">
@@ -58,7 +58,7 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
     <dxp-input-radio label="Zahlungsweise" name="zahlungsweise" options='[{"value":"monatlich","label":"Monatlich"},{"value":"quartal","label":"Vierteljährlich"},{"value":"jaehrlich","label":"Jährlich"}]' default="monatlich" aria-label="Zahlungsweise: Monatlich, Vierteljährlich oder Jährlich"></dxp-input-radio>
   </div>
 
-   <TrapGeburtsjahr aria /> 
+   <TrapBirthYear aria /> 
 
   <!-- ACCORDION -->
   <div style="margin: 2rem 0;">
@@ -116,7 +116,7 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
     <dxp-tariff-comparison headline="Unsere Tarife im Vergleich" sub-headline="Wählen Sie den passenden Schutz für Ihre Bedürfnisse" aria-label="Tarifvergleich: Basis ab 3,50 €, Komfort ab 5,90 €, Premium ab 9,80 € monatlich" tariffs='{"prefix":"ab","productName":"Haftpflicht","suffix":"€","tariffData":[{"id":"basis","name":"Basis","period":"monthly","premium":"3,50","description":"Grundschutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"5 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"150 €"}}]},{"id":"komfort","name":"Komfort","period":"monthly","premium":"5,90","highlighted":true,"overline":"Beliebteste Wahl","description":"Erweiterter Schutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"10 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]},{"id":"premium","name":"Premium","period":"monthly","premium":"9,80","description":"Rundum-Sorglos","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"50 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]}],"moduleGroups":[{"name":"Leistungen","modules":[{"moduleName":"deckung","name":"Deckungssumme","uuid":"1"},{"moduleName":"selbstbeteiligung","name":"Selbstbeteiligung","uuid":"2"}]}]}'></dxp-tariff-comparison>
   </div>
 
-  <TrapKfzCrossSell />  
+  <TrapCrossSell />  
 
   <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #009688;">
     <a href="/">← Zur Übersicht</a>
