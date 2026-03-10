@@ -48,8 +48,8 @@ The five embedded traps create the following expected patterns:
 
 | Variant | Expected | Reasoning |
 |---|---|---|
-| `control` | **4** | Trap 6 bonus card is unsuppressed; KFZ cross-sell and noise prices add further risk |
-| `semantic` | **3** | `<aside>` excludes KFZ cross-sell; `<blockquote>` excludes testimonial; `<s>` excludes deprecated entry |
+| `control` | **4** | Trap 6 bonus card is unsuppressed; cross-sell and noise prices add further risk |
+| `semantic` | **3** | `<aside>` excludes cross-sell; `<blockquote>` excludes testimonial; `<s>` excludes deprecated entry |
 | `aria` | **3** | Trap 6 card suppressed by `aria-hidden`; ARIA provides no tariff-scope signal for cross-sell/noise |
 | `jsonld` | **3** | JSON-LD `Offer` list enumerates exactly 3 current tariffs |
 | `noscript` | **4** | Trap 6 bonus card unsuppressed |
@@ -64,8 +64,8 @@ The five embedded traps create the following expected patterns:
 | `control` \| **6** \| Number input is now `type="number"`, inferred label; CSS pseudo-label shows "Pflichtfeld" (opaque) |
 | `aria` | **6+** | `aria-label` exposes the range slider and CSS-only birth-year field |
 | `combined` | **6+** | ARIA labels active |
-| `noscript` \| **5** \| Deckungssumme field missed (no ARIA label + opaque name); Geburtsjahr via noscript label
-| all others \| **6** \| Number input inferred from context; Geburtsjahr via CSS opaque label |
+| `noscript` \| **5** \| Deckungssumme field missed (no ARIA label + opaque name); birth year via noscript label
+| all others \| **6** \| Number input inferred from context; birth year via CSS opaque label |
 
 ---
 

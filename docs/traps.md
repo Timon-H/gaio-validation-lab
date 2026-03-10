@@ -4,9 +4,9 @@ The first round of evaluation produced identical extraction scores across all 8 
 
 ---
 
-## Trap 1 — KFZ Cross-sell Block (scope ambiguity)
+## Trap 1 — Cross-sell Block (scope ambiguity)
 
-**What it is:** A cross-selling block listing two KFZ (motor) tariffs ("KFZ Basis – 39,00 €" and "KFZ Komfort – 59,00 €") placed after the main Haftpflicht tariff comparison on the page.
+**What it is:** A cross-selling block listing two motor tariffs ("KFZ Basis – 39,00 €" and "KFZ Komfort – 59,00 €") placed after the main Haftpflicht tariff comparison on the page.
 
 **Per-variant implementation:**
 
@@ -16,7 +16,7 @@ The first round of evaluation produced identical extraction scores across all 8 
 | `semantic`, `combined` | `<aside>` — landmark element that denotes supplementary / related content |
 
 **Expected signal (`tarife` count):**
-- Non-semantic pages: LLM may include the 2 KFZ tariffs, returning **5** tariffs instead of 3.
+- Non-semantic pages: LLM may include the 2 motor tariffs, returning **5** tariffs instead of 3.
 - `semantic` / `combined`: The `<aside>` signals out-of-scope content; LLM should return **3** main tariffs.
 
 The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär beworbenen Produkts dieser Seite."*
@@ -48,7 +48,7 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 
 | Variants | Label mechanism |
 |---|---|
-| `control`, `semantic`, `noscript`, `dsd`, `microdata`, `jsonld` | `.field-geburtsjahr::before { content: "Geburtsjahr" }` — CSS only, no HTML text, no ARIA |
+| `control`, `semantic`, `noscript`, `dsd`, `microdata`, `jsonld` | `.field-birthyear::before { content: "Geburtsjahr" }` — CSS only, no HTML text, no ARIA |
 | `aria`, `combined` | `aria-label="Geburtsjahr eingeben"` on the `<input>` |
 
 **Expected signal (`formFelder` count):**
@@ -96,22 +96,6 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 
 ---
 
-## Signal Matrix
-
-The following table summarises the maximum discriminating signal each trap can produce across variants.
-
-| Trap | Measurement field | Control & DSD & Noscript | Aria | Semantic | Combined | Microdata | JSON-LD |
-|---|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| Falle 1 — KFZ cross-sell | `tarife` count | 5 (risk) | 5 (risk) | **3** | **3** | 5 (risk) | 5 (risk) |
-| Falle 2 — Range slider | `formFelder` count | miss (risk) | **counted** | miss (risk) | **counted** | miss (risk) | miss (risk) |
-| Falle 3 — CSS-only label | `formFelder` count | miss (risk) | **named** | miss (risk) | **named** | miss (risk) | miss (risk) |
-| Falle 4 — Testimonial `12 €` | `tarife` accuracy | noise (risk) | noise (risk) | **excluded** | **excluded** | noise (risk) | **excluded** |
-| Falle 5 — Deprecated `1,99 €` | `tarife` accuracy | noise (risk) | noise (risk) | **excluded** | **excluded** | **excluded** | **excluded** |
-
-`risk` = the LLM may degrade; bold = markup provides a reliable disambiguation cue.
-
----
-
 ## Trap 6 -- aria-hidden Bonus Tariff Card (ARIA content suppression)
 
 **What it is:** A "Komfort-Plus" tariff card (7,50 EUR/Monat, Deckungssumme: 20 Mio. EUR) placed directly above the tariff comparison table. Its text format is structurally identical to the three main tariff rows -- no promotional language or qualifiers that allow a capable model to self-disambiguate it as non-primary content. Three suppression mechanisms are contrasted.
@@ -156,17 +140,3 @@ This trap tests ARIA in the **suppressive** direction — the inverse of Traps 2
 **Expected signal (`faq` count):**
 - Non-ARIA pages: faq = **4** (4th item visible)
 - `aria` / `combined`: `aria-hidden` suppresses the 4th item → faq = **3**
-
----
-
-## Signal Matrix (updated)
-
-| Trap | Measurement | control/dsd | aria | semantic | combined | microdata | jsonld | noscript |
-|---|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 1 — KFZ cross-sell | `tarife` count | 5 (risk) | 5 (risk) | **3** | **3** | 5 (risk) | 5 (risk) | 5 (risk) |
-| 2 — Number input | `formFelder` label | miss/infer | **named** | miss/infer | **named** | miss/infer | miss/infer | **miss** |
-| 3 — CSS label | `formFelder` label | "Pflichtfeld" | **"Geburtsjahr eingeben"** | "Pflichtfeld" | **"Geburtsjahr eingeben"** | "Pflichtfeld" | "Pflichtfeld" | label via noscript |
-| 4 — Testimonial 12€ | `tarife` accuracy | noise (risk) | noise (risk) | **excluded** | **excluded** | noise (risk) | **excluded** | noise (risk) |
-| 5 — Deprecated 1,99€ | `tarife` accuracy | noise (risk) | noise (risk) | **excluded** | **excluded** | **excluded** | **excluded** | noise (risk) |
-| 6 — Bonus tariff card | `tarife` count | 4 (risk) | **3** | **3** | **3** | **3** | **3** | 4 (risk) |
-| 7 — Hidden FAQ item | `faq` count | 4 | **3** | 4 | **3** | 4 | 4 | 4 |
