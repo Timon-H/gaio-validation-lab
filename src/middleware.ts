@@ -2,13 +2,22 @@ import type { MiddlewareHandler } from 'astro';
 
 // Definition of relevant AI crawlers
 const AI_BOTS = [
-  { name: 'ChatGPT', regex: /GPTBot|OAI-SearchBot|ChatGPT-User/i },
-  { name: 'Claude', regex: /ClaudeBot|Claude-Web|anthropic-ai/i },
-  { name: 'Gemini', regex: /Google-Extended/i },
+  { name: 'ChatGPT', regex: /GPTBot|OAI-SearchBot|ChatGPT-User|ChatGPT Agent/i },
+  { name: 'Claude', regex: /ClaudeBot|Claude-Web|Claude-User|Claude-SearchBot|anthropic-ai/i },
+  { name: 'Gemini', regex: /Google-Extended|Gemini-Deep-Research|Google-NotebookLM|NotebookLM|GoogleAgent-Mariner/i },
   { name: 'Perplexity', regex: /PerplexityBot|Perplexity-User/i },
   { name: 'CommonCrawl', regex: /CCBot/i },
-  { name: 'Applebot', regex: /Applebot-Extended/i },
-  { name: 'Meta', regex: /meta-externalagent/i },
+  { name: 'Applebot', regex: /Applebot/i },
+  { name: 'Meta', regex: /meta-externalagent|Meta-ExternalAgent|meta-externalfetcher|meta-webindexer/i },
+  { name: 'DeepSeek', regex: /DeepSeekBot/i },
+  { name: 'Mistral', regex: /MistralAI-User/i },
+  { name: 'DuckDuckGo', regex: /DuckAssistBot/i },
+  { name: 'Brave', regex: /Bravebot/i },
+  { name: 'You', regex: /YouBot/i },
+  { name: 'Cohere', regex: /cohere-ai|cohere-training-data-crawler/i },
+  { name: 'ByteDance', regex: /Bytespider|TikTokSpider/i },
+  { name: 'Manus', regex: /Manus-User/i },
+  { name: 'Amazon', regex: /Amazonbot|amazon-kendra|AmazonBuyForMe/i },
 ];
 
 export const onRequest: MiddlewareHandler = async (context, next) => {
