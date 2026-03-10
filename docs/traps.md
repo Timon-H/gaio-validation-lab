@@ -109,3 +109,64 @@ The following table summarises the maximum discriminating signal each trap can p
 | Falle 5 — Deprecated `1,99 €` | `tarife` accuracy | noise (risk) | noise (risk) | **excluded** | **excluded** | **excluded** | **excluded** |
 
 `risk` = the LLM may degrade; bold = markup provides a reliable disambiguation cue.
+
+---
+
+## Trap 6 -- aria-hidden Bonus Tariff Card (ARIA content suppression)
+
+**What it is:** A "Komfort-Plus" tariff card (7,50 EUR/Monat, Deckungssumme: 20 Mio. EUR) placed directly above the tariff comparison table. Its text format is structurally identical to the three main tariff rows -- no promotional language or qualifiers that allow a capable model to self-disambiguate it as non-primary content. Three suppression mechanisms are contrasted.
+
+**Per-variant implementation:**
+
+| Variants | Markup |
+|---|---|
+| `control`, `noscript`, `dsd`, `microdata`, `jsonld` | Bare `<div>` — no suppression cue |
+| `aria` | `<div aria-hidden="true">` — ARIA marks the card as not part of primary content |
+| `semantic` | `<aside>` — landmark signals supplementary content |
+| `combined` | `<aside aria-hidden="true">` — both signals |
+
+**Note:** On `jsonld` and `microdata` pages the structured `offers` array enumerates exactly 3 `Offer` objects, providing an implicit scope boundary without any HTML-level suppression on the card itself.
+
+**Expected signal (`tarife` count):**
+- Non-ARIA, non-semantic pages: LLM may include "Basis-Plus" → tarife = **4**
+- `aria` / `combined`: `aria-hidden` suppresses the card → tarife = **3**
+- `semantic` / `combined`: `<aside>` signals out-of-scope → tarife = **3**
+- `jsonld` / `microdata`: structured Offer scope implicitly excludes the card → tarife = **3**
+
+---
+
+## Trap 7 -- aria-hidden 4th FAQ Item (ARIA suppressive signal)
+
+**What it is:** A fourth FAQ accordion item ("Wie lange ist mein Versicherungsschutz aktiv?") added after the three main FAQ entries. It is fully visible in the HTML DOM by default, testing whether `aria-hidden="true"` causes an LLM to *exclude* content that is structurally present.
+
+This trap tests ARIA in the **suppressive** direction — the inverse of Traps 2 and 3, which test ARIA in the *additive* (labelling) direction.
+
+**Per-variant implementation:**
+
+| Variants | Markup |
+|---|---|
+| `control`, `dsd`, `semantic`, `microdata`, `jsonld` | Bare `<dxp-accordion-element>` — 4th FAQ fully visible |
+| `noscript` | Visible element + `<noscript>` fallback label — no suppression, faq = 4 |
+| `aria`, `combined` | `<dxp-accordion-element aria-hidden="true">` — ARIA suppresses the item |
+
+**Design limitation:** `aria-hidden="true"` is set on the `<dxp-accordion-element>` *host* element. In Shadow DOM, host `aria-hidden` propagates to the accessibility tree but does not remove slotted light DOM content from raw HTML. LLMs parsing raw HTML may extract the 4th FAQ regardless of this attribute. A uniform `faq=4` result is a valid null finding for H8.
+
+> **Note:** The `jsonld` / `combined` FAQPage schema in `<head>` enumerates exactly 3 `Question` objects. Whether the model uses the JSON-LD count as a "ground truth" (returning 3 even when the HTML has 4) is itself a measurable GAIO effect.
+
+**Expected signal (`faq` count):**
+- Non-ARIA pages: faq = **4** (4th item visible)
+- `aria` / `combined`: `aria-hidden` suppresses the 4th item → faq = **3**
+
+---
+
+## Signal Matrix (updated)
+
+| Trap | Measurement | control/dsd | aria | semantic | combined | microdata | jsonld | noscript |
+|---|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| 1 — KFZ cross-sell | `tarife` count | 5 (risk) | 5 (risk) | **3** | **3** | 5 (risk) | 5 (risk) | 5 (risk) |
+| 2 — Number input | `formFelder` label | miss/infer | **named** | miss/infer | **named** | miss/infer | miss/infer | **miss** |
+| 3 — CSS label | `formFelder` label | "Pflichtfeld" | **"Geburtsjahr eingeben"** | "Pflichtfeld" | **"Geburtsjahr eingeben"** | "Pflichtfeld" | "Pflichtfeld" | label via noscript |
+| 4 — Testimonial 12€ | `tarife` accuracy | noise (risk) | noise (risk) | **excluded** | **excluded** | noise (risk) | **excluded** | noise (risk) |
+| 5 — Deprecated 1,99€ | `tarife` accuracy | noise (risk) | noise (risk) | **excluded** | **excluded** | **excluded** | **excluded** | noise (risk) |
+| 6 — Bonus tariff card | `tarife` count | 4 (risk) | **3** | **3** | **3** | **3** | **3** | 4 (risk) |
+| 7 — Hidden FAQ item | `faq` count | 4 | **3** | 4 | **3** | 4 | 4 | 4 |

@@ -1,4 +1,4 @@
-﻿---
+---
 /**
  * Control — Standard DXP Components
  * 
@@ -17,6 +17,8 @@ import TrapGeburtsjahr from '../../components/traps/TrapGeburtsjahr.astro';
 import TrapTestimonial from '../../components/traps/TrapTestimonial.astro';
 import TrapDeprecatedTariff from '../../components/traps/TrapDeprecatedTariff.astro';
 import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
+import TrapAriaHiddenBonus from '../../components/traps/TrapAriaHiddenBonus.astro';
+import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
 ---
 
 <BaseLayout 
@@ -108,6 +110,7 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
         <span slot="headline">Kann ich meine Versicherung online kündigen?</span>
         <p>Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit.</p>
       </dxp-accordion-element>
+      <TrapHiddenFaq />
     </dxp-accordion>
   </div>
 
@@ -150,6 +153,7 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
   <div style="margin: 2rem 0;">
     <TrapTestimonial />  
     <TrapDeprecatedTariff />  
+    <TrapAriaHiddenBonus />
     <dxp-tariff-comparison
       headline="Unsere Tarife im Vergleich"
       sub-headline="Wählen Sie den passenden Schutz für Ihre Bedürfnisse"

@@ -1,4 +1,4 @@
-﻿---
+---
 /**
  * Isolated Test: <noscript> Light DOM Fallbacks Only
  * 
@@ -14,6 +14,8 @@ import TrapGeburtsjahr from '../../components/traps/TrapGeburtsjahr.astro';
 import TrapTestimonial from '../../components/traps/TrapTestimonial.astro';
 import TrapDeprecatedTariff from '../../components/traps/TrapDeprecatedTariff.astro';
 import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
+import TrapAriaHiddenBonus from '../../components/traps/TrapAriaHiddenBonus.astro';
+import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
 ---
 
 <BaseLayout 
@@ -102,6 +104,7 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
         <span slot="headline">Kann ich meine Versicherung online kündigen?</span>
         <p>Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit.</p>
       </dxp-accordion-element>
+      <TrapHiddenFaq noscript />
     </dxp-accordion>
     <noscript>
       <dl>
@@ -167,6 +170,7 @@ import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
   <div style="margin: 2rem 0;">
     <TrapTestimonial />
     <TrapDeprecatedTariff />
+    <TrapAriaHiddenBonus />
     <dxp-tariff-comparison headline="Unsere Tarife im Vergleich" sub-headline="Wählen Sie den passenden Schutz für Ihre Bedürfnisse" tariffs='{"prefix":"ab","productName":"Haftpflicht","suffix":"€","tariffData":[{"id":"basis","name":"Basis","period":"monthly","premium":"3,50","description":"Grundschutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"5 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"150 €"}}]},{"id":"komfort","name":"Komfort","period":"monthly","premium":"5,90","highlighted":true,"overline":"Beliebteste Wahl","description":"Erweiterter Schutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"10 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]},{"id":"premium","name":"Premium","period":"monthly","premium":"9,80","description":"Rundum-Sorglos","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"50 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]}],"moduleGroups":[{"name":"Leistungen","modules":[{"moduleName":"deckung","name":"Deckungssumme","uuid":"1"},{"moduleName":"selbstbeteiligung","name":"Selbstbeteiligung","uuid":"2"}]}]}'></dxp-tariff-comparison>
     <noscript>
       <table>

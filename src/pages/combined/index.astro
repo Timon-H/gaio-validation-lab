@@ -1,4 +1,4 @@
-﻿---
+---
 /**
  * Combined — GAIO-Optimized Components (Full Combo)
  * 
@@ -24,6 +24,8 @@ import TrapGeburtsjahr from '../../components/traps/TrapGeburtsjahr.astro';
 import TrapTestimonial from '../../components/traps/TrapTestimonial.astro';
 import TrapDeprecatedTariff from '../../components/traps/TrapDeprecatedTariff.astro';
 import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
+import TrapAriaHiddenBonus from '../../components/traps/TrapAriaHiddenBonus.astro';
+import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
 
 // Import all component side-effects (registers custom elements for SSR)
 import '../../components/baseline/dxp-button.ts';
@@ -189,6 +191,7 @@ const accordionHtml = await renderLitToString(html`
       <span slot="headline">Kann ich meine Versicherung online kündigen?</span>
       <p>Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit.</p>
     </dxp-accordion-element>
+    <TrapHiddenFaq aria />
   </dxp-accordion>
 `);
 
@@ -349,6 +352,7 @@ const tariffHtml = await renderLitToString(html`
     <p>Wählen Sie den passenden Schutz für Ihre Bedürfnisse. Alle Preise verstehen sich als monatliche Beiträge.</p>
     <TrapTestimonial  semantic /> 
     <TrapDeprecatedTariff  semantic />    
+    <TrapAriaHiddenBonus aria semantic />
     <Fragment set:html={tariffHtml} />
   </section>
 

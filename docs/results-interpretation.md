@@ -48,12 +48,12 @@ The five embedded traps create the following expected patterns:
 
 | Variant | Expected | Reasoning |
 |---|---|---|
-| `control` | 3–5 | No scope markers; LLM may include KFZ cross-sell or noise prices |
+| `control` | **4** | Trap 6 bonus card is unsuppressed; KFZ cross-sell and noise prices add further risk |
 | `semantic` | **3** | `<aside>` excludes KFZ cross-sell; `<blockquote>` excludes testimonial; `<s>` excludes deprecated entry |
-| `aria` | 3–5 | No tariff-scope markers; same risk as control |
+| `aria` | **3** | Trap 6 card suppressed by `aria-hidden`; ARIA provides no tariff-scope signal for cross-sell/noise |
 | `jsonld` | **3** | JSON-LD `Offer` list enumerates exactly 3 current tariffs |
-| `noscript` | 3–5 | No scope markers for tariffs |
-| `dsd` | 3–5 | DSD improves content visibility but provides no tariff-scope signal |
+| `noscript` | **4** | Trap 6 bonus card unsuppressed |
+| `dsd` | **4** | Trap 6 bonus card unsuppressed; DSD provides no tariff-scope signal |
 | `microdata` | **3** | `itemprop="offers"` scopes exactly the 3 live tariffs; deprecated entry has no annotation |
 | `combined` | **3** | All scope signals active |
 
@@ -61,13 +61,30 @@ The five embedded traps create the following expected patterns:
 
 | Variant | Expected | Reasoning |
 |---|---|---|
-| `control` | 4–5 | Range slider and CSS-only label are not machine-readable |
+| `control` \| **6** \| Number input is now `type="number"`, inferred label; CSS pseudo-label shows "Pflichtfeld" (opaque) |
 | `aria` | **6+** | `aria-label` exposes the range slider and CSS-only birth-year field |
 | `combined` | **6+** | ARIA labels active |
-| all others | 4–5 | No ARIA labels on hidden/unlabelled fields |
+| `noscript` \| **5** \| Deckungssumme field missed (no ARIA label + opaque name); Geburtsjahr via noscript label
+| all others \| **6** \| Number input inferred from context; Geburtsjahr via CSS opaque label |
 
 ---
 
+### `faq` count
+
+| Variant | Expected | Reasoning |
+|---|---|---|
+| `control` | **4** | Trap 7 4th FAQ item fully visible |
+| `semantic` | **4** | No ARIA suppression; 4th FAQ visible |
+| `aria` | **3** | `aria-hidden` on 4th accordion item; model may suppress it |
+| `jsonld` | 3-4 | FAQPage schema enumerates 3 questions; model may use schema as ground truth |
+| `noscript` | **4** | No suppression; noscript label reinforces visibility |
+| `dsd` | **4** | No ARIA suppression |
+| `microdata` | **4** | No ARIA suppression |
+| `combined` | **3** | `aria-hidden` active on 4th accordion item |
+
+> **Trap 7 design note:** `aria-hidden=`true`` is on the `<dxp-accordion-element>` host, not the slotted light DOM. LLMs reading raw HTML see the slot content regardless. A uniform `faq=4` result is a valid null finding for H8 confirming LLMs do not honour `aria-hidden` on WC hosts.
+
+---
 ## Statistical Analysis
 
 Each provider run executes **n repetitions** per variant with `temperature: 0.0` and `seed: 42` (where supported). To summarise results:
