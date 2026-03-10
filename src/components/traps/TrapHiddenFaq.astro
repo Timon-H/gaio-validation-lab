@@ -1,0 +1,54 @@
+---
+/**
+ * Trap 7 -- aria-hidden 4th FAQ Item (ARIA content suppression)
+ *
+ * A fourth FAQ accordion item "Wie lange ist mein Versicherungsschutz aktiv?" is
+ * added after the three main FAQ items. By default it is fully visible in the DOM.
+ *
+ * The trap tests ARIA suppression in the opposite polarity from Traps 2 and 3:
+ * instead of ARIA *revealing* information (aria-label), this trap tests whether
+ * aria-hidden="true" causes an LLM to *exclude* content that is visually present.
+ *
+ * Remediation variants:
+ *   - default:       4th FAQ fully visible -> faq count = 4
+ *   - aria=true:     aria-hidden="true" on the accordion item -> faq count = 3 (suppressed)
+ *   - noscript=true: fully visible + additional <noscript> label (no suppression) -> faq = 4
+ *
+ * Note: The JSON-LD FAQPage schema in the jsonld / combined pages enumerates exactly
+ * 3 Question objects. Whether the model uses the JSON-LD count as ground truth (3)
+ * or the HTML content count (4) is itself a measurable GAIO effect.
+ *
+ * Expected signal (faq count):
+ *   - default, noscript, semantic, dsd, jsonld, microdata: faq = 4
+ *   - aria=true, combined: faq = 3 (aria-hidden suppresses the 4th item)
+ */
+interface Props {
+  /** Apply ARIA suppression: adds aria-hidden="true" to the 4th FAQ item */
+  aria?: boolean;
+  /** Apply noscript remediation: adds a visible <noscript> version (no suppression) */
+  noscript?: boolean;
+}
+
+const { aria = false, noscript: includeNoscript = false } = Astro.props;
+---
+
+{aria ? (
+  <dxp-accordion-element id="faq-4" aria-hidden="true">
+    <span slot="headline">Wie lange ist mein Versicherungsschutz aktiv?</span>
+    <p>Ihr Versicherungsschutz beginnt ab dem in Ihrer Police genannten Datum und l&auml;uft bis zur gew&auml;hlten Vertragslaufzeit. Eine Verl&auml;ngerung erfolgt automatisch, sofern Sie nicht fristgerecht k&uuml;ndigen.</p>
+  </dxp-accordion-element>
+) : (
+  <dxp-accordion-element id="faq-4">
+    <span slot="headline">Wie lange ist mein Versicherungsschutz aktiv?</span>
+    <p>Ihr Versicherungsschutz beginnt ab dem in Ihrer Police genannten Datum und l&auml;uft bis zur gew&auml;hlten Vertragslaufzeit. Eine Verl&auml;ngerung erfolgt automatisch, sofern Sie nicht fristgerecht k&uuml;ndigen.</p>
+  </dxp-accordion-element>
+)}
+
+{includeNoscript && (
+  <noscript>
+    <div style="padding: 0.5rem 0; border-top: 1px solid #eee; margin-top: 0.5rem;">
+      <strong>Wie lange ist mein Versicherungsschutz aktiv?</strong>
+      <p>Ihr Versicherungsschutz beginnt ab dem in Ihrer Police genannten Datum und laeuft bis zur gewaehlten Vertragslaufzeit.</p>
+    </div>
+  </noscript>
+)}

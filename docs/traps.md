@@ -4,9 +4,9 @@ The first round of evaluation produced identical extraction scores across all 8 
 
 ---
 
-## Trap 1 — KFZ Cross-sell Block (scope ambiguity)
+## Trap 1 — Cross-sell Block (scope ambiguity)
 
-**What it is:** A cross-selling block listing two KFZ (motor) tariffs ("KFZ Basis – 39,00 €" and "KFZ Komfort – 59,00 €") placed after the main Haftpflicht tariff comparison on the page.
+**What it is:** A cross-selling block listing two motor tariffs ("KFZ Basis – 39,00 €" and "KFZ Komfort – 59,00 €") placed after the main Haftpflicht tariff comparison on the page.
 
 **Per-variant implementation:**
 
@@ -16,7 +16,7 @@ The first round of evaluation produced identical extraction scores across all 8 
 | `semantic`, `combined` | `<aside>` — landmark element that denotes supplementary / related content |
 
 **Expected signal (`tarife` count):**
-- Non-semantic pages: LLM may include the 2 KFZ tariffs, returning **5** tariffs instead of 3.
+- Non-semantic pages: LLM may include the 2 motor tariffs, returning **5** tariffs instead of 3.
 - `semantic` / `combined`: The `<aside>` signals out-of-scope content; LLM should return **3** main tariffs.
 
 The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär beworbenen Produkts dieser Seite."*
@@ -25,7 +25,7 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 
 ## Trap 2 — Unlabelled Range Slider (field visibility)
 
-**What it is:** An `<input type="range">` for "Gewünschte Deckungssumme" placed in the form section. On non-ARIA pages it has no accessible label in HTML.
+**What it is:** A number input (`<input type="number">`) for "Gewünschte Deckungssumme" placed in the form section. On non-ARIA pages it has no accessible label and an opaque `name` attribute (`f_coverage`), giving the LLM no cue to identify its purpose.
 
 **Per-variant implementation:**
 
@@ -48,7 +48,7 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 
 | Variants | Label mechanism |
 |---|---|
-| `control`, `semantic`, `noscript`, `dsd`, `microdata`, `jsonld` | `.field-geburtsjahr::before { content: "Geburtsjahr" }` — CSS only, no HTML text, no ARIA |
+| `control`, `semantic`, `noscript`, `dsd`, `microdata`, `jsonld` | `.field-birthyear::before { content: "Geburtsjahr" }` — CSS only, no HTML text, no ARIA |
 | `aria`, `combined` | `aria-label="Geburtsjahr eingeben"` on the `<input>` |
 
 **Expected signal (`formFelder` count):**
@@ -59,7 +59,7 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 
 ## Trap 4 — Testimonial Price Noise (tariff scope)
 
-**What it is:** A customer testimonial quote placed directly adjacent to the tariff comparison block. The quote contains a price figure ("12 € pro Monat") that could be confused with a bookable tariff by a naive text extractor.
+**What it is:** A customer testimonial quote placed directly adjacent to the tariff comparison block. The quote contains a price figure ("12 € pro Monat") phrased as a first-person product statement (*"Bei meiner Police zahle ich nur 12 € pro Monat"*). Without `<blockquote>`, this is plausible as a tariff price. Comparative phrasing ("I save compared to…") has been intentionally removed so that `<blockquote>` is the primary disambiguation signal.
 
 **Per-variant implementation:**
 
@@ -84,28 +84,59 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 
 | Variants | Markup |
 |---|---|
-| `control`, `aria`, `noscript`, `dsd` | Bare `<p>` — no semantic indication of obsolescence |
+| `control`, `aria`, `noscript`, `dsd` | Bare `<p>` with ambiguous text ("Einsteiger-Tarif: ab 1,99 €") — no "discontinued" phrasing, so only the semantic `<s>` carries the obsolescence signal |
 | `semantic`, `combined` | `<s>` element — HTML semantic for content that is "no longer accurate or relevant" |
 | `microdata` | Bare `<p>`, but the page's three live tariffs each carry `itemprop="offers"` / `schema:Offer`; the deprecated notice has no structured data annotation |
 | `jsonld` | Bare `<p>`, but the JSON-LD `Offer` list in `<head>` includes only the 3 current tariffs |
 
 **Expected signal (`tarife` count / accuracy):**
-- `control`, `aria`, `noscript`, `dsd`: LLM may include `1,99 €` as a fourth tariff.
+- `control`, `aria`, `noscript`, `dsd`: Ambiguous text with no explicit "not bookable" cue; LLM may include `1,99 €` as a fourth tariff.
 - `semantic` / `combined`: `<s>` element communicates obsolescence.
 - `microdata` / `jsonld`: Structured data scope excludes the deprecated entry.
 
 ---
 
-## Signal Matrix
+## Trap 6 -- aria-hidden Bonus Tariff Card (ARIA content suppression)
 
-The following table summarises the maximum discriminating signal each trap can produce across variants.
+**What it is:** A "Komfort-Plus" tariff card (7,50 EUR/Monat, Deckungssumme: 20 Mio. EUR) placed directly above the tariff comparison table. Its text format is structurally identical to the three main tariff rows -- no promotional language or qualifiers that allow a capable model to self-disambiguate it as non-primary content. Three suppression mechanisms are contrasted.
 
-| Trap | Measurement field | Control & DSD & Noscript | Aria | Semantic | Combined | Microdata | JSON-LD |
-|---|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| Falle 1 — KFZ cross-sell | `tarife` count | 5 (risk) | 5 (risk) | **3** | **3** | 5 (risk) | 5 (risk) |
-| Falle 2 — Range slider | `formFelder` count | miss (risk) | **counted** | miss (risk) | **counted** | miss (risk) | miss (risk) |
-| Falle 3 — CSS-only label | `formFelder` count | miss (risk) | **named** | miss (risk) | **named** | miss (risk) | miss (risk) |
-| Falle 4 — Testimonial `12 €` | `tarife` accuracy | noise (risk) | noise (risk) | **excluded** | **excluded** | noise (risk) | **excluded** |
-| Falle 5 — Deprecated `1,99 €` | `tarife` accuracy | noise (risk) | noise (risk) | **excluded** | **excluded** | **excluded** | **excluded** |
+**Per-variant implementation:**
 
-`risk` = the LLM may degrade; bold = markup provides a reliable disambiguation cue.
+| Variants | Markup |
+|---|---|
+| `control`, `noscript`, `dsd`, `microdata`, `jsonld` | Bare `<div>` — no suppression cue |
+| `aria` | `<div aria-hidden="true">` — ARIA marks the card as not part of primary content |
+| `semantic` | `<aside>` — landmark signals supplementary content |
+| `combined` | `<aside aria-hidden="true">` — both signals |
+
+**Note:** On `jsonld` and `microdata` pages the structured `offers` array enumerates exactly 3 `Offer` objects, providing an implicit scope boundary without any HTML-level suppression on the card itself.
+
+**Expected signal (`tarife` count):**
+- Non-ARIA, non-semantic pages: LLM may include "Basis-Plus" → tarife = **4**
+- `aria` / `combined`: `aria-hidden` suppresses the card → tarife = **3**
+- `semantic` / `combined`: `<aside>` signals out-of-scope → tarife = **3**
+- `jsonld` / `microdata`: structured Offer scope implicitly excludes the card → tarife = **3**
+
+---
+
+## Trap 7 -- aria-hidden 4th FAQ Item (ARIA suppressive signal)
+
+**What it is:** A fourth FAQ accordion item ("Wie lange ist mein Versicherungsschutz aktiv?") added after the three main FAQ entries. It is fully visible in the HTML DOM by default, testing whether `aria-hidden="true"` causes an LLM to *exclude* content that is structurally present.
+
+This trap tests ARIA in the **suppressive** direction — the inverse of Traps 2 and 3, which test ARIA in the *additive* (labelling) direction.
+
+**Per-variant implementation:**
+
+| Variants | Markup |
+|---|---|
+| `control`, `dsd`, `semantic`, `microdata`, `jsonld` | Bare `<dxp-accordion-element>` — 4th FAQ fully visible |
+| `noscript` | Visible element + `<noscript>` fallback label — no suppression, faq = 4 |
+| `aria`, `combined` | `<dxp-accordion-element aria-hidden="true">` — ARIA suppresses the item |
+
+**Design limitation:** `aria-hidden="true"` is set on the `<dxp-accordion-element>` *host* element. In Shadow DOM, host `aria-hidden` propagates to the accessibility tree but does not remove slotted light DOM content from raw HTML. LLMs parsing raw HTML may extract the 4th FAQ regardless of this attribute. A uniform `faq=4` result is a valid null finding for H8.
+
+> **Note:** The `jsonld` / `combined` FAQPage schema in `<head>` enumerates exactly 3 `Question` objects. Whether the model uses the JSON-LD count as a "ground truth" (returning 3 even when the HTML has 4) is itself a measurable GAIO effect.
+
+**Expected signal (`faq` count):**
+- Non-ARIA pages: faq = **4** (4th item visible)
+- `aria` / `combined`: `aria-hidden` suppresses the 4th item → faq = **3**

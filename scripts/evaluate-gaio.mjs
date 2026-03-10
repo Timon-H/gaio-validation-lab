@@ -40,7 +40,7 @@ Usage: node evaluate-gaio.mjs --provider <provider> [--persist] [--url <base-url
 Providers:
   openai   → uses OPENAI_API_KEY    (model: gpt-4.1-mini)
   claude   → uses ANTHROPIC_API_KEY  (model: claude-haiku-4-5)
-  gemini   → uses GEMINI_API_KEY     (model: gemini-3.0-flash)
+  gemini   → uses GEMINI_API_KEY     (model: gemini-3-flash-preview)
 
 Options:
   --persist          Write results to Supabase in addition to CSV output.
@@ -76,17 +76,20 @@ if (!SUPPORTED_PROVIDERS.includes(PROVIDER)) {
 const PROVIDER_CONFIG = {
   openai: {
     envVar: 'OPENAI_API_KEY',
-    model: 'gpt-4.1-mini', // switch to 'gpt-4.1' for higher accuracy
+    model: 'gpt-4.1-mini', 
+    // switch to 'gpt-4.1' for higher accuracy and 'gpt-4.1-nano' for faster but less accurate results
     // NOTE: GPT-5 models are intentionally excluded — they do not support
     // the temperature parameter, which is required for deterministic output.
   },
   claude: {
     envVar: 'ANTHROPIC_API_KEY',
-    model: 'claude-haiku-4-5', // switch to 'claude-opus-4-5' for higher accuracy
+    model: 'claude-haiku-4-5', 
+    // switch to 'claude-opus-4-5' for higher accuracy
   },
   gemini: {
     envVar: 'GEMINI_API_KEY',
-    model: 'gemini-3-flash-preview', // switch to 'gemini-3-pro-preview' for higher accuracy
+    model: 'gemini-3-flash-preview', 
+    // switch to 'gemini-3-pro-preview' for higher accuracy
   },
 };
 
@@ -142,6 +145,7 @@ const SYSTEM_PROMPT = `
 Du bist ein präziser Daten-Extraktor. Analysiere das übergebene HTML-Dokument einer Versicherungswebseite.
 
 Deine Aufgabe ist es, die aktuell angebotenen Haupttarife, Kontaktinformationen und Formularfelder aus dem Quelltext zu extrahieren.
+Erfasse nur die Haupttarife des primär beworbenen Produkts dieser Seite.
 Setze den Wert auf null, wenn eine Information im HTML nicht eindeutig identifizierbar ist oder das Label fehlt.
 Gib leere Arrays zurück, wenn keine passenden Einträge gefunden werden.
 
@@ -189,6 +193,12 @@ Antworte ausschließlich mit einem validen JSON-Objekt exakt nach folgendem Sche
 // Provider-specific LLM call functions
 // ---------------------------------------------------------------------------
 
+/**
+ * Sends the page HTML to OpenAI and returns the raw JSON string response.
+ * Uses `response_format: json_object` to guarantee valid JSON output.
+ * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
+ * @returns {Promise<string>} JSON string extracted by the model.
+ */
 async function callOpenAI(htmlContent) {
   const client = new OpenAI({ apiKey: API_KEY });
   const completion = await client.chat.completions.create({
@@ -204,6 +214,12 @@ async function callOpenAI(htmlContent) {
   return completion.choices[0].message.content;
 }
 
+/**
+ * Sends the page HTML to Anthropic Claude and returns the raw JSON string response.
+ * Uses assistant prefilling (starting with `{`) to force JSON-only output.
+ * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
+ * @returns {Promise<string>} JSON string extracted by the model.
+ */
 async function callClaude(htmlContent) {
   const client = new Anthropic({ apiKey: API_KEY });
   const message = await client.messages.create({
@@ -225,6 +241,12 @@ async function callClaude(htmlContent) {
   return '{' + (textBlock ? textBlock.text : '}');
 }
 
+/**
+ * Sends the page HTML to Google Gemini and returns the raw JSON string response.
+ * Uses `responseMimeType: application/json` to guarantee valid JSON output.
+ * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
+ * @returns {Promise<string>} JSON string extracted by the model.
+ */
 async function callGemini(htmlContent) {
   const genAI = new GoogleGenerativeAI(API_KEY);
   const model = genAI.getGenerativeModel({
@@ -239,6 +261,11 @@ async function callGemini(htmlContent) {
   return result.response.text();
 }
 
+/**
+ * Dispatches an LLM call to the configured provider.
+ * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
+ * @returns {Promise<string>} JSON string extracted by the model.
+ */
 // Dispatch to the correct provider
 async function callLLM(htmlContent) {
   switch (PROVIDER) {
@@ -263,6 +290,13 @@ function parseRetryDelayMs(errorMessage) {
   return null;
 }
 
+/**
+ * Wraps `callLLM` with retry logic for 429 rate-limit errors.
+ * Parses the provider-suggested retry delay from the error message and waits
+ * accordingly, falling back to linear backoff (15s, 30s, 45s).
+ * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
+ * @returns {Promise<string>} JSON string extracted by the model.
+ */
 async function callLLMWithRetry(htmlContent) {
   let lastError;
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
@@ -289,6 +323,11 @@ async function callLLMWithRetry(htmlContent) {
 // Supabase persistence
 // ---------------------------------------------------------------------------
 
+/**
+ * Persists a single evaluation result row to the Supabase `llm_evaluation_results` table.
+ * @param {object} payload - Row data matching the table schema.
+ * @returns {Promise<boolean>} `true` if the insert succeeded, `false` otherwise.
+ */
 async function persistEvalResult(payload) {
   try {
     const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/llm_evaluation_results`, {
@@ -317,13 +356,32 @@ async function persistEvalResult(payload) {
 // Core evaluation logic
 // ---------------------------------------------------------------------------
 
+/**
+ * Fetches the HTML of a page variant, stripping HTML comments to reduce token usage.
+ * @param {string} url - Full URL of the variant to fetch.
+ * @returns {Promise<string>} Raw HTML with comments removed.
+ */
 async function fetchHtml(url) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
   const raw = await response.text();
-  return raw.replace(/<!--[\s\S]*?-->/g, '');
+  // Strip HTML comments to reduce token usage.
+  // Strip <nav>...</nav> to prevent experimental variant names (e.g. "JSON-LD",
+  // "Semantic", "ARIA") from leaking into the LLM context — the BaseLayout nav
+  // lists all eight variants by name, which would reveal the experimental design
+  // and could bias extraction behaviour.
+  return raw
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<nav[\s\S]*?<\/nav>/gi, '');
 }
 
+/**
+ * Evaluates a single page variant for one run index.
+ * Fetches the HTML, calls the LLM, parses the response, and optionally persists the result.
+ * @param {{ id: string, path: string }} variant - Variant descriptor.
+ * @param {number} runIndex - 1-based repetition index.
+ * @returns {Promise<object>} Result row ready for CSV serialisation.
+ */
 async function evaluateVariant(variant, runIndex) {
   const url = `${BASE_URL}${variant.path}`;
   console.log(`⏳ [${PROVIDER}] Testing variant "${variant.id}" (Run ${runIndex}/${REPETITIONS})...`);

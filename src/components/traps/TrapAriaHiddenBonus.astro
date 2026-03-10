@@ -1,0 +1,51 @@
+---
+/**
+ * Trap 6 -- aria-hidden Bonus Tariff Card (ARIA/semantic tariff suppression)
+ *
+ * A "Komfort-Plus" tariff card placed directly above the tariff comparison table.
+ * Its text format (name, price, Selbstbeteiligung, Deckungssumme) is structurally
+ * identical to the three main tariff rows -- no promotional language or qualifiers
+ * that would allow a capable model to self-disambiguate it as non-primary content.
+ * Only the semantic/ARIA suppression signals distinguish it.
+ *
+ * Three suppression mechanisms are tested:
+ *   - ARIA:     aria-hidden="true" signals the card is not part of primary content
+ *   - Semantic: <aside> landmark signals supplementary / out-of-scope content
+ *   - JSON-LD / Microdata: the structured Offer list in <head> enumerates only 3 items,
+ *               implicitly excluding this card (handled in page markup, not here)
+ *
+ * Without any of these signals, the card is indistinguishable from a 4th tariff
+ * and a naive extractor should count tarife = 4.
+ *
+ * Expected signal (tarife count):
+ *   - default:        No suppression cue -> tarife = 4
+ *   - aria=true:      aria-hidden suppresses it -> tarife = 3
+ *   - semantic=true:  <aside> signals out-of-scope -> tarife = 3
+ *   - jsonld/microdata: structured Offer scope excludes the card -> tarife = 3
+ */
+interface Props {
+  /** Apply ARIA suppression: adds aria-hidden="true" to the card */
+  aria?: boolean;
+  /** Apply semantic suppression: wraps the card in <aside> */
+  semantic?: boolean;
+}
+
+const { aria = false, semantic = false } = Astro.props;
+---
+
+{semantic ? (
+  <aside style="margin: 0.5rem 0 1rem; padding: 0.75rem 1rem; background: #f0f7ff; border: 1px solid #c0d8f0; border-radius: 4px;">
+    <p style="margin: 0 0 0.25rem;"><strong>Komfort-Plus</strong> &middot; ab <strong>7,50 &euro; / Monat</strong></p>
+    <p style="margin: 0; font-size: 0.875rem; color: #555;">Selbstbeteiligung: 0 &euro; &middot; Deckungssumme: 20 Mio. &euro;</p>
+  </aside>
+) : aria ? (
+  <div aria-hidden="true" style="margin: 0.5rem 0 1rem; padding: 0.75rem 1rem; background: #f0f7ff; border: 1px solid #c0d8f0; border-radius: 4px;">
+    <p style="margin: 0 0 0.25rem;"><strong>Komfort-Plus</strong> &middot; ab <strong>7,50 &euro; / Monat</strong></p>
+    <p style="margin: 0; font-size: 0.875rem; color: #555;">Selbstbeteiligung: 0 &euro; &middot; Deckungssumme: 20 Mio. &euro;</p>
+  </div>
+) : (
+  <div style="margin: 0.5rem 0 1rem; padding: 0.75rem 1rem; background: #f0f7ff; border: 1px solid #c0d8f0; border-radius: 4px;">
+    <p style="margin: 0 0 0.25rem;"><strong>Komfort-Plus</strong> &middot; ab <strong>7,50 &euro; / Monat</strong></p>
+    <p style="margin: 0; font-size: 0.875rem; color: #555;">Selbstbeteiligung: 0 &euro; &middot; Deckungssumme: 20 Mio. &euro;</p>
+  </div>
+)}

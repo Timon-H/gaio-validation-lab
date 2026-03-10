@@ -16,7 +16,7 @@ interface Props {
   lang?: string;
 }
 
-const { title, description, schemaData, lang = 'en' } = Astro.props;
+const { title, description, schemaData, lang = 'de' } = Astro.props;
 const schemaJson = schemaData
   ? JSON.stringify(schemaData).replace(/</g, '\\u003c')
   : undefined;

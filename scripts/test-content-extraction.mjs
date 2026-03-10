@@ -178,6 +178,13 @@ if (mode === 'persist') {
 
 console.log('============================================');
 
+/**
+ * Fetches the HTML of a page variant using the specified user-agent string.
+ * Times out after 4 seconds to prevent hanging on unresponsive servers.
+ * @param {string} url - Full URL of the variant to fetch.
+ * @param {string} userAgent - User-agent string to send with the request.
+ * @returns {Promise<string>} Raw HTML, or an empty string on error.
+ */
 async function fetchHtml(url, userAgent) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 4000);
@@ -197,10 +204,20 @@ async function fetchHtml(url, userAgent) {
   }
 }
 
+/**
+ * Strips all HTML tags and collapses whitespace to produce plain text.
+ * @param {string} html - Raw HTML string.
+ * @returns {string} Plain text content.
+ */
 function stripHtml(html) {
   return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
+/**
+ * Counts the number of whitespace-delimited words in a text string.
+ * @param {string} text - Plain text to count.
+ * @returns {number} Word count.
+ */
 function countWords(text) {
   if (!text) {
     return 0;
@@ -208,11 +225,22 @@ function countWords(text) {
   return text.split(/\s+/).filter(Boolean).length;
 }
 
+/**
+ * Counts all non-overlapping matches of a regex in a string.
+ * @param {string} text - Text to search.
+ * @param {RegExp} regex - Pattern to match (should use the `g` flag).
+ * @returns {number} Number of matches.
+ */
 function countMatches(text, regex) {
   const matches = text.match(regex);
   return matches ? matches.length : 0;
 }
 
+/**
+ * Extracts and parses the first `<script type="application/ld+json">` block from HTML.
+ * @param {string} html - Raw HTML string.
+ * @returns {object|null} Parsed JSON-LD object, or `null` if absent or invalid.
+ */
 function extractFirstJsonLd(html) {
   const match = html.match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i);
   if (!match || !match[1]) {
@@ -231,6 +259,11 @@ function extractFirstJsonLd(html) {
   }
 }
 
+/**
+ * Persists a single extraction result row to the Supabase `extraction_results` table.
+ * @param {object} payload - Row data matching the table schema.
+ * @returns {Promise<boolean>} `true` if the insert succeeded, `false` otherwise.
+ */
 async function persistResult(payload) {
   try {
     const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/extraction_results`, {
@@ -256,6 +289,12 @@ async function persistResult(payload) {
   }
 }
 
+/**
+ * Prints a formatted result row to stdout with fixed-width column alignment.
+ * @param {string} variant - Variant identifier.
+ * @param {string} botName - Simulated bot name.
+ * @param {string[]} values - Column values: [words, heads, links, ld, aria, sem, nosc, dsd, md, db].
+ */
 function logRow(variant, botName, values) {
   const [words, heads, links, ld, aria, sem, nosc, dsd, md, db] = values;
   const row = [

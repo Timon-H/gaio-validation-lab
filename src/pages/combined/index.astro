@@ -1,4 +1,4 @@
-﻿---
+---
 /**
  * Combined — GAIO-Optimized Components (Full Combo)
  * 
@@ -19,11 +19,12 @@
  */
 import { renderLitToString, html } from '../../lib/lit-ssr.ts';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import TrapDeckungssumme from '../../components/traps/TrapDeckungssumme.astro';
-import TrapGeburtsjahr from '../../components/traps/TrapGeburtsjahr.astro';
+import TrapCoverageAmount from '../../components/traps/TrapCoverageAmount.astro';
+import TrapBirthYear from '../../components/traps/TrapBirthYear.astro';
 import TrapTestimonial from '../../components/traps/TrapTestimonial.astro';
 import TrapDeprecatedTariff from '../../components/traps/TrapDeprecatedTariff.astro';
-import TrapKfzCrossSell from '../../components/traps/TrapKfzCrossSell.astro';
+import TrapCrossSell from '../../components/traps/TrapCrossSell.astro';
+import TrapAriaHiddenBonus from '../../components/traps/TrapAriaHiddenBonus.astro';
 
 // Import all component side-effects (registers custom elements for SSR)
 import '../../components/baseline/dxp-button.ts';
@@ -189,6 +190,10 @@ const accordionHtml = await renderLitToString(html`
       <span slot="headline">Kann ich meine Versicherung online kündigen?</span>
       <p>Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit.</p>
     </dxp-accordion-element>
+    <dxp-accordion-element id="faq-4" aria-hidden="true">
+      <span slot="headline">Wie lange ist mein Versicherungsschutz aktiv?</span>
+      <p>Ihr Versicherungsschutz beginnt ab dem in Ihrer Police genannten Datum und l&auml;uft bis zur gew&auml;hlten Vertragslaufzeit. Eine Verl&auml;ngerung erfolgt automatisch, sofern Sie nicht fristgerecht k&uuml;ndigen.</p>
+    </dxp-accordion-element>
   </dxp-accordion>
 `);
 
@@ -265,7 +270,7 @@ const tariffHtml = await renderLitToString(html`
     </div>
   </section>
 
-  <TrapDeckungssumme aria />
+  <TrapCoverageAmount aria />
 
   <!-- ============================================ -->
   <!-- DROPDOWN — DSD + Semantic + ARIA + Microdata  -->
@@ -289,7 +294,7 @@ const tariffHtml = await renderLitToString(html`
     <Fragment set:html={radioHtml} />
   </section>
 
-  <TrapGeburtsjahr aria />  
+  <TrapBirthYear aria />  
 
   <!-- ============================================ -->
   <!-- ACCORDION / FAQ — DSD + Semantic + ARIA + Microdata -->
@@ -349,10 +354,11 @@ const tariffHtml = await renderLitToString(html`
     <p>Wählen Sie den passenden Schutz für Ihre Bedürfnisse. Alle Preise verstehen sich als monatliche Beiträge.</p>
     <TrapTestimonial  semantic /> 
     <TrapDeprecatedTariff  semantic />    
+    <TrapAriaHiddenBonus aria semantic />
     <Fragment set:html={tariffHtml} />
   </section>
 
-  <TrapKfzCrossSell semantic />   
+  <TrapCrossSell semantic />   
 
   <aside style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #43a047;">
     <a href="/">← Zur Übersicht</a>

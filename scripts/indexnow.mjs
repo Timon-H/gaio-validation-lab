@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const KEY = '292555bae5aa48bcb6f7a67f3c4c0a62';
-const HOST = 'gaio-validation-lab.vercel.app';
+const KEY = process.env.INDEXNOW_KEY;
+const HOST = process.env.SITE_HOST;
 
 const body = {
   host: HOST,
