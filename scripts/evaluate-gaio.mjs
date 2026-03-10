@@ -40,7 +40,7 @@ Usage: node evaluate-gaio.mjs --provider <provider> [--persist] [--url <base-url
 Providers:
   openai   → uses OPENAI_API_KEY    (model: gpt-4.1-mini)
   claude   → uses ANTHROPIC_API_KEY  (model: claude-haiku-4-5)
-  gemini   → uses GEMINI_API_KEY     (model: gemini-3.0-flash)
+  gemini   → uses GEMINI_API_KEY     (model: gemini-3-flash-preview)
 
 Options:
   --persist          Write results to Supabase in addition to CSV output.
@@ -142,6 +142,7 @@ const SYSTEM_PROMPT = `
 Du bist ein präziser Daten-Extraktor. Analysiere das übergebene HTML-Dokument einer Versicherungswebseite.
 
 Deine Aufgabe ist es, die aktuell angebotenen Haupttarife, Kontaktinformationen und Formularfelder aus dem Quelltext zu extrahieren.
+Erfasse nur die Haupttarife des primär beworbenen Produkts dieser Seite.
 Setze den Wert auf null, wenn eine Information im HTML nicht eindeutig identifizierbar ist oder das Label fehlt.
 Gib leere Arrays zurück, wenn keine passenden Einträge gefunden werden.
 
@@ -361,7 +362,14 @@ async function fetchHtml(url) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
   const raw = await response.text();
-  return raw.replace(/<!--[\s\S]*?-->/g, '');
+  // Strip HTML comments to reduce token usage.
+  // Strip <nav>...</nav> to prevent experimental variant names (e.g. "JSON-LD",
+  // "Semantic", "ARIA") from leaking into the LLM context — the BaseLayout nav
+  // lists all eight variants by name, which would reveal the experimental design
+  // and could bias extraction behaviour.
+  return raw
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<nav[\s\S]*?<\/nav>/gi, '');
 }
 
 /**

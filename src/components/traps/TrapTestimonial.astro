@@ -6,6 +6,10 @@
  * block. The quote contains a price figure ("12 € pro Monat") that could be confused
  * with a bookable tariff by a naive text extractor.
  *
+ * Non-semantic variant: the text is phrased as a first-person product statement
+ * ("Bei meiner Police zahle ich nur 12 €…") which is plausible as a tariff price.
+ * There is no comparative phrasing that would pre-disambiguate it for an LLM.
+ *
  * Remediation: `semantic` pages wrap the quote in <figure>/<blockquote>/<figcaption>,
  * which are semantic HTML quotation landmarks. Non-semantic pages use a bare <p>.
  *
@@ -30,14 +34,14 @@ const { semantic = false } = Astro.props;
   <figure style="margin: 0.5rem 0; padding: 0.5rem 0.75rem; border-left: 3px solid #ddd;">
     <blockquote>
       <p style="font-size: 0.875rem; color: #555; margin: 0;">
-        <em>„Ich spare jetzt <strong>12 € pro Monat</strong> gegenüber meinem alten Anbieter – super Preis-Leistung!"</em>
+        <em>&#x201E;Bei meiner Police zahle ich nur <strong>12 &#x20AC; pro Monat</strong> &#x2013; das ist top!&#x201C;</em>
       </p>
     </blockquote>
-    <figcaption style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">– Kundin Lisa M., München</figcaption>
+    <figcaption style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">&#x2013; Kundin Lisa M., M&#xFC;nchen</figcaption>
   </figure>
 ) : (
   <p style="font-size: 0.875rem; color: #555; border-left: 3px solid #ddd; padding: 0.5rem 0.75rem; margin: 0.5rem 0;">
-    <em>„Ich spare jetzt <strong>12 € pro Monat</strong> gegenüber meinem alten Anbieter – super Preis-Leistung!"</em><br>
-    <small>– Kundin Lisa M., München</small>
+    <em>&#x201E;Bei meiner Police zahle ich nur <strong>12 &#x20AC; pro Monat</strong> &#x2013; das ist top!&#x201C;</em><br>
+    <small>&#x2013; Kundin Lisa M., M&#xFC;nchen</small>
   </p>
 )}
