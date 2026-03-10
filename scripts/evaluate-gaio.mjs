@@ -28,12 +28,14 @@ const args = process.argv.slice(2);
 const providerFlagIndex = args.indexOf('--provider');
 const PROVIDER = providerFlagIndex !== -1 ? args[providerFlagIndex + 1] : null;
 const PERSIST = args.includes('--persist');
+const urlFlagIndex = args.indexOf('--url');
+const URL_OVERRIDE = urlFlagIndex !== -1 ? args[urlFlagIndex + 1] : null;
 
 const SUPPORTED_PROVIDERS = ['openai', 'claude', 'gemini'];
 
 if (!PROVIDER) {
   console.log(`
-Usage: node evaluate-gaio.mjs --provider <provider> [--persist]
+Usage: node evaluate-gaio.mjs --provider <provider> [--persist] [--url <base-url>]
 
 Providers:
   openai   → uses OPENAI_API_KEY    (model: gpt-4.1-mini)
@@ -41,8 +43,10 @@ Providers:
   gemini   → uses GEMINI_API_KEY     (model: gemini-3.0-flash)
 
 Options:
-  --persist   Write results to Supabase in addition to CSV output.
-              Requires SUPABASE_URL and SUPABASE_ANON_KEY.
+  --persist          Write results to Supabase in addition to CSV output.
+                     Requires SUPABASE_URL and SUPABASE_ANON_KEY.
+  --url <base-url>   Override the target base URL (default: http://localhost:4321).
+                     Example: --url https://gaio-validation-lab.vercel.app
 
 Npm shortcuts:
   npm run evaluate:openai
@@ -51,6 +55,12 @@ Npm shortcuts:
   npm run evaluate:openai:persist
   npm run evaluate:claude:persist
   npm run evaluate:gemini:persist
+  npm run evaluate:openai:live
+  npm run evaluate:claude:live
+  npm run evaluate:gemini:live
+  npm run evaluate:openai:live:persist
+  npm run evaluate:claude:live:persist
+  npm run evaluate:gemini:live:persist
 `);
   process.exit(0);
 }
@@ -86,7 +96,7 @@ const API_KEY = process.env[config.envVar];
 // ---------------------------------------------------------------------------
 // General configuration
 // ---------------------------------------------------------------------------
-const BASE_URL = 'http://localhost:4321';
+const BASE_URL = URL_OVERRIDE ?? 'http://localhost:4321';
 const REPETITIONS = 1; // n=5 for statistical significance
 
 const VARIANTS = [
@@ -310,7 +320,8 @@ async function persistEvalResult(payload) {
 async function fetchHtml(url) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-  return await response.text();
+  const raw = await response.text();
+  return raw.replace(/<!--[\s\S]*?-->/g, '');
 }
 
 async function evaluateVariant(variant, runIndex) {

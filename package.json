@@ -18,6 +18,12 @@
     "evaluate:openai:persist": "node --env-file=.env ./scripts/evaluate-gaio.mjs --provider openai --persist",
     "evaluate:claude:persist": "node --env-file=.env ./scripts/evaluate-gaio.mjs --provider claude --persist",
     "evaluate:gemini:persist": "node --env-file=.env ./scripts/evaluate-gaio.mjs --provider gemini --persist",
+    "evaluate:openai:live": "node --env-file=.env ./scripts/evaluate-gaio.mjs --provider openai --url https://gaio-validation-lab.vercel.app",
+    "evaluate:claude:live": "node --env-file=.env ./scripts/evaluate-gaio.mjs --provider claude --url https://gaio-validation-lab.vercel.app",
+    "evaluate:gemini:live": "node --env-file=.env ./scripts/evaluate-gaio.mjs --provider gemini --url https://gaio-validation-lab.vercel.app",
+    "evaluate:openai:live:persist": "node --env-file=.env ./scripts/evaluate-gaio.mjs --provider openai --url https://gaio-validation-lab.vercel.app --persist",
+    "evaluate:claude:live:persist": "node --env-file=.env ./scripts/evaluate-gaio.mjs --provider claude --url https://gaio-validation-lab.vercel.app --persist",
+    "evaluate:gemini:live:persist": "node --env-file=.env ./scripts/evaluate-gaio.mjs --provider gemini --url https://gaio-validation-lab.vercel.app --persist",
     "preview": "astro build && astro preview",
     "indexnow": "node ./scripts/indexnow.mjs"
   },
