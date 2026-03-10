@@ -179,6 +179,12 @@ Antworte ausschließlich mit einem validen JSON-Objekt exakt nach folgendem Sche
 // Provider-specific LLM call functions
 // ---------------------------------------------------------------------------
 
+/**
+ * Sends the page HTML to OpenAI and returns the raw JSON string response.
+ * Uses `response_format: json_object` to guarantee valid JSON output.
+ * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
+ * @returns {Promise<string>} JSON string extracted by the model.
+ */
 async function callOpenAI(htmlContent) {
   const client = new OpenAI({ apiKey: API_KEY });
   const completion = await client.chat.completions.create({
@@ -194,6 +200,12 @@ async function callOpenAI(htmlContent) {
   return completion.choices[0].message.content;
 }
 
+/**
+ * Sends the page HTML to Anthropic Claude and returns the raw JSON string response.
+ * Uses assistant prefilling (starting with `{`) to force JSON-only output.
+ * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
+ * @returns {Promise<string>} JSON string extracted by the model.
+ */
 async function callClaude(htmlContent) {
   const client = new Anthropic({ apiKey: API_KEY });
   const message = await client.messages.create({
@@ -215,6 +227,12 @@ async function callClaude(htmlContent) {
   return '{' + (textBlock ? textBlock.text : '}');
 }
 
+/**
+ * Sends the page HTML to Google Gemini and returns the raw JSON string response.
+ * Uses `responseMimeType: application/json` to guarantee valid JSON output.
+ * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
+ * @returns {Promise<string>} JSON string extracted by the model.
+ */
 async function callGemini(htmlContent) {
   const genAI = new GoogleGenerativeAI(API_KEY);
   const model = genAI.getGenerativeModel({
@@ -229,6 +247,11 @@ async function callGemini(htmlContent) {
   return result.response.text();
 }
 
+/**
+ * Dispatches an LLM call to the configured provider.
+ * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
+ * @returns {Promise<string>} JSON string extracted by the model.
+ */
 // Dispatch to the correct provider
 async function callLLM(htmlContent) {
   switch (PROVIDER) {
@@ -253,6 +276,13 @@ function parseRetryDelayMs(errorMessage) {
   return null;
 }
 
+/**
+ * Wraps `callLLM` with retry logic for 429 rate-limit errors.
+ * Parses the provider-suggested retry delay from the error message and waits
+ * accordingly, falling back to linear backoff (15s, 30s, 45s).
+ * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
+ * @returns {Promise<string>} JSON string extracted by the model.
+ */
 async function callLLMWithRetry(htmlContent) {
   let lastError;
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
@@ -279,6 +309,11 @@ async function callLLMWithRetry(htmlContent) {
 // Supabase persistence
 // ---------------------------------------------------------------------------
 
+/**
+ * Persists a single evaluation result row to the Supabase `llm_evaluation_results` table.
+ * @param {object} payload - Row data matching the table schema.
+ * @returns {Promise<boolean>} `true` if the insert succeeded, `false` otherwise.
+ */
 async function persistEvalResult(payload) {
   try {
     const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/llm_evaluation_results`, {
@@ -307,12 +342,24 @@ async function persistEvalResult(payload) {
 // Core evaluation logic
 // ---------------------------------------------------------------------------
 
+/**
+ * Fetches the HTML of a page variant, stripping HTML comments to reduce token usage.
+ * @param {string} url - Full URL of the variant to fetch.
+ * @returns {Promise<string>} Raw HTML with comments removed.
+ */
 async function fetchHtml(url) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
   return await response.text();
 }
 
+/**
+ * Evaluates a single page variant for one run index.
+ * Fetches the HTML, calls the LLM, parses the response, and optionally persists the result.
+ * @param {{ id: string, path: string }} variant - Variant descriptor.
+ * @param {number} runIndex - 1-based repetition index.
+ * @returns {Promise<object>} Result row ready for CSV serialisation.
+ */
 async function evaluateVariant(variant, runIndex) {
   const url = `${BASE_URL}${variant.path}`;
   console.log(`⏳ [${PROVIDER}] Testing variant "${variant.id}" (Run ${runIndex}/${REPETITIONS})...`);
