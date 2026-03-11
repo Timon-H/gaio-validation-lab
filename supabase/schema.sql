@@ -61,7 +61,7 @@ FROM bot_logs
 GROUP BY test_group
 ORDER BY test_group;
 
--- 4. LLM evaluation results (populated by evaluate-gaio.mjs --persist)
+-- 4. LLM evaluation results (populated by evaluate.mjs --persist)
 -- Stores structured extraction output per variant and provider run
 CREATE TABLE IF NOT EXISTS llm_evaluation_results (
   id                   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,

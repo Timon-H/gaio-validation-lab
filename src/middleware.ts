@@ -27,12 +27,12 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
   const isControl = url.pathname.startsWith('/control');
   const isCombined = url.pathname.startsWith('/combined');
-  const isIsolatedTest = url.pathname.startsWith('/test-jsonld-only')
-    || url.pathname.startsWith('/test-semantic-only')
-    || url.pathname.startsWith('/test-noscript-only')
-    || url.pathname.startsWith('/test-aria-only')
+  const isIsolatedTest = url.pathname.startsWith('/test-jsonld')
+    || url.pathname.startsWith('/test-semantic')
+    || url.pathname.startsWith('/test-noscript')
+    || url.pathname.startsWith('/test-aria')
     || url.pathname.startsWith('/test-dsd')
-    || url.pathname.startsWith('/test-microdata-only');
+    || url.pathname.startsWith('/test-microdata');
   
   if (!isControl && !isCombined && !isIsolatedTest) {
     return next();

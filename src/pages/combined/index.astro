@@ -11,7 +11,7 @@
  * 
  * NOTE: <noscript> fallbacks are NOT included here because DSD makes them
  * redundant — the shadow content is already in the initial HTML without JS.
- * The noscript technique is tested in isolation at /test-noscript-only.
+ * The noscript technique is tested in isolation at /test-noscript.
  * 
  * Crawlers and LLMs can now parse the page content even though the
  * interactive rendering still lives inside Shadow DOM.
@@ -360,7 +360,7 @@ const tariffHtml = await renderLitToString(html`
 
   <TrapCrossSell semantic />   
 
-  <aside style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #43a047;">
+  <aside style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #4a5dc9;">
     <a href="/">← Zur Übersicht</a>
   </aside>
 </BaseLayout>

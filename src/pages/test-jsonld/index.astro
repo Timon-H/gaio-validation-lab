@@ -1,12 +1,12 @@
 ---
 /**
- * Isolated Test: Semantic HTML Only
+ * Isolated Test: JSON-LD Only
  * 
- * Same components as Baseline, but wrapped in semantic HTML5 elements
- * (<section>, <article>, <address>) instead of <div>.
+ * Same components as Baseline (Shadow DOM, <div> wrappers),
+ * but WITH JSON-LD structured data in the <head>.
  * 
- * NO JSON-LD, NO ARIA on host elements, NO <noscript> fallbacks.
- * Isolates the effect of semantic wrappers on GAIObility.
+ * Isolates the effect of structured data alone on AI extractability,
+ * without semantic HTML, ARIA, or Light DOM fallbacks.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import TrapCoverageAmount from '../../components/traps/TrapCoverageAmount.astro';
@@ -16,60 +16,143 @@ import TrapDeprecatedTariff from '../../components/traps/TrapDeprecatedTariff.as
 import TrapCrossSell from '../../components/traps/TrapCrossSell.astro';
 import TrapAriaHiddenBonus from '../../components/traps/TrapAriaHiddenBonus.astro';
 import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
+
+const jsonldSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Versicherungen – Tarifvergleich & Übersicht",
+  "description": "Vergleichen Sie unsere Haftpflicht-, Hausrat- und Kaskoversicherungen. Berechnen Sie Ihren individuellen Beitrag online.",
+  "about": {
+    "@type": "FinancialProduct",
+    "name": "Haftpflichtversicherung",
+    "sameAs": [
+      "https://de.wikipedia.org/wiki/Haftpflichtversicherung",
+      "https://www.wikidata.org/wiki/Q1377051"
+    ]
+  },
+  "provider": {
+    "@type": "InsuranceAgency",
+    "name": "DXP Versicherungen",
+    "sameAs": [
+      "https://de.wikipedia.org/wiki/Versicherungsunternehmen"
+    ]
+  },
+  "mainEntity": {
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Was ist eine Haftpflichtversicherung?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Eine Haftpflichtversicherung schützt Sie vor Schadensersatzansprüchen Dritter. Sie übernimmt die Kosten, wenn Sie versehentlich Schäden an Personen oder deren Eigentum verursachen."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Wie berechne ich meinen Beitrag?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Ihr Beitrag hängt von verschiedenen Faktoren ab, wie z.B. Ihrem Alter, Ihrem Wohnort und dem gewünschten Versicherungsschutz. Nutzen Sie unseren Online-Rechner für eine individuelle Berechnung."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Kann ich meine Versicherung online kündigen?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit."
+        }
+      }
+    ]
+  },
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "Haftpflicht Basis",
+      "price": "3.50",
+      "priceCurrency": "EUR",
+      "description": "Grundschutz – Deckungssumme 5 Mio. €, Selbstbeteiligung 150 €",
+      "itemOffered": {
+        "@type": "Product",
+        "name": "Privathaftpflichtversicherung Basis",
+        "category": "Haftpflichtversicherung",
+        "sameAs": "https://de.wikipedia.org/wiki/Privathaftpflichtversicherung"
+      }
+    },
+    {
+      "@type": "Offer",
+      "name": "Haftpflicht Komfort",
+      "price": "5.90",
+      "priceCurrency": "EUR",
+      "description": "Erweiterter Schutz – Deckungssumme 10 Mio. €, keine Selbstbeteiligung",
+      "itemOffered": {
+        "@type": "Product",
+        "name": "Privathaftpflichtversicherung Komfort",
+        "category": "Haftpflichtversicherung",
+        "sameAs": "https://de.wikipedia.org/wiki/Privathaftpflichtversicherung"
+      }
+    },
+    {
+      "@type": "Offer",
+      "name": "Haftpflicht Premium",
+      "price": "9.80",
+      "priceCurrency": "EUR",
+      "description": "Rundum-Sorglos – Deckungssumme 50 Mio. €, keine Selbstbeteiligung",
+      "itemOffered": {
+        "@type": "Product",
+        "name": "Privathaftpflichtversicherung Premium",
+        "category": "Haftpflichtversicherung",
+        "sameAs": "https://de.wikipedia.org/wiki/Privathaftpflichtversicherung"
+      }
+    }
+  ]
+};
 ---
 
 <BaseLayout 
   title="DXP Versicherungen – Tarifvergleich & Übersicht"
   description="Vergleichen Sie unsere Haftpflicht-, Hausrat- und Kaskoversicherungen. Berechnen Sie Ihren individuellen Beitrag online."
+  schemaData={jsonldSchema}
 >
   <script>
     import '../../components/baseline/index.ts';
   </script>
 
-  <section style="margin-top: 1.5rem;">
+  <div style="margin-top: 1.5rem;">
     <h2>Unsere Versicherungsprodukte</h2>
     <p>Entdecken Sie unsere umfangreichen Versicherungslösungen – von der Privathaftpflicht bis zur Hausratversicherung.</p>
-  </section>
+  </div>
 
   <!-- BUTTON -->
-  <section style="margin: 2rem 0;">
-    <h3>Aktionen</h3>
-    <p>Starten Sie Ihre Versicherungsberechnung oder erfahren Sie mehr über unsere Produkte.</p>
+  <div style="margin: 2rem 0;">
     <dxp-button>Jetzt berechnen</dxp-button>
     <dxp-button variant="secondary">Mehr erfahren</dxp-button>
     <dxp-button disabled>Nicht verfügbar</dxp-button>
-  </section>
+  </div>
 
   <!-- TEXT INPUT -->
-  <section style="margin: 2rem 0;">
-    <h3>Persönliche Angaben</h3>
-    <p>Geben Sie Ihre Kontaktdaten ein, um ein individuelles Angebot zu erhalten.</p>
+  <div style="margin: 2rem 0;">
     <dxp-text-input label="Vorname" name="vorname" placeholder="Max" required required-error-text="Bitte geben Sie Ihren Vornamen ein."></dxp-text-input>
     <dxp-text-input label="E-Mail" name="email" type="email" placeholder="max@example.de" regex="^[^@]+@[^@]+\.[^@]+$" regex-error-text="Bitte geben Sie eine gültige E-Mail-Adresse ein."></dxp-text-input>
-  </section>
+  </div>
 
   <TrapCoverageAmount />
 
   <!-- DROPDOWN -->
-  <section style="margin: 2rem 0;">
-    <h3>Versicherungstyp auswählen</h3>
-    <p>Wählen Sie die gewünschte Versicherungsart aus unseren Angeboten.</p>
+  <div style="margin: 2rem 0;">
     <dxp-dropdown-v1 label="Versicherungstyp" name="versicherungstyp" placeholder="Bitte wählen..." options='[{"key":"haftpflicht","value":"Haftpflichtversicherung"},{"key":"kasko","value":"Kaskoversicherung"},{"key":"teilkasko","value":"Teilkaskoversicherung"}]' required></dxp-dropdown-v1>
-  </section>
+  </div>
 
   <!-- RADIO -->
-  <section style="margin: 2rem 0;">
-    <h3>Zahlungsweise</h3>
-    <p>Wählen Sie Ihre bevorzugte Zahlungsfrequenz für Ihren Versicherungsbeitrag.</p>
+  <div style="margin: 2rem 0;">
     <dxp-input-radio label="Zahlungsweise" name="zahlungsweise" options='[{"value":"monatlich","label":"Monatlich"},{"value":"quartal","label":"Vierteljährlich"},{"value":"jaehrlich","label":"Jährlich"}]' default="monatlich"></dxp-input-radio>
-  </section>
+  </div>
 
   <TrapBirthYear />
 
   <!-- ACCORDION -->
-  <section style="margin: 2rem 0;">
-    <h3>Häufig gestellte Fragen</h3>
-    <p>Antworten auf die wichtigsten Fragen rund um unsere Versicherungsprodukte.</p>
+  <div style="margin: 2rem 0;">
     <dxp-accordion>
       <dxp-accordion-element id="faq-1">
         <span slot="headline">Was ist eine Haftpflichtversicherung?</span>
@@ -85,35 +168,27 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
       </dxp-accordion-element>
       <TrapHiddenFaq />
     </dxp-accordion>
-  </section>
+  </div>
 
   <!-- CARD -->
-  <section style="margin: 2rem 0;">
-    <h3>Unsere Versicherungsprodukte</h3>
-    <p>Finden Sie den passenden Schutz für Ihre Lebenssituation.</p>
+  <div style="margin: 2rem 0;">
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
-      <article>
-        <dxp-card>
-          <span slot="badge" style="background: #e3f2fd; color: #0066cc;">Empfohlen</span>
-          <h4 slot="header-title">Privathaftpflicht</h4>
-          <p slot="teaser-text">Umfassender Schutz für Ihren Alltag – ab 3,50 € im Monat.</p>
-          <dxp-button slot="buttons">Jetzt abschließen</dxp-button>
-        </dxp-card>
-      </article>
-      <article>
-        <dxp-card>
-          <h4 slot="header-title">Hausratversicherung</h4>
-          <p slot="teaser-text">Schützen Sie Ihr Hab und Gut gegen Einbruch, Feuer und Wasserschäden.</p>
-          <dxp-button slot="buttons" variant="secondary">Details ansehen</dxp-button>
-        </dxp-card>
-      </article>
+      <dxp-card>
+        <span slot="badge" style="background: #e3f2fd; color: #0066cc;">Empfohlen</span>
+        <h3 slot="header-title">Privathaftpflicht</h3>
+        <p slot="teaser-text">Umfassender Schutz für Ihren Alltag – ab 3,50 € im Monat.</p>
+        <dxp-button slot="buttons">Jetzt abschließen</dxp-button>
+      </dxp-card>
+      <dxp-card>
+        <h3 slot="header-title">Hausratversicherung</h3>
+        <p slot="teaser-text">Schützen Sie Ihr Hab und Gut gegen Einbruch, Feuer und Wasserschäden.</p>
+        <dxp-button slot="buttons" variant="secondary">Details ansehen</dxp-button>
+      </dxp-card>
     </div>
-  </section>
+  </div>
 
   <!-- FLYOUT -->
-  <section style="margin: 2rem 0;">
-    <h3>Brauchen Sie Hilfe?</h3>
-    <p>Unser Kundenservice steht Ihnen gerne zur Verfügung.</p>
+  <div style="margin: 2rem 0;">
     <dxp-flyout flyout-position="left">
       <dxp-button slot="content" variant="secondary">Hilfe & Kontakt</dxp-button>
       <div slot="flyout" style="padding: 0.5rem;">
@@ -122,21 +197,19 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
         <p style="margin: 0;">Mo–Fr: 8:00–18:00 Uhr</p>
       </div>
     </dxp-flyout>
-  </section>
+  </div>
 
   <!-- TARIFF COMPARISON -->
-  <section style="margin: 2rem 0;">
-    <h3>Unsere Tarife im Vergleich</h3>
-    <p>Wählen Sie den passenden Schutz für Ihre Bedürfnisse. Alle Preise verstehen sich als monatliche Beiträge.</p>
-    <TrapTestimonial semantic />
-    <TrapDeprecatedTariff semantic />
-    <TrapAriaHiddenBonus semantic />
+  <div style="margin: 2rem 0;">
+    <TrapTestimonial />
+    <TrapDeprecatedTariff />
+    <TrapAriaHiddenBonus />
     <dxp-tariff-comparison headline="Unsere Tarife im Vergleich" sub-headline="Wählen Sie den passenden Schutz für Ihre Bedürfnisse" tariffs='{"prefix":"ab","productName":"Haftpflicht","suffix":"€","tariffData":[{"id":"basis","name":"Basis","period":"monthly","premium":"3,50","description":"Grundschutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"5 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"150 €"}}]},{"id":"komfort","name":"Komfort","period":"monthly","premium":"5,90","highlighted":true,"overline":"Beliebteste Wahl","description":"Erweiterter Schutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"10 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]},{"id":"premium","name":"Premium","period":"monthly","premium":"9,80","description":"Rundum-Sorglos","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"50 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]}],"moduleGroups":[{"name":"Leistungen","modules":[{"moduleName":"deckung","name":"Deckungssumme","uuid":"1"},{"moduleName":"selbstbeteiligung","name":"Selbstbeteiligung","uuid":"2"}]}]}'></dxp-tariff-comparison>
-  </section>
+  </div>
 
-  <TrapCrossSell semantic />
+  <TrapCrossSell />
 
-  <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #3f51b5;">
+  <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #4a5dc9;">
     <a href="/">← Zur Übersicht</a>
   </p>
 </BaseLayout>

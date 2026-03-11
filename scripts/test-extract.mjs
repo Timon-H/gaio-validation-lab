@@ -19,12 +19,12 @@ if (mode === 'persist') {
 const variants = [
   'control',
   'combined',
-  'test-jsonld-only',
-  'test-semantic-only',
-  'test-noscript-only',
-  'test-aria-only',
+  'test-jsonld',
+  'test-semantic',
+  'test-noscript',
+  'test-aria',
   'test-dsd',
-  'test-microdata-only',
+  'test-microdata',
 ];
 
 const bots = [
@@ -156,13 +156,13 @@ console.log('Legend: LD=JSON-LD, ARIA=aria-label, SEM=semantic HTML, NOSC=<noscr
 console.log('');
 console.log('Expected GAIO variable pattern (LD / ARIA / SEM / NOSC / DSD):');
 console.log('  control           → no  / no  / no  / no  / no');
-console.log('  test-jsonld-only  → YES / no  / no  / no  / no');
-console.log('  test-semantic-only→ no  / no  / YES / no  / no');
-console.log('  test-noscript-only→ no  / no  / no  / YES / no');
-console.log('  test-aria-only    → no  / YES / no  / no  / no');
+console.log('  test-jsonld     → YES / no  / no  / no  / no');
+console.log('  test-semantic   → no  / no  / YES / no  / no');
+console.log('  test-noscript   → no  / no  / no  / YES / no');
+console.log('  test-aria       → no  / YES / no  / no  / no');
 console.log('  test-dsd          → no  / no  / no  / no  / YES');
 console.log('  combined          → YES / YES / YES / no  / YES (DSD supersedes noscript)');
-console.log('  test-microdata-only → no / no  / no  / no  / no  / YES (microdata)');
+console.log('  test-microdata  → no / no  / no  / no  / no  / YES (microdata)');
 console.log('        MD=microdata (itemscope/itemtype/itemprop)');
 console.log('');
 console.log('NOTE: SEM/ARIA may show infrastructure positives (BaseLayout <nav>, DSD');
