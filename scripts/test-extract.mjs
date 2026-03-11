@@ -52,6 +52,20 @@ const colors = {
   reset: '\x1b[0m',
 };
 
+// Expected GAIO marker pattern per variant.
+// aria/sem are not asserted: BaseLayout <nav> produces infrastructure positives
+// on all pages, making false-negatives impossible to distinguish from real signals.
+const expected = {
+  'control':        { ld: false, nosc: false, dsd: false, md: false },
+  'test-jsonld':    { ld: true,  nosc: false, dsd: false, md: false },
+  'test-semantic':  { ld: false, nosc: false, dsd: false, md: false },
+  'test-noscript':  { ld: false, nosc: true,  dsd: false, md: false },
+  'test-aria':      { ld: false, nosc: false, dsd: false, md: false },
+  'test-dsd':       { ld: false, nosc: false, dsd: true,  md: false },
+  'test-microdata': { ld: false, nosc: false, dsd: false, md: true  },
+  'combined':       { ld: true,  nosc: false, dsd: true,  md: true  },
+};
+
 const header = [
   'VARIANT'.padEnd(22),
   'BOT'.padEnd(10),
@@ -79,6 +93,7 @@ console.log('-------------------------------------------------------------------
 
 let persisted = 0;
 let failed = 0;
+let assertFailed = 0;
 
 for (const variant of variants) {
   for (const bot of bots) {
@@ -111,6 +126,16 @@ for (const variant of variants) {
       hasDsd ? 'YES' : 'no',
       hasMicrodata ? 'YES' : 'no',
     ];
+
+    // Assert marker pattern once per variant (first bot is sufficient; HTML is UA-invariant).
+    if (bot === bots[0] && expected[variant]) {
+      const actual = { ld: hasJsonLd, nosc: hasNoscript, dsd: hasDsd, md: hasMicrodata };
+      const fails = Object.entries(expected[variant]).filter(([k, v]) => actual[k] !== v);
+      fails.forEach(([k, v]) => {
+        console.log(`  ${colors.red}[ASSERT]${colors.reset} ${variant}: expected ${k}=${v}, got ${actual[k]}`);
+      });
+      assertFailed += fails.length;
+    }
 
     let dbStatus = '-';
 
@@ -176,7 +201,14 @@ if (mode === 'persist') {
   console.log('Or use the gaio_comparison view for aggregated stats.');
 }
 
+if (assertFailed > 0) {
+  console.log(`\n${colors.red}✗ ${assertFailed} marker assertion(s) failed — check for cross-contamination.${colors.reset}`);
+} else {
+  console.log(`\n${colors.green}✓ All marker assertions passed.${colors.reset}`);
+}
 console.log('============================================');
+
+if (assertFailed > 0) process.exit(1);
 
 /**
  * Fetches the HTML of a page variant using the specified user-agent string.

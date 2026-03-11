@@ -10,12 +10,12 @@ const body = {
   urlList: [
     'control',
     'combined',
-    'test-jsonld-only',
-    'test-semantic-only',
-    'test-noscript-only',
-    'test-aria-only',
+    'test-jsonld',
+    'test-semantic',
+    'test-noscript',
+    'test-aria',
     'test-dsd',
-    'test-microdata-only',
+    'test-microdata',
   ].map(path => `https://${HOST}/${path}`),
 };
 
