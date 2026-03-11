@@ -139,9 +139,9 @@ If results were persisted with `--persist`, the view aggregates across runs:
 GET /rest/v1/llm_eval_comparison?select=*
 ```
 
-Columns: `variant_id`, `provider`, `model`, `avg_tarife_count`, `avg_faq_count`, `avg_produktkarten_count`, `avg_form_felder_count`, `hat_kontakt_sum`, `hat_anbieter_sum`, `run_count`.
+Columns: `variant_id`, `provider`, `model`, `runs`, `avg_tarife`, `avg_faq`, `avg_produktkarten`, `avg_form_felder`, `pct_kontakt`, `pct_anbieter`, `last_run_at`.
 
-The `run_count` column shows how many individual runs were aggregated. A higher count (e.g. 9 = 3 runs × 3 repetitions) provides more reliable averages.
+The `runs` column shows how many individual runs were aggregated. A higher count (e.g. 9 = 3 runs × 3 repetitions) provides more reliable averages.
 
 ## GPT-4.1 Pilot Run — 2026-03-10 Observations
 
@@ -177,6 +177,6 @@ With flat aggregate counts, the raw JSON still varies by variant — GAIO measur
 
 ### Recommendations for Future Runs
 
-- Use a lower-capability model (e.g., `gpt-4o-mini`, `gemini-flash`) to observe count-level discrimination from the hardened traps.
+- Use a lower-capability model (e.g., `gpt-4.1-nano`, `gemini-3-flash-preview`) to observe count-level discrimination from the hardened traps.
 - Run `REPETITIONS=5` for statistical significance after confirming trap discrimination on a single run.
 - Report both count-level and sub-surface JSON comparisons in the final analysis.

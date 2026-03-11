@@ -47,7 +47,7 @@ Add the relevant keys to your `.env` file. The npm scripts load them automatical
 |---|---|---|
 | OpenAI | `gpt-4.1-mini` | `gpt-4.1` |
 | Claude | `claude-haiku-4-5` | `claude-opus-4-5` |
-| Gemini | `gemini-2.5-flash` | `gemini-2.5-pro` |
+| Gemini | `gemini-3-flash-preview` | `gemini-3-pro-preview` |
 
 Models can be changed in the `PROVIDER_CONFIG` table at the top of `evaluate.mjs`.
 

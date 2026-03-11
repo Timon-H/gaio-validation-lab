@@ -56,11 +56,11 @@ Eight variants of the same insurance page content. Each isolates a single GAIO v
 | H1 — Semantic HTML causes LLMs to exclude the KFZ cross-sell block from tariff extraction | Trap 1 | `tarife` count = n
 | H2 — Semantic HTML causes LLMs to exclude the testimonial price from tariff extraction | Trap 4 | `tarife` accuracy |
 | H3 — Semantic HTML causes LLMs to exclude the deprecated tariff from active offers | Trap 5 | `tarife` accuracy |
-| H4 — ARIA labels expose the unlabelled range slider to LLM field detection | Trap 2 | `formFelder` count |
+| H4 — ARIA labels expose the unlabelled number input to LLM field detection | Trap 2 | `formFelder` count |
 | H5 — ARIA labels expose the CSS-only labelled input to LLM field detection | Trap 3 | `formFelder` count |
 | H6 — JSON-LD / Microdata structured data excludes noise prices from tariff extraction | Traps 4, 5 | `tarife` accuracy |
 | H7 — ARIA `aria-hidden` suppresses a tariff-like card from LLM extraction | Trap 6 | `tarife` count = 3 |
-| H8 — ARIA `aria-hidden` on a Web Component host suppresses slotted light DOM content | Trap 7 | `faq` count = 3 |
+| H8 — ARIA `aria-hidden` on a Web Component host suppresses slotted light DOM content (see *Threats to Validity*) | Trap 7 | `faq` count = 3 |
 
 ### Objective
 

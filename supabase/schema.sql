@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS bot_logs (
   id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   created_at    TIMESTAMPTZ DEFAULT now(),
   bot_name      TEXT NOT NULL,           -- 'ChatGPT', 'Claude', 'Gemini', etc.
-  test_group    TEXT NOT NULL,           -- path segment: 'control', 'combined', 'test-jsonld-only', etc.
-  path          TEXT NOT NULL,           -- full path: '/test-jsonld-only'
+  test_group    TEXT NOT NULL,           -- path segment: 'control', 'combined', 'test-jsonld', etc.
+  path          TEXT NOT NULL,           -- full path: '/test-jsonld'
   user_agent    TEXT,
   method        TEXT DEFAULT 'GET',
   status        INT,

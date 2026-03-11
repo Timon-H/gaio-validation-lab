@@ -80,8 +80,9 @@ const PROVIDER_CONFIG = {
     envVar: 'OPENAI_API_KEY',
     model: 'gpt-4.1-mini', 
     // switch to 'gpt-4.1' for higher accuracy and 'gpt-4.1-nano' for faster but less accurate results
-    // NOTE: GPT-5 models are intentionally excluded — they do not support
-    // the temperature parameter, which is required for deterministic output.
+    // NOTE: GPT-5 models are intentionally excluded — at the time of writing
+    // they do not support the temperature parameter, which is required for
+    // deterministic output.
   },
   claude: {
     envVar: 'ANTHROPIC_API_KEY',

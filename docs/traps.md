@@ -23,7 +23,7 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 
 ---
 
-## Trap 2 — Unlabelled Range Slider (field visibility)
+## Trap 2 — Unlabelled Number Input (field visibility)
 
 **What it is:** A number input (`<input type="number">`) for "Gewünschte Deckungssumme" placed in the form section. On non-ARIA pages it has no accessible label and an opaque `name` attribute (`f_coverage`), giving the LLM no cue to identify its purpose.
 
@@ -35,7 +35,7 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 | `aria`, `combined` | `aria-label="Gewünschte Deckungssumme in Euro"` |
 
 **Expected signal (`formFelder` count):**
-- Non-ARIA pages: LLM may not recognize the slider as a named field.
+- Non-ARIA pages: LLM may not recognize the input as a named field.
 - `aria` / `combined`: ARIA label exposes the field purpose; LLM should count it.
 
 ---
@@ -48,11 +48,11 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 
 | Variants | Label mechanism |
 |---|---|
-| `control`, `semantic`, `noscript`, `dsd`, `microdata`, `jsonld` | `.field-birthyear::before { content: "Geburtsjahr" }` — CSS only, no HTML text, no ARIA |
+| `control`, `semantic`, `noscript`, `dsd`, `microdata`, `jsonld` | `.field-birth-year::before { content: "Pflichtfeld" }` — CSS only, opaque label, no ARIA |
 | `aria`, `combined` | `aria-label="Geburtsjahr eingeben"` on the `<input>` |
 
 **Expected signal (`formFelder` count):**
-- CSS-only pages: LLM sees an unlabelled `<input type="text" name="geburtsjahr">` — may miss it or list it without a name.
+- CSS-only pages: LLM sees an unlabelled `<input type="text" name="f_birth">` — may miss it or list it without a name.
 - `aria` / `combined`: ARIA label makes the field identity machine-readable; LLM should include it with its name.
 
 ---

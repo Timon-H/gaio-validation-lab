@@ -91,6 +91,8 @@ const accordionHtml = await renderLitToString(html`
       <span slot="headline">Kann ich meine Versicherung online kündigen?</span>
       <p>Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit.</p>
     </dxp-accordion-element>
+    <!-- Trap 7 (TrapHiddenFaq) inlined here because Lit SSR requires template literals;
+         the Astro component version is used on all non-SSR pages. -->
     <dxp-accordion-element id="faq-4">
       <span slot="headline">Wie lange ist mein Versicherungsschutz aktiv?</span>
       <p>Ihr Versicherungsschutz beginnt ab dem in Ihrer Police genannten Datum und l&auml;uft bis zur gew&auml;hlten Vertragslaufzeit. Eine Verl&auml;ngerung erfolgt automatisch, sofern Sie nicht fristgerecht k&uuml;ndigen.</p>
