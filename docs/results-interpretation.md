@@ -1,6 +1,6 @@
 # Results Interpretation
 
-This document explains how to read and analyse the CSV outputs produced by `scripts/evaluate-gaio.mjs`.
+Column reference and analysis guide for the CSV outputs produced by `scripts/evaluate.mjs`.
 
 ---
 
@@ -42,7 +42,7 @@ results/gaio_evaluation_<provider>_<timestamp>.csv
 
 ## Expected Per-Variant Signals
 
-The five embedded traps create the following expected patterns:
+The seven embedded traps create the following expected patterns:
 
 ### `Tarife` count
 
@@ -61,11 +61,11 @@ The five embedded traps create the following expected patterns:
 
 | Variant | Expected | Reasoning |
 |---|---|---|
-| `control` \| **6** \| Number input is now `type="number"`, inferred label; CSS pseudo-label shows "Pflichtfeld" (opaque) |
+| `control` | **6** | Number input is now `type="number"`, inferred label; CSS pseudo-label shows "Pflichtfeld" (opaque) |
 | `aria` | **6+** | `aria-label` exposes the range slider and CSS-only birth-year field |
 | `combined` | **6+** | ARIA labels active |
-| `noscript` \| **5** \| Deckungssumme field missed (no ARIA label + opaque name); birth year via noscript label
-| all others \| **6** \| Number input inferred from context; birth year via CSS opaque label |
+| `noscript` | **5** | Deckungssumme field missed (no ARIA label + opaque name); birth year via noscript label |
+| all others | **6** | Number input inferred from context; birth year via CSS opaque label |
 
 ---
 
@@ -82,7 +82,7 @@ The five embedded traps create the following expected patterns:
 | `microdata` | **4** | No ARIA suppression |
 | `combined` | **3** | `aria-hidden` active on 4th accordion item |
 
-> **Trap 7 design note:** `aria-hidden=`true`` is on the `<dxp-accordion-element>` host, not the slotted light DOM. LLMs reading raw HTML see the slot content regardless. A uniform `faq=4` result is a valid null finding for H8 confirming LLMs do not honour `aria-hidden` on WC hosts.
+> **Trap 7 design note:** `aria-hidden="true"` is on the `<dxp-accordion-element>` host, not the slotted light DOM. LLMs reading raw HTML see the slot content regardless. A uniform `faq=4` result is a valid null finding for H8 confirming LLMs do not honour `aria-hidden` on WC hosts.
 
 ---
 ## Statistical Analysis
@@ -173,7 +173,7 @@ Despite flat counts, raw JSON extraction **does** vary by variant — confirming
 | `jsonld` | `zielgruppe` changes from `"Privatkunden"` → `"Privathaftpflichtversicherung"` (reads `about.name` from JSON-LD graph) |
 | `combined` | `zahlungsperiode` normalises to `"pro Monat"` (text from combined JSON-LD + Microdata context) |
 
-These sub-surface effects demonstrate that GAIO measures influence **information quality and extraction fidelity** even when aggregate counts are stable. This is an important finding for RQ2.
+With flat aggregate counts, the raw JSON still varies by variant — GAIO measures change how the model labels and scopes content, not just whether it finds it.
 
 ### Recommendations for Future Runs
 

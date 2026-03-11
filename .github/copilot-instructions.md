@@ -22,8 +22,9 @@ npm run build                      # astro check + astro build (type-check first
 npm run evaluate:openai            # Run OpenAI extraction benchmark, output CSV to results/
 npm run evaluate:claude            # Run Claude extraction benchmark
 npm run evaluate:gemini            # Run Gemini extraction benchmark
-npm run evaluate:openai:persist    # Same + persist to Supabase
-npm run evaluate:openai:live       # Run against production URL instead of localhost
+npm run evaluate:all               # Run all three providers in sequence
+# Flags (pass after --): --persist, --url <url>, --repetitions <n>, --variant <id>
+# Example: npm run evaluate:all -- --persist --repetitions 3
 
 # Testing
 npm run test:extract               # Simulate bot content extraction (curl/UA variants)
@@ -43,12 +44,12 @@ Each of the 8 routes under `src/pages/` is an isolated single-variable experimen
 | Route | GAIO Measure |
 |-------|-------------|
 | `/control` | None (baseline) |
-| `/test-jsonld-only` | JSON-LD structured data in `<head>` |
-| `/test-semantic-only` | Semantic HTML landmarks |
-| `/test-aria-only` | ARIA attributes |
-| `/test-noscript-only` | `<noscript>` Light DOM fallbacks |
+| `/test-jsonld` | JSON-LD structured data in `<head>` |
+| `/test-semantic` | Semantic HTML landmarks |
+| `/test-aria` | ARIA attributes |
+| `/test-noscript` | `<noscript>` Light DOM fallbacks |
 | `/test-dsd` | Declarative Shadow DOM (SSR-rendered) |
-| `/test-microdata-only` | Microdata `itemscope`/`itemprop` |
+| `/test-microdata` | Microdata `itemscope`/`itemprop` |
 | `/combined` | All measures combined |
 
 All pages share the same hardcoded insurance product content (Haftpflicht, Hausrat, Kasko tariffs). Content is never fetched or generated dynamically — the *markup* differs, not the content.

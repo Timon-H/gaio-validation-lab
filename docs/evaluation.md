@@ -1,6 +1,6 @@
 # LLM Evaluation
 
-`scripts/evaluate-gaio.mjs` runs the structured extraction benchmark against all 8 page variants using a chosen LLM provider. Each run fetches the live HTML and asks the model to extract a fixed set of fields:
+`scripts/evaluate.mjs` runs the structured extraction benchmark against all 8 page variants using a chosen LLM provider. Each run fetches the live HTML and asks the model to extract a fixed set of fields:
 
 - **tarife** — name, price, Deckungssumme, Selbstbeteiligung, payment period, highlighted flag
 - **faq** — question + answer pairs
@@ -9,7 +9,7 @@
 - **kontakt** — contact details
 - **anbieter** — provider name
 
-Results are returned as structured JSON. Because most of these fields live inside Shadow DOM, extraction counts vary across variants, making them the primary GAIObility metric.
+Results are returned as structured JSON. Because most of these fields live inside Shadow DOM, extraction counts vary across variants — this variance is the primary measurement target.
 
 ## Commands
 
@@ -20,16 +20,16 @@ npm run evaluate:claude
 npm run evaluate:gemini
 
 # Persist results to Supabase (requires SUPABASE_URL + SUPABASE_ANON_KEY)
-npm run evaluate:openai:persist
-npm run evaluate:claude:persist
-npm run evaluate:gemini:persist
+npm run evaluate:openai -- --persist
+npm run evaluate:claude -- --persist
+npm run evaluate:gemini -- --persist
 ```
 
 Results are always written to `results/gaio_evaluation_<provider>.csv`. With `--persist`, each run is also inserted into the `llm_evaluation_results` Supabase table, enabling cross-provider and cross-run comparisons via the `llm_eval_comparison` SQL view.
 
 ## Environment Variables
 
-An LLM provider API key is **always required** — there is no credential-free mode for this script. Running with `--persist` additionally requires `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
+Running the evaluation requires an LLM provider API key. Running with `--persist` additionally requires `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
 
 | Variable | Required for |
 |---|---|
@@ -49,7 +49,7 @@ Add the relevant keys to your `.env` file. The npm scripts load them automatical
 | Claude | `claude-haiku-4-5` | `claude-opus-4-5` |
 | Gemini | `gemini-2.5-flash` | `gemini-2.5-pro` |
 
-Models can be changed in the `PROVIDER_CONFIG` table at the top of `evaluate-gaio.mjs`.
+Models can be changed in the `PROVIDER_CONFIG` table at the top of `evaluate.mjs`.
 
 ## JSON Enforcement Per Provider
 

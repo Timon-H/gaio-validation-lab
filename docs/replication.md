@@ -1,7 +1,5 @@
 # Replication Guide
 
-This guide provides step-by-step instructions for replicating the GAIO Validation Lab experiments.
-
 ## Prerequisites
 
 | Requirement | Version | Notes |
@@ -62,12 +60,12 @@ The eight variant pages are available at:
 |---|---|
 | `/control` | Bare Shadow DOM — no GAIO measures |
 | `/combined` | All GAIO measures combined |
-| `/test-jsonld-only` | JSON-LD only |
-| `/test-semantic-only` | Semantic HTML only |
-| `/test-aria-only` | ARIA only |
-| `/test-noscript-only` | `<noscript>` fallbacks only |
+| `/test-jsonld` | JSON-LD only |
+| `/test-semantic` | Semantic HTML only |
+| `/test-aria` | ARIA only |
+| `/test-noscript` | `<noscript>` fallbacks only |
 | `/test-dsd` | Declarative Shadow DOM only |
-| `/test-microdata-only` | Microdata only |
+| `/test-microdata` | Microdata only |
 
 ---
 
@@ -91,7 +89,7 @@ npm run test:extract:persist   # requires SUPABASE_URL + SUPABASE_ANON_KEY in .e
 
 ## 5. Bot User-Agent Simulation
 
-Verifies that the middleware correctly identifies AI crawler user-agent strings and sets `X-AI-Bot-Detected` and `X-Test-Group` response headers. Requires the local preview server (step 3) or the live deployment.
+Checks that the middleware correctly identifies AI crawler user-agent strings and sets `X-AI-Bot-Detected` and `X-Test-Group` response headers. Requires the local preview server (step 3) or the live deployment.
 
 ```bash
 npm run test:bots
@@ -112,9 +110,9 @@ npm run evaluate:claude
 npm run evaluate:gemini
 
 # Run against the live Vercel deployment
-npm run evaluate:openai:live
-npm run evaluate:claude:live
-npm run evaluate:gemini:live
+npm run evaluate:openai -- --url https://gaio-validation-lab.vercel.app
+npm run evaluate:claude -- --url https://gaio-validation-lab.vercel.app
+npm run evaluate:gemini -- --url https://gaio-validation-lab.vercel.app
 ```
 
 Results are written to `results/gaio_evaluation_<provider>_<timestamp>.csv`. The `results/` directory is gitignored; CSV files are generated locally.
@@ -122,11 +120,21 @@ Results are written to `results/gaio_evaluation_<provider>_<timestamp>.csv`. The
 To additionally persist each run to the Supabase `llm_evaluation_results` table:
 
 ```bash
-npm run evaluate:openai:persist         # local build + persist
-npm run evaluate:openai:live:persist    # live deployment + persist
+npm run evaluate:openai -- --persist
+npm run evaluate:openai -- --url https://gaio-validation-lab.vercel.app --persist
 ```
 
 This requires `SUPABASE_URL` and `SUPABASE_ANON_KEY` in `.env`.
+
+### Available Flags
+
+| Flag | Default | Description |
+|---|---|---|
+| `--provider <id>` | — | Provider to use: `openai`, `claude`, `gemini`, or `all` |
+| `--url <base-url>` | `http://localhost:4321` | Base URL for all variant fetches |
+| `--persist` | off | Write results to Supabase in addition to CSV |
+| `--repetitions <n>` | `1` | Number of extraction runs per variant |
+| `--variant <id>` | all | Run a single variant only (e.g. `--variant control`) |
 
 ---
 
@@ -159,18 +167,18 @@ To run additional evaluation rounds for higher statistical confidence:
 
 ```bash
 # Run additional rounds (each npm run call executes n repetitions internally)
-npm run evaluate:openai:live
-npm run evaluate:openai:live
-npm run evaluate:openai:live
+npm run evaluate:openai -- --url https://gaio-validation-lab.vercel.app
+npm run evaluate:openai -- --url https://gaio-validation-lab.vercel.app
+npm run evaluate:openai -- --url https://gaio-validation-lab.vercel.app
 ```
 
-Each call generates a new timestamped CSV. Aggregate across files for broader statistics.
+Each call generates a new timestamped CSV; aggregate multiple runs for more reliable statistics.
 
 ---
 
 ## Known Limitations
 
 - **API quotas:** Gemini free-tier quota may throttle or reject requests during high-load periods. The script includes automatic retry logic with exponential backoff.
-- **Live vs. local differences:** The `:live` variants evaluate the deployed Vercel URL; the default variants evaluate `localhost:4321`. Results should be identical given the same HTML output, but network latency and caching may introduce minor differences.
+- **Live vs. local differences:** Passing `--url https://gaio-validation-lab.vercel.app` evaluates the deployed Vercel URL; the default targets `localhost:4321`. Results should be identical given the same HTML output, but network latency and caching may introduce minor differences.
 - **`/combined` and `/test-dsd` are SSR-only:** These two variants disable client-side hydration to keep the initial HTML deterministic. Other variants use standard Astro SSR with client-side Lit hydration.
 - **`seed` support varies by provider:** OpenAI and Gemini support `seed: 42`; Claude does not currently expose a seed parameter. Temperature is fixed at `0.0` for all providers.

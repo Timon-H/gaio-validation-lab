@@ -7,12 +7,12 @@ Eight variants of the same insurance page content. Each isolates a single GAIO v
 | Variant | JSON-LD | Semantic HTML | ARIA | Noscript | DSD | Microdata |
 |---------|:-------:|:------------:|:----:|:--------:|:---:|:---------:|
 | `/control` | — | — | — | — | — | — |
-| `/test-jsonld-only` | ✅ | — | — | — | — | — |
-| `/test-semantic-only` | — | ✅ | — | — | — | — |
-| `/test-aria-only` | — | — | ✅ | — | — | — |
-| `/test-noscript-only` | — | — | — | ✅ | — | — |
+| `/test-jsonld` | ✅ | — | — | — | — | — |
+| `/test-semantic` | — | ✅ | — | — | — | — |
+| `/test-aria` | — | — | ✅ | — | — | — |
+| `/test-noscript` | — | — | — | ✅ | — | — |
 | `/test-dsd` | — | — | — | — | ✅ | — |
-| `/test-microdata-only` | — | — | — | — | — | ✅ |
+| `/test-microdata` | — | — | — | — | — | ✅ |
 | `/combined` | ✅ | ✅ | ✅ | — | ✅ | ✅ |
 
 **Hydration note:** `/combined` and `/test-dsd` are SSR-only to keep the initial HTML deterministic for crawler/LLM evaluation and to avoid client-side re-rendering artifacts.
@@ -59,8 +59,8 @@ Eight variants of the same insurance page content. Each isolates a single GAIO v
 | H4 — ARIA labels expose the unlabelled range slider to LLM field detection | Trap 2 | `formFelder` count |
 | H5 — ARIA labels expose the CSS-only labelled input to LLM field detection | Trap 3 | `formFelder` count |
 | H6 — JSON-LD / Microdata structured data excludes noise prices from tariff extraction | Traps 4, 5 | `tarife` accuracy |
-| H7 -- ARIA `aria-hidden` suppresses a tariff-like card from LLM extraction | Trap 6 | `tarife` count = 3 |
-| H8 -- ARIA `aria-hidden` on a Web Component host suppresses slotted light DOM content | Trap 7 | `faq` count = 3 |
+| H7 — ARIA `aria-hidden` suppresses a tariff-like card from LLM extraction | Trap 6 | `tarife` count = 3 |
+| H8 — ARIA `aria-hidden` on a Web Component host suppresses slotted light DOM content | Trap 7 | `faq` count = 3 |
 
 ### Objective
 
@@ -85,17 +85,17 @@ Measure how different GAIO measures affect crawler/LLM extraction from the **ini
 
 ### Threats to Validity
 
-- **LLM non-determinism:** mitigated by fixed `temperature: 0.0` and `seed: 42` (where supported); n repetitions per run allow variance measurement.
+- **LLM non-determinism:** fixed `temperature: 0.0` and `seed: 42` (where supported) hold output stable; n repetitions per run allow variance measurement.
 - **Hydration artifacts:** client-side rendering changes the DOM post-load and can confound results. SSR-only variants (`/combined`, `/test-dsd`) are fully deterministic. For JS-hydrated variants, the evaluation fetches the initial server-rendered HTML before hydration.
-- **Content–language mismatch:** the system prompt is written in German to match the page content, reducing the risk of language-induced extraction bias.
+- **Content–language mismatch:** the system prompt is written in German to match the page content, reducing extraction bias from language mismatch.
 - **Single-site deployment:** all variants share the same domain and server; results reflect this controlled environment and may not generalise to other hosting configurations.
 - **Provider-specific behaviour:** different LLM providers (OpenAI, Claude, Gemini) may respond differently to identical markup signals. Cross-provider comparison is included to surface model-level confounds.
 - **Navigation context leakage:** `BaseLayout` includes a `<nav>` listing all eight variant names (e.g. "JSON-LD", "Semantic", "ARIA"). To prevent this from revealing the experimental design to the LLM evaluator, the evaluation script strips `<nav>` blocks from the HTML before submission.
-- **`aria-hidden` and Web Component light DOM:** `aria-hidden="true"` on a custom element host does not suppress slotted light DOM content in raw HTML. LLMs parsing raw HTML may therefore not respect it as a suppression signal (Trap 7). This is intentional: the trap tests *whether* LLMs honour `aria-hidden` on WC hosts — null results across all variants are themselves a valid finding.
-- **Host element attribute visibility:** the `tariffs` JSON attribute on `<dxp-tariff-comparison>` is visible in all variants, including the control. This reflects real-world Shadow DOM behaviour (host attributes are public). Tariff count discrimination in this study therefore relies on scope and accuracy signals (traps 1, 4, 5) rather than raw data visibility.
+- **`aria-hidden` and Web Component light DOM:** `aria-hidden="true"` on a custom element host does not suppress slotted light DOM content in raw HTML. LLMs parsing raw HTML may therefore not respect it as a suppression signal (Trap 7). The trap tests *whether* LLMs honour `aria-hidden` on WC hosts — null results are themselves a valid finding.
+- **Host element attribute visibility:** the `tariffs` JSON attribute on `<dxp-tariff-comparison>` is visible in all variants, including the control — host attributes are public in Shadow DOM. Tariff count discrimination therefore relies on scope and accuracy signals (traps 1, 4, 5) rather than raw data visibility.
 
 ### Reporting
 
 - Report results per variant and summarise deltas vs. baseline (control).
-- Note that findings apply to initial HTML visibility rather than interactive behaviour.
+- Findings apply to initial HTML visibility, not interactive behaviour.
 - Statistical summary: mean ± SD across n runs per variant × provider.

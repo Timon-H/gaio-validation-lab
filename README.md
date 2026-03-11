@@ -1,6 +1,6 @@
 # gaio-validation-lab
 
-This repository is the implementation artifact for a master's thesis investigating how different HTML markup techniques affect content extraction from Web Components with **Shadow DOM encapsulation** by AI crawlers and large language models.
+This repository benchmarks how different HTML markup techniques affect content extraction from Web Components with **Shadow DOM encapsulation** by AI crawlers and large language models.
 
 Shadow DOM — used extensively in component-driven DXP architectures — is opaque to most AI crawlers by default. This lab benchmarks six **GAIO (Generative AI Optimization)** measures that make Shadow DOM content machine-readable:
 
@@ -19,7 +19,7 @@ Shadow DOM — used extensively in component-driven DXP architectures — is opa
 - **RQ2** — Do semantic HTML5 landmark elements (`<article>`, `<aside>`, `<figure>`) improve scope disambiguation for LLM extractors?
 - **RQ3** — Does ARIA labelling on Web Component hosts improve form-field detection by LLMs?
 
-Each GAIO measure is tested in isolation across eight page variants so that its independent contribution can be quantified. Seven deliberate test traps are embedded to create meaningful per-variant signals. See [`docs/test-design.md`](docs/test-design.md) for the full methodology and [`docs/traps.md`](docs/traps.md) for the trap specifications.
+Each GAIO measure is isolated to a separate page variant to quantify its independent contribution. Seven deliberate test traps are embedded to create meaningful per-variant signals. See [`docs/test-design.md`](docs/test-design.md) for the full methodology and [`docs/traps.md`](docs/traps.md) for the trap specifications.
 
 ## Live Deployment
 
@@ -29,12 +29,12 @@ Eight variants of the same insurance page content, each isolating a single GAIO 
 |---|---|---|
 | Control | None — bare Shadow DOM baseline | [/control](https://gaio-validation-lab.vercel.app/control) |
 | Combined | All measures combined | [/combined](https://gaio-validation-lab.vercel.app/combined) |
-| JSON-LD only | Structured data in `<head>` | [/test-jsonld-only](https://gaio-validation-lab.vercel.app/test-jsonld-only) |
-| Semantic HTML only | `<section>`, `<article>`, `<aside>` wrappers | [/test-semantic-only](https://gaio-validation-lab.vercel.app/test-semantic-only) |
-| ARIA only | `aria-label` / `aria-labelledby` on host elements | [/test-aria-only](https://gaio-validation-lab.vercel.app/test-aria-only) |
-| `<noscript>` only | Light DOM fallbacks for no-JS crawlers | [/test-noscript-only](https://gaio-validation-lab.vercel.app/test-noscript-only) |
+| JSON-LD only | Structured data in `<head>` | [/test-jsonld](https://gaio-validation-lab.vercel.app/test-jsonld) |
+| Semantic HTML only | `<section>`, `<article>`, `<aside>` wrappers | [/test-semantic](https://gaio-validation-lab.vercel.app/test-semantic) |
+| ARIA only | `aria-label` / `aria-labelledby` on host elements | [/test-aria](https://gaio-validation-lab.vercel.app/test-aria) |
+| `<noscript>` only | Light DOM fallbacks for no-JS crawlers | [/test-noscript](https://gaio-validation-lab.vercel.app/test-noscript) |
 | Declarative Shadow DOM | SSR-rendered shadow content via `@lit-labs/ssr` | [/test-dsd](https://gaio-validation-lab.vercel.app/test-dsd) |
-| Microdata only | Inline `schema.org` `itemscope`/`itemprop` attributes | [/test-microdata-only](https://gaio-validation-lab.vercel.app/test-microdata-only) |
+| Microdata only | Inline `schema.org` `itemscope`/`itemprop` attributes | [/test-microdata](https://gaio-validation-lab.vercel.app/test-microdata) |
 
 ## Quick Start
 
@@ -57,16 +57,16 @@ src/
   pages/
     control/             ← Baseline — no GAIO measures
     combined/            ← All GAIO measures combined
-    test-jsonld-only/    ← Isolated: JSON-LD
-    test-semantic-only/  ← Isolated: Semantic HTML
-    test-aria-only/      ← Isolated: ARIA attributes
-    test-noscript-only/  ← Isolated: <noscript> fallbacks
+    test-jsonld/         ← Isolated: JSON-LD
+    test-semantic/       ← Isolated: Semantic HTML
+    test-aria/           ← Isolated: ARIA attributes
+    test-noscript/       ← Isolated: <noscript> fallbacks
     test-dsd/            ← Isolated: Declarative Shadow DOM
-    test-microdata-only/ ← Isolated: Microdata
+    test-microdata/      ← Isolated: Microdata
 scripts/
-  evaluate-gaio.mjs           ← Multi-provider LLM extraction benchmark
+  evaluate.mjs           ← Multi-provider LLM extraction benchmark
   test-bots.mjs               ← Bot UA simulation
-  test-content-extraction.mjs ← Structural content extraction
+  test-extract.mjs ← Structural content extraction
   indexnow.mjs                ← Submit all variant URLs to IndexNow (Bing)
 supabase/
   schema.sql             ← DDL: bot_logs, extraction_results, llm_evaluation_results
