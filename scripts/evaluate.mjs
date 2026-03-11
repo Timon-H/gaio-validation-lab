@@ -3,12 +3,13 @@
 /**
  * GAIO Evaluation Script
  *
- * Supports three LLM providers: openai (default), claude, gemini
+ * Supports three LLM providers: openai, claude, gemini, all (runs all three sequentially)
  *
  * Usage:
- *   node evaluate-gaio.mjs                        # uses OpenAI
- *   node evaluate-gaio.mjs --provider claude       # uses Anthropic Claude
- *   node evaluate-gaio.mjs --provider gemini       # uses Google Gemini
+ *   node evaluate.mjs --provider openai       # OpenAI only
+ *   node evaluate.mjs --provider claude       # Claude only
+ *   node evaluate.mjs --provider gemini       # Gemini only
+ *   node evaluate.mjs --provider all          # All three providers sequentially
  *
  * Required environment variables (per provider):
  *   openai  → OPENAI_API_KEY
@@ -30,37 +31,38 @@ const PROVIDER = providerFlagIndex !== -1 ? args[providerFlagIndex + 1] : null;
 const PERSIST = args.includes('--persist');
 const urlFlagIndex = args.indexOf('--url');
 const URL_OVERRIDE = urlFlagIndex !== -1 ? args[urlFlagIndex + 1] : null;
+const repetitionsFlagIndex = args.indexOf('--repetitions');
+const REPETITIONS_ARG = repetitionsFlagIndex !== -1 ? parseInt(args[repetitionsFlagIndex + 1], 10) : NaN;
+const variantFlagIndex = args.indexOf('--variant');
+const VARIANT_FILTER = variantFlagIndex !== -1 ? args[variantFlagIndex + 1] : null;
 
-const SUPPORTED_PROVIDERS = ['openai', 'claude', 'gemini'];
+const SUPPORTED_PROVIDERS = ['openai', 'claude', 'gemini', 'all'];
 
 if (!PROVIDER) {
   console.log(`
-Usage: node evaluate-gaio.mjs --provider <provider> [--persist] [--url <base-url>]
+Usage: node evaluate.mjs --provider <provider> [options]
 
 Providers:
   openai   → uses OPENAI_API_KEY    (model: gpt-4.1-mini)
   claude   → uses ANTHROPIC_API_KEY  (model: claude-haiku-4-5)
   gemini   → uses GEMINI_API_KEY     (model: gemini-3-flash-preview)
+  all      → runs openai, claude, gemini sequentially; all three API keys required
 
 Options:
-  --persist          Write results to Supabase in addition to CSV output.
-                     Requires SUPABASE_URL and SUPABASE_ANON_KEY.
-  --url <base-url>   Override the target base URL (default: http://localhost:4321).
-                     Example: --url https://gaio-validation-lab.vercel.app
+  --persist               Write results to Supabase in addition to CSV output.
+                          Requires SUPABASE_URL and SUPABASE_ANON_KEY.
+  --url <base-url>        Override the target base URL (default: http://localhost:4321).
+                          Example: --url https://gaio-validation-lab.vercel.app
+  --repetitions <n>       Number of runs per variant (default: 1).
+  --variant <id>          Run only a single variant (default: all).
+                          IDs: control, jsonld, semantic, aria, noscript, dsd, microdata, combined
 
-Npm shortcuts:
-  npm run evaluate:openai
-  npm run evaluate:claude
-  npm run evaluate:gemini
-  npm run evaluate:openai:persist
-  npm run evaluate:claude:persist
-  npm run evaluate:gemini:persist
-  npm run evaluate:openai:live
-  npm run evaluate:claude:live
-  npm run evaluate:gemini:live
-  npm run evaluate:openai:live:persist
-  npm run evaluate:claude:live:persist
-  npm run evaluate:gemini:live:persist
+Npm shortcuts (pass flags after --):
+  npm run evaluate:openai -- --persist
+  npm run evaluate:claude -- --persist --repetitions 5
+  npm run evaluate:gemini -- --url https://gaio-validation-lab.vercel.app
+  npm run evaluate:all   -- --persist --repetitions 5
+  npm run evaluate:all   -- --url https://gaio-validation-lab.vercel.app --persist
 `);
   process.exit(0);
 }
@@ -93,30 +95,32 @@ const PROVIDER_CONFIG = {
   },
 };
 
-const config = PROVIDER_CONFIG[PROVIDER];
-const API_KEY = process.env[config.envVar];
-
 // ---------------------------------------------------------------------------
 // General configuration
 // ---------------------------------------------------------------------------
 const BASE_URL = URL_OVERRIDE ?? 'http://localhost:4321';
-const REPETITIONS = 1; // n=5 for statistical significance
+const REPETITIONS = Number.isFinite(REPETITIONS_ARG) && REPETITIONS_ARG > 0 ? REPETITIONS_ARG : 1;
 
-const VARIANTS = [
+const ALL_VARIANTS = [
   { id: 'control',    path: '/control' },
-  { id: 'jsonld',     path: '/test-jsonld-only' },
-  { id: 'semantic',   path: '/test-semantic-only' },
-  { id: 'aria',       path: '/test-aria-only' },
-  { id: 'noscript',   path: '/test-noscript-only' },
+  { id: 'jsonld',     path: '/test-jsonld' },
+  { id: 'semantic',   path: '/test-semantic' },
+  { id: 'aria',       path: '/test-aria' },
+  { id: 'noscript',   path: '/test-noscript' },
   { id: 'dsd',        path: '/test-dsd' },
-  { id: 'microdata',  path: '/test-microdata-only' },
+  { id: 'microdata',  path: '/test-microdata' },
   { id: 'combined',   path: '/combined' },
 ];
 
+if (VARIANT_FILTER && !ALL_VARIANTS.some(v => v.id === VARIANT_FILTER)) {
+  console.error(`❌ Unknown variant "${VARIANT_FILTER}". Choose from: ${ALL_VARIANTS.map(v => v.id).join(', ')}`);
+  process.exit(1);
+}
+
+const VARIANTS = VARIANT_FILTER ? ALL_VARIANTS.filter(v => v.id === VARIANT_FILTER) : ALL_VARIANTS;
+
 // Ensure results directory exists
 fs.mkdirSync('./results', { recursive: true });
-const RUN_TIMESTAMP = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '');
-const OUTPUT_FILE = `./results/gaio_evaluation_${PROVIDER}_${RUN_TIMESTAMP}.csv`;
 
 // ---------------------------------------------------------------------------
 // System prompt – shared across providers
@@ -124,7 +128,7 @@ const OUTPUT_FILE = `./results/gaio_evaluation_${PROVIDER}_${RUN_TIMESTAMP}.csv`
 // Forces the LLM to extract specific data from the HTML for consistent,
 // comparable results across providers, runs, and variants.
 //
-// Field rationale (tied to GAIObility measurement goals):
+// Field rationale (tied to AI extractability measurement goals):
 //
 //  tarife[]           — core KPI; Deckungssumme/Selbstbeteiligung are only
 //                       accessible in Shadow DOM → strong variant discriminator
@@ -199,10 +203,10 @@ Antworte ausschließlich mit einem validen JSON-Objekt exakt nach folgendem Sche
  * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
  * @returns {Promise<string>} JSON string extracted by the model.
  */
-async function callOpenAI(htmlContent) {
-  const client = new OpenAI({ apiKey: API_KEY });
+async function callOpenAI(htmlContent, model, apiKey) {
+  const client = new OpenAI({ apiKey });
   const completion = await client.chat.completions.create({
-    model: config.model,
+    model,
     temperature: 0.0,  // Deterministic output for consistent evaluation
     seed: 42,          // Fixed seed for reproducibility (if supported by the model)
     response_format: { type: 'json_object' },
@@ -220,10 +224,10 @@ async function callOpenAI(htmlContent) {
  * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
  * @returns {Promise<string>} JSON string extracted by the model.
  */
-async function callClaude(htmlContent) {
-  const client = new Anthropic({ apiKey: API_KEY });
+async function callClaude(htmlContent, model, apiKey) {
+  const client = new Anthropic({ apiKey });
   const message = await client.messages.create({
-    model: config.model,
+    model,
     max_tokens: 2048,
     temperature: 0.0,
     system: SYSTEM_PROMPT,
@@ -247,10 +251,10 @@ async function callClaude(htmlContent) {
  * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
  * @returns {Promise<string>} JSON string extracted by the model.
  */
-async function callGemini(htmlContent) {
-  const genAI = new GoogleGenerativeAI(API_KEY);
+async function callGemini(htmlContent, modelName, apiKey) {
+  const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
-    model: config.model,
+    model: modelName,
     generationConfig: {
       temperature: 0.0,
       responseMimeType: 'application/json',
@@ -267,12 +271,12 @@ async function callGemini(htmlContent) {
  * @returns {Promise<string>} JSON string extracted by the model.
  */
 // Dispatch to the correct provider
-async function callLLM(htmlContent) {
-  switch (PROVIDER) {
-    case 'openai': return callOpenAI(htmlContent);
-    case 'claude': return callClaude(htmlContent);
-    case 'gemini': return callGemini(htmlContent);
-    default: throw new Error(`Unsupported provider: ${PROVIDER}`);
+async function callLLM(provider, htmlContent, config, apiKey) {
+  switch (provider) {
+    case 'openai': return callOpenAI(htmlContent, config.model, apiKey);
+    case 'claude': return callClaude(htmlContent, config.model, apiKey);
+    case 'gemini': return callGemini(htmlContent, config.model, apiKey);
+    default: throw new Error(`Unsupported provider: ${provider}`);
   }
 }
 
@@ -297,11 +301,11 @@ function parseRetryDelayMs(errorMessage) {
  * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
  * @returns {Promise<string>} JSON string extracted by the model.
  */
-async function callLLMWithRetry(htmlContent) {
+async function callLLMWithRetry(provider, htmlContent, config, apiKey) {
   let lastError;
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
-      return await callLLM(htmlContent);
+      return await callLLM(provider, htmlContent, config, apiKey);
     } catch (err) {
       lastError = err;
       const msg = err.message ?? '';
@@ -382,13 +386,13 @@ async function fetchHtml(url) {
  * @param {number} runIndex - 1-based repetition index.
  * @returns {Promise<object>} Result row ready for CSV serialisation.
  */
-async function evaluateVariant(variant, runIndex) {
+async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
   const url = `${BASE_URL}${variant.path}`;
-  console.log(`⏳ [${PROVIDER}] Testing variant "${variant.id}" (Run ${runIndex}/${REPETITIONS})...`);
+  console.log(`⏳ [${provider}] Testing variant "${variant.id}" (Run ${runIndex}/${REPETITIONS})...`);
 
   try {
     const htmlContent = await fetchHtml(url);
-    const resultJson = await callLLMWithRetry(htmlContent);
+    const resultJson = await callLLMWithRetry(provider, htmlContent, config, apiKey);
     const parsedData = JSON.parse(resultJson);
 
     // Count extracted items per dimension for quick comparison across variants
@@ -404,7 +408,7 @@ async function evaluateVariant(variant, runIndex) {
     let dbStatus = '-';
     if (PERSIST) {
       const ok = await persistEvalResult({
-        provider:            PROVIDER,
+        provider,
         model:               config.model,
         variant_id:          variant.id,
         run:                 runIndex,
@@ -420,7 +424,7 @@ async function evaluateVariant(variant, runIndex) {
     }
 
     return {
-      provider: PROVIDER,
+      provider,
       variantId: variant.id,
       run: runIndex,
       extractedTariffs: counts.tarife,
@@ -435,7 +439,7 @@ async function evaluateVariant(variant, runIndex) {
   } catch (error) {
     console.error(`❌ Error in variant "${variant.id}":`, error.message);
     return {
-      provider: PROVIDER,
+      provider,
       variantId: variant.id,
       run: runIndex,
       extractedTariffs: 'ERROR',
@@ -450,27 +454,15 @@ async function evaluateVariant(variant, runIndex) {
   }
 }
 
-async function runEvaluation() {
-  if (!API_KEY) {
-    console.error(`❌ Error: ${config.envVar} is not set.`);
-    process.exit(1);
-  }
-
-  if (PERSIST) {
-    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
-      console.error('❌ Error: --persist requires SUPABASE_URL and SUPABASE_ANON_KEY to be set.');
-      process.exit(1);
-    }
-    console.log(`💾 Persist mode: results will be written to Supabase (${process.env.SUPABASE_URL})`);
-  }
-
-  console.log(`🚀 Starting GAIO evaluation pipeline  [provider: ${PROVIDER}, model: ${config.model}]`);
+async function runProviderEvaluation(provider, config, apiKey) {
+  const outputFile = `./results/gaio_evaluation_${provider}_${new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '')}.csv`;
+  console.log(`🚀 Starting GAIO evaluation pipeline  [provider: ${provider}, model: ${config.model}]`);
   const results = [];
 
   // Sequential testing to avoid overwhelming the server and to respect rate limits
   for (const variant of VARIANTS) {
     for (let i = 1; i <= REPETITIONS; i++) {
-      const res = await evaluateVariant(variant, i);
+      const res = await evaluateVariant(provider, config, apiKey, variant, i);
       results.push(res);
       // Pause between requests to avoid rate limits and give the server time to recover
       await new Promise(r => setTimeout(r, 1000));
@@ -484,14 +476,53 @@ async function runEvaluation() {
     )
     .join('\n');
 
-  fs.writeFileSync(OUTPUT_FILE, csvHeader + csvRows);
-  console.log(`\n✅ Evaluation complete! Results saved to: ${OUTPUT_FILE}`);
+  fs.writeFileSync(outputFile, csvHeader + csvRows);
+  console.log(`✅ Results saved to: ${outputFile}`);
 
   if (PERSIST) {
     const persisted = results.filter(r => r.dbStatus === 'OK').length;
     const failed    = results.filter(r => r.dbStatus === 'ERR').length;
     console.log(`💾 Database: ${persisted} persisted / ${failed} failed`);
-    console.log(`   Query: SELECT * FROM llm_evaluation_results ORDER BY created_at DESC;`);
+  }
+}
+
+async function runEvaluation() {
+  if (PERSIST) {
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+      console.error('❌ Error: --persist requires SUPABASE_URL and SUPABASE_ANON_KEY to be set.');
+      process.exit(1);
+    }
+    console.log(`💾 Persist mode: results will be written to Supabase (${process.env.SUPABASE_URL})`);
+  }
+
+  const providersToRun = PROVIDER === 'all' ? ['openai', 'claude', 'gemini'] : [PROVIDER];
+
+  for (const provider of providersToRun) {
+    const config = PROVIDER_CONFIG[provider];
+    const apiKey = process.env[config.envVar];
+
+    if (!apiKey) {
+      console.error(`❌ Error: ${config.envVar} is not set.`);
+      process.exit(1);
+    }
+
+    if (PROVIDER === 'all') {
+      console.log(`\n${'='.repeat(60)}`);
+      console.log(`  Provider: ${provider.toUpperCase()}`);
+      console.log(`${'='.repeat(60)}`);
+    }
+
+    await runProviderEvaluation(provider, config, apiKey);
+  }
+
+  if (PROVIDER === 'all') {
+    console.log(`\n${'='.repeat(60)}`);
+    console.log('  All-providers run complete');
+    console.log(`${'='.repeat(60)}`);
+  }
+
+  if (PERSIST) {
+    console.log(`\n   Query: SELECT * FROM llm_evaluation_results ORDER BY created_at DESC;`);
   }
 }
 
