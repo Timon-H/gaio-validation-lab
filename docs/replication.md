@@ -126,6 +126,16 @@ npm run evaluate:openai -- --url https://gaio-validation-lab.vercel.app --persis
 
 This requires `SUPABASE_URL` and `SUPABASE_ANON_KEY` in `.env`.
 
+To run a different model tier, pass `--tier`:
+
+```bash
+# Run the validation tier (higher-capability models)
+npm run evaluate:all -- --tier validation --repetitions 5
+
+# Run the exploratory tier (GPT-5-nano reasoning model)
+npm run evaluate:openai -- --tier exploratory --repetitions 5
+```
+
 ### Available Flags
 
 | Flag | Default | Description |
@@ -135,6 +145,7 @@ This requires `SUPABASE_URL` and `SUPABASE_ANON_KEY` in `.env`.
 | `--persist` | off | Write results to Supabase in addition to CSV |
 | `--repetitions <n>` | `1` | Number of extraction runs per variant |
 | `--variant <id>` | all | Run a single variant only (e.g. `--variant control`) |
+| `--tier <tier>` | `primary` | Model tier: `primary`, `validation`, or `exploratory`. See [`docs/evaluation.md`](evaluation.md) for tier details. |
 
 ---
 

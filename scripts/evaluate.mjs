@@ -4,12 +4,13 @@
  * GAIO Evaluation Script
  *
  * Supports three LLM providers: openai, claude, gemini, all (runs all three sequentially)
+ * Supports three model tiers: primary (default), validation, exploratory
  *
  * Usage:
- *   node evaluate.mjs --provider openai       # OpenAI only
- *   node evaluate.mjs --provider claude       # Claude only
- *   node evaluate.mjs --provider gemini       # Gemini only
+ *   node evaluate.mjs --provider openai       # OpenAI only (primary tier)
  *   node evaluate.mjs --provider all          # All three providers sequentially
+ *   node evaluate.mjs --provider all --tier validation   # Higher-capability models
+ *   node evaluate.mjs --provider openai --tier exploratory  # GPT-5-nano reasoning model
  *
  * Required environment variables (per provider):
  *   openai  → OPENAI_API_KEY
@@ -35,8 +36,11 @@ const repetitionsFlagIndex = args.indexOf('--repetitions');
 const REPETITIONS_ARG = repetitionsFlagIndex !== -1 ? parseInt(args[repetitionsFlagIndex + 1], 10) : NaN;
 const variantFlagIndex = args.indexOf('--variant');
 const VARIANT_FILTER = variantFlagIndex !== -1 ? args[variantFlagIndex + 1] : null;
+const tierFlagIndex = args.indexOf('--tier');
+const TIER = tierFlagIndex !== -1 ? args[tierFlagIndex + 1] : 'primary';
 
 const SUPPORTED_PROVIDERS = ['openai', 'claude', 'gemini', 'all'];
+const SUPPORTED_TIERS = ['primary', 'validation', 'exploratory'];
 
 if (!PROVIDER) {
   console.log(`
@@ -56,13 +60,18 @@ Options:
   --repetitions <n>       Number of runs per variant (default: 1).
   --variant <id>          Run only a single variant (default: all).
                           IDs: control, jsonld, semantic, aria, noscript, dsd, microdata, combined
+  --tier <tier>           Model tier to use (default: primary).
+                          primary      → cost-effective models (gpt-4.1-mini, haiku-4-5, flash)
+                          validation   → higher-capability models (gpt-4.1, sonnet-4.6, 3.1-pro)
+                          exploratory  → reasoning model probe (gpt-5-nano only, openai provider)
 
 Npm shortcuts (pass flags after --):
   npm run evaluate:openai -- --persist
   npm run evaluate:claude -- --persist --repetitions 5
   npm run evaluate:gemini -- --url https://gaio-validation-lab.vercel.app
   npm run evaluate:all   -- --persist --repetitions 5
-  npm run evaluate:all   -- --url https://gaio-validation-lab.vercel.app --persist
+  npm run evaluate:all   -- --persist --tier validation --repetitions 5
+  npm run evaluate:openai -- --tier exploratory --repetitions 5
 `);
   process.exit(0);
 }
@@ -72,29 +81,72 @@ if (!SUPPORTED_PROVIDERS.includes(PROVIDER)) {
   process.exit(1);
 }
 
+if (!SUPPORTED_TIERS.includes(TIER)) {
+  console.error(`❌ Unknown tier "${TIER}". Choose from: ${SUPPORTED_TIERS.join(', ')}`);
+  process.exit(1);
+}
+
 // ---------------------------------------------------------------------------
-// Provider configuration
+// Provider configuration — organised by tier
 // ---------------------------------------------------------------------------
-const PROVIDER_CONFIG = {
-  openai: {
-    envVar: 'OPENAI_API_KEY',
-    model: 'gpt-4.1-mini', 
-    // switch to 'gpt-4.1' for higher accuracy and 'gpt-4.1-nano' for faster but less accurate results
-    // NOTE: GPT-5 models are intentionally excluded — at the time of writing
-    // they do not support the temperature parameter, which is required for
-    // deterministic output.
+//
+// primary      — cost-effective models with full determinism controls
+//                (temperature: 0.0, seed where supported, JSON mode)
+// validation   — higher-capability models from the same providers;
+//                same API surface and determinism controls, used with
+//                fewer repetitions to confirm that results generalise
+//                across model capability levels.
+// exploratory  — OpenAI-only GPT-5-nano reasoning model probe.
+//                Uses the Responses API with reasoning.effort: 'low'.
+//                No temperature/seed support — non-deterministic by design.
+//                Included as a forward-looking supplementary analysis.
+
+const TIER_CONFIGS = {
+  primary: {
+    openai: {
+      envVar: 'OPENAI_API_KEY',
+      model: 'gpt-4.1-mini',
+    },
+    claude: {
+      envVar: 'ANTHROPIC_API_KEY',
+      model: 'claude-haiku-4-5',
+    },
+    gemini: {
+      envVar: 'GEMINI_API_KEY',
+      model: 'gemini-3-flash-preview',
+    },
   },
-  claude: {
-    envVar: 'ANTHROPIC_API_KEY',
-    model: 'claude-haiku-4-5', 
-    // switch to 'claude-opus-4-5' for higher accuracy
+  validation: {
+    openai: {
+      envVar: 'OPENAI_API_KEY',
+      model: 'gpt-4.1',
+    },
+    claude: {
+      envVar: 'ANTHROPIC_API_KEY',
+      model: 'claude-sonnet-4-6',
+    },
+    gemini: {
+      envVar: 'GEMINI_API_KEY',
+      model: 'gemini-3.1-pro-preview',
+    },
   },
-  gemini: {
-    envVar: 'GEMINI_API_KEY',
-    model: 'gemini-3-flash-preview', 
-    // switch to 'gemini-3-pro-preview' for higher accuracy
+  exploratory: {
+    openai: {
+      envVar: 'OPENAI_API_KEY',
+      model: 'gpt-5-nano',
+      reasoning: true,  // flag: use Responses API with reasoning.effort
+    },
   },
 };
+
+// Resolve the provider config for the chosen tier
+function getProviderConfig(provider) {
+  const tierConfig = TIER_CONFIGS[TIER];
+  if (!tierConfig[provider]) {
+    return null; // provider not available in this tier
+  }
+  return tierConfig[provider];
+}
 
 // ---------------------------------------------------------------------------
 // General configuration
@@ -199,8 +251,9 @@ Antworte ausschließlich mit einem validen JSON-Objekt exakt nach folgendem Sche
 // ---------------------------------------------------------------------------
 
 /**
- * Sends the page HTML to OpenAI and returns the raw JSON string response.
+ * Sends the page HTML to OpenAI (Chat Completions API) and returns the raw JSON string.
  * Uses `response_format: json_object` to guarantee valid JSON output.
+ * Used for non-reasoning models (gpt-4.1 family).
  * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
  * @returns {Promise<string>} JSON string extracted by the model.
  */
@@ -217,6 +270,25 @@ async function callOpenAI(htmlContent, model, apiKey) {
     ],
   });
   return completion.choices[0].message.content;
+}
+
+/**
+ * Sends the page HTML to OpenAI (Responses API) for reasoning models (GPT-5 family).
+ * Uses reasoning.effort: 'low' to minimise non-deterministic thinking tokens.
+ * NOTE: Reasoning models do not support temperature or seed parameters.
+ * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
+ * @returns {Promise<string>} JSON string extracted by the model.
+ */
+async function callOpenAIReasoning(htmlContent, model, apiKey) {
+  const client = new OpenAI({ apiKey });
+  const response = await client.responses.create({
+    model,
+    reasoning: { effort: 'low' },
+    text: { format: { type: 'json_object' } },
+    instructions: SYSTEM_PROMPT,
+    input: htmlContent,
+  });
+  return response.output_text;
 }
 
 /**
@@ -268,13 +340,16 @@ async function callGemini(htmlContent, modelName, apiKey) {
 
 /**
  * Dispatches an LLM call to the configured provider.
+ * Routes OpenAI reasoning models to the Responses API.
  * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
  * @returns {Promise<string>} JSON string extracted by the model.
  */
-// Dispatch to the correct provider
 async function callLLM(provider, htmlContent, config, apiKey) {
   switch (provider) {
-    case 'openai': return callOpenAI(htmlContent, config.model, apiKey);
+    case 'openai':
+      return config.reasoning
+        ? callOpenAIReasoning(htmlContent, config.model, apiKey)
+        : callOpenAI(htmlContent, config.model, apiKey);
     case 'claude': return callClaude(htmlContent, config.model, apiKey);
     case 'gemini': return callGemini(htmlContent, config.model, apiKey);
     default: throw new Error(`Unsupported provider: ${provider}`);
@@ -457,7 +532,7 @@ async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
 
 async function runProviderEvaluation(provider, config, apiKey) {
   const outputFile = `./results/gaio_evaluation_${provider}_${new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '')}.csv`;
-  console.log(`🚀 Starting GAIO evaluation pipeline  [provider: ${provider}, model: ${config.model}]`);
+  console.log(`🚀 Starting GAIO evaluation pipeline  [provider: ${provider}, model: ${config.model}, tier: ${TIER}]`);
   const results = [];
 
   // Sequential testing to avoid overwhelming the server and to respect rate limits
@@ -499,7 +574,13 @@ async function runEvaluation() {
   const providersToRun = PROVIDER === 'all' ? ['openai', 'claude', 'gemini'] : [PROVIDER];
 
   for (const provider of providersToRun) {
-    const config = PROVIDER_CONFIG[provider];
+    const config = getProviderConfig(provider);
+
+    if (!config) {
+      console.warn(`⚠️  Provider "${provider}" is not available in the "${TIER}" tier. Skipping.`);
+      continue;
+    }
+
     const apiKey = process.env[config.envVar];
 
     if (!apiKey) {
@@ -509,7 +590,7 @@ async function runEvaluation() {
 
     if (PROVIDER === 'all') {
       console.log(`\n${'='.repeat(60)}`);
-      console.log(`  Provider: ${provider.toUpperCase()}`);
+      console.log(`  Provider: ${provider.toUpperCase()}  |  Tier: ${TIER}`);
       console.log(`${'='.repeat(60)}`);
     }
 

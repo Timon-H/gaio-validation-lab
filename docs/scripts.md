@@ -22,11 +22,11 @@ npm run test:extract
 npm run test:extract:persist
 ```
 
-`--persist` requires `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
+    `--persist` requires `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
 
 ## LLM Evaluation (`evaluate.mjs`)
 
-Structured multi-provider extraction benchmark. See [docs/evaluation.md](evaluation.md) for full reference.
+Structured multi-provider extraction benchmark. Supports three model tiers (`--tier primary|validation|exploratory`) for cross-capability analysis. See [docs/evaluation.md](evaluation.md) for full reference including tier details, pricing, and recommended runs.
 
 ## IndexNow Submission (`indexnow.mjs`)
 
