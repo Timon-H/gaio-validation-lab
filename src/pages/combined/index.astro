@@ -11,7 +11,7 @@
  * 
  * NOTE: <noscript> fallbacks are NOT included here because DSD makes them
  * redundant — the shadow content is already in the initial HTML without JS.
- * The noscript technique is tested in isolation at /test-noscript-only.
+ * The noscript technique is tested in isolation at /test-noscript.
  * 
  * Crawlers and LLMs can now parse the page content even though the
  * interactive rendering still lives inside Shadow DOM.
@@ -190,6 +190,8 @@ const accordionHtml = await renderLitToString(html`
       <span slot="headline">Kann ich meine Versicherung online kündigen?</span>
       <p>Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit.</p>
     </dxp-accordion-element>
+    <!-- Trap 7 (TrapHiddenFaq) inlined here because Lit SSR requires template literals;
+         the Astro component version is used on all non-SSR pages. -->
     <dxp-accordion-element id="faq-4" aria-hidden="true">
       <span slot="headline">Wie lange ist mein Versicherungsschutz aktiv?</span>
       <p>Ihr Versicherungsschutz beginnt ab dem in Ihrer Police genannten Datum und l&auml;uft bis zur gew&auml;hlten Vertragslaufzeit. Eine Verl&auml;ngerung erfolgt automatisch, sofern Sie nicht fristgerecht k&uuml;ndigen.</p>
@@ -360,7 +362,7 @@ const tariffHtml = await renderLitToString(html`
 
   <TrapCrossSell semantic />   
 
-  <aside style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #43a047;">
+  <aside style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #4a5dc9;">
     <a href="/">← Zur Übersicht</a>
   </aside>
 </BaseLayout>

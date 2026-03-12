@@ -29,3 +29,6 @@ pnpm-debug.log*
 
 # Evaluation results
 results*/
+
+# Repomix
+*repomix*

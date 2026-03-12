@@ -7,7 +7,7 @@
  * (Declarative Shadow DOM), making shadow content visible in the initial HTML.
  * 
  * NO JSON-LD, NO ARIA on host, NO <noscript> fallbacks, NO semantic wrappers.
- * Isolates the effect of DSD on GAIObility — the Shadow DOM content
+ * Isolates the effect of DSD on AI extractability — the Shadow DOM content
  * is present in the initial HTML, not deferred to JS.
  * 
  * Each component is rendered server-side via renderLitToString() and injected
@@ -91,6 +91,8 @@ const accordionHtml = await renderLitToString(html`
       <span slot="headline">Kann ich meine Versicherung online kündigen?</span>
       <p>Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit.</p>
     </dxp-accordion-element>
+    <!-- Trap 7 (TrapHiddenFaq) inlined here because Lit SSR requires template literals;
+         the Astro component version is used on all non-SSR pages. -->
     <dxp-accordion-element id="faq-4">
       <span slot="headline">Wie lange ist mein Versicherungsschutz aktiv?</span>
       <p>Ihr Versicherungsschutz beginnt ab dem in Ihrer Police genannten Datum und l&auml;uft bis zur gew&auml;hlten Vertragslaufzeit. Eine Verl&auml;ngerung erfolgt automatisch, sofern Sie nicht fristgerecht k&uuml;ndigen.</p>
@@ -198,7 +200,7 @@ const tariffHtml = await renderLitToString(html`
 
   <TrapCrossSell /> 
 
-  <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #9c27b0;">
+  <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #4a5dc9;">
     <a href="/">← Zur Übersicht</a>
   </p>
 </BaseLayout>

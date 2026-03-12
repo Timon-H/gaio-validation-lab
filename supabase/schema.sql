@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS bot_logs (
   id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   created_at    TIMESTAMPTZ DEFAULT now(),
   bot_name      TEXT NOT NULL,           -- 'ChatGPT', 'Claude', 'Gemini', etc.
-  test_group    TEXT NOT NULL,           -- path segment: 'control', 'combined', 'test-jsonld-only', etc.
-  path          TEXT NOT NULL,           -- full path: '/test-jsonld-only'
+  test_group    TEXT NOT NULL,           -- path segment: 'control', 'combined', 'test-jsonld', etc.
+  path          TEXT NOT NULL,           -- full path: '/test-jsonld'
   user_agent    TEXT,
   method        TEXT DEFAULT 'GET',
   status        INT,
@@ -61,7 +61,7 @@ FROM bot_logs
 GROUP BY test_group
 ORDER BY test_group;
 
--- 4. LLM evaluation results (populated by evaluate-gaio.mjs --persist)
+-- 4. LLM evaluation results (populated by evaluate.mjs --persist)
 -- Stores structured extraction output per variant and provider run
 CREATE TABLE IF NOT EXISTS llm_evaluation_results (
   id                   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,

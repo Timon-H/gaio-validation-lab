@@ -1,6 +1,6 @@
 # Test Traps
 
-The first round of evaluation produced identical extraction scores across all 8 variants (`3/3/2/4`). This showed that LLMs recover content from raw text regardless of markup. To create meaningful differentiation, five deliberate traps were embedded — HTML structures that a GAIO-aware page should handle differently from a bare control page. Each trap tests whether a specific markup technique (semantic elements, ARIA attributes, structured data) changes what an LLM picks up as a valid extraction target.
+The first round of evaluation produced identical extraction scores across all 8 variants (`3/3/2/4`) — LLMs recover content from raw text regardless of markup structure. Seven deliberate traps were then embedded — HTML structures that a GAIO-aware page should handle differently from a bare control page. Each trap tests whether a specific markup technique (semantic elements, ARIA attributes, structured data) changes what an LLM picks up as a valid extraction target.
 
 ---
 
@@ -23,7 +23,7 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 
 ---
 
-## Trap 2 — Unlabelled Range Slider (field visibility)
+## Trap 2 — Unlabelled Number Input (field visibility)
 
 **What it is:** A number input (`<input type="number">`) for "Gewünschte Deckungssumme" placed in the form section. On non-ARIA pages it has no accessible label and an opaque `name` attribute (`f_coverage`), giving the LLM no cue to identify its purpose.
 
@@ -35,7 +35,7 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 | `aria`, `combined` | `aria-label="Gewünschte Deckungssumme in Euro"` |
 
 **Expected signal (`formFelder` count):**
-- Non-ARIA pages: LLM may not recognize the slider as a named field.
+- Non-ARIA pages: LLM may not recognize the input as a named field.
 - `aria` / `combined`: ARIA label exposes the field purpose; LLM should count it.
 
 ---
@@ -48,18 +48,18 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 
 | Variants | Label mechanism |
 |---|---|
-| `control`, `semantic`, `noscript`, `dsd`, `microdata`, `jsonld` | `.field-birthyear::before { content: "Geburtsjahr" }` — CSS only, no HTML text, no ARIA |
+| `control`, `semantic`, `noscript`, `dsd`, `microdata`, `jsonld` | `.field-birth-year::before { content: "Pflichtfeld" }` — CSS only, opaque label, no ARIA |
 | `aria`, `combined` | `aria-label="Geburtsjahr eingeben"` on the `<input>` |
 
 **Expected signal (`formFelder` count):**
-- CSS-only pages: LLM sees an unlabelled `<input type="text" name="geburtsjahr">` — may miss it or list it without a name.
+- CSS-only pages: LLM sees an unlabelled `<input type="text" name="f_birth">` — may miss it or list it without a name.
 - `aria` / `combined`: ARIA label makes the field identity machine-readable; LLM should include it with its name.
 
 ---
 
 ## Trap 4 — Testimonial Price Noise (tariff scope)
 
-**What it is:** A customer testimonial quote placed directly adjacent to the tariff comparison block. The quote contains a price figure ("12 € pro Monat") phrased as a first-person product statement (*"Bei meiner Police zahle ich nur 12 € pro Monat"*). Without `<blockquote>`, this is plausible as a tariff price. Comparative phrasing ("I save compared to…") has been intentionally removed so that `<blockquote>` is the primary disambiguation signal.
+**What it is:** A customer testimonial quote placed directly adjacent to the tariff comparison block. The quote contains a price figure ("12 € pro Monat") phrased as a first-person product statement (*"Bei meiner Police zahle ich nur 12 € pro Monat"*). Without `<blockquote>`, this is plausible as a tariff price. Comparative phrasing ("I save compared to…") was dropped, leaving `<blockquote>` as the sole disambiguation signal.
 
 **Per-variant implementation:**
 
@@ -96,9 +96,9 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 
 ---
 
-## Trap 6 -- aria-hidden Bonus Tariff Card (ARIA content suppression)
+## Trap 6 — aria-hidden Bonus Tariff Card (ARIA content suppression)
 
-**What it is:** A "Komfort-Plus" tariff card (7,50 EUR/Monat, Deckungssumme: 20 Mio. EUR) placed directly above the tariff comparison table. Its text format is structurally identical to the three main tariff rows -- no promotional language or qualifiers that allow a capable model to self-disambiguate it as non-primary content. Three suppression mechanisms are contrasted.
+**What it is:** A "Komfort-Plus" tariff card (7,50 EUR/Monat, Deckungssumme: 20 Mio. EUR) placed directly above the tariff comparison table. Its text format is structurally identical to the three main tariff rows — no promotional language or qualifiers that allow a capable model to self-disambiguate it as non-primary content.
 
 **Per-variant implementation:**
 
@@ -112,14 +112,14 @@ The system prompt reinforces this: *"Erfasse nur die Haupttarife des primär bew
 **Note:** On `jsonld` and `microdata` pages the structured `offers` array enumerates exactly 3 `Offer` objects, providing an implicit scope boundary without any HTML-level suppression on the card itself.
 
 **Expected signal (`tarife` count):**
-- Non-ARIA, non-semantic pages: LLM may include "Basis-Plus" → tarife = **4**
+- Non-ARIA, non-semantic pages: LLM may include "Komfort-Plus" → tarife = **4**
 - `aria` / `combined`: `aria-hidden` suppresses the card → tarife = **3**
 - `semantic` / `combined`: `<aside>` signals out-of-scope → tarife = **3**
 - `jsonld` / `microdata`: structured Offer scope implicitly excludes the card → tarife = **3**
 
 ---
 
-## Trap 7 -- aria-hidden 4th FAQ Item (ARIA suppressive signal)
+## Trap 7 — aria-hidden 4th FAQ Item (ARIA suppressive signal)
 
 **What it is:** A fourth FAQ accordion item ("Wie lange ist mein Versicherungsschutz aktiv?") added after the three main FAQ entries. It is fully visible in the HTML DOM by default, testing whether `aria-hidden="true"` causes an LLM to *exclude* content that is structurally present.
 

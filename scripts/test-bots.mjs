@@ -5,12 +5,12 @@ const baseUrl = process.argv[2] ?? 'http://localhost:4321';
 const variants = [
   'control',
   'combined',
-  'test-jsonld-only',
-  'test-semantic-only',
-  'test-noscript-only',
-  'test-aria-only',
+  'test-jsonld',
+  'test-semantic',
+  'test-noscript',
+  'test-aria',
   'test-dsd',
-  'test-microdata-only',
+  'test-microdata',
 ];
 
 const bots = [

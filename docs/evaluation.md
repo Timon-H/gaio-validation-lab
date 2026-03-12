@@ -1,6 +1,6 @@
 # LLM Evaluation
 
-`scripts/evaluate-gaio.mjs` runs the structured extraction benchmark against all 8 page variants using a chosen LLM provider. Each run fetches the live HTML and asks the model to extract a fixed set of fields:
+`scripts/evaluate.mjs` runs the structured extraction benchmark against all 8 page variants using a chosen LLM provider. Each run fetches the live HTML and asks the model to extract a fixed set of fields:
 
 - **tarife** — name, price, Deckungssumme, Selbstbeteiligung, payment period, highlighted flag
 - **faq** — question + answer pairs
@@ -9,27 +9,33 @@
 - **kontakt** — contact details
 - **anbieter** — provider name
 
-Results are returned as structured JSON. Because most of these fields live inside Shadow DOM, extraction counts vary across variants, making them the primary GAIObility metric.
+Results are returned as structured JSON. Because most of these fields live inside Shadow DOM, extraction counts vary across variants — this variance is the primary measurement target.
 
 ## Commands
 
 ```bash
-# Run with a specific provider
+# Run with a specific provider (primary tier, default)
 npm run evaluate:openai
 npm run evaluate:claude
 npm run evaluate:gemini
 
+# Run all providers with the validation tier
+npm run evaluate:all -- --tier validation --repetitions 5
+
+# Run OpenAI exploratory tier (GPT-5-nano reasoning model)
+npm run evaluate:openai -- --tier exploratory --repetitions 5
+
 # Persist results to Supabase (requires SUPABASE_URL + SUPABASE_ANON_KEY)
-npm run evaluate:openai:persist
-npm run evaluate:claude:persist
-npm run evaluate:gemini:persist
+npm run evaluate:openai -- --persist
+npm run evaluate:claude -- --persist
+npm run evaluate:gemini -- --persist
 ```
 
 Results are always written to `results/gaio_evaluation_<provider>.csv`. With `--persist`, each run is also inserted into the `llm_evaluation_results` Supabase table, enabling cross-provider and cross-run comparisons via the `llm_eval_comparison` SQL view.
 
 ## Environment Variables
 
-An LLM provider API key is **always required** — there is no credential-free mode for this script. Running with `--persist` additionally requires `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
+Running the evaluation requires an LLM provider API key. Running with `--persist` additionally requires `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
 
 | Variable | Required for |
 |---|---|
@@ -41,15 +47,51 @@ An LLM provider API key is **always required** — there is no credential-free m
 
 Add the relevant keys to your `.env` file. The npm scripts load them automatically via Node's native `--env-file` flag.
 
+## Model Tiers
+
+The evaluation uses a tiered model strategy. Use `--tier <tier>` to select (default: `primary`).
+
+### Primary Tier — `--tier primary`
+
+Cost-effective models with full determinism controls (`temperature: 0.0`, `seed: 42` where supported). Used for the main analysis with 10+ repetitions.
+
+| Provider | Model | Input/MTok | Output/MTok |
+|---|---|---|---|
+| OpenAI | `gpt-4.1-mini` | $0.40 | $1.60 |
+| Claude | `claude-haiku-4-5` | $1.00 | $5.00 |
+| Gemini | `gemini-3-flash-preview` | $0.50 | $3.00 |
+
+### Validation Tier — `--tier validation`
+
+Higher-capability models from each provider, same API surface and determinism controls. Used with fewer repetitions (e.g., 5) to confirm that GAIO measure effects generalise across model capability levels.
+
+| Provider | Model | Input/MTok | Output/MTok |
+|---|---|---|---|
+| OpenAI | `gpt-4.1` | $2.00 | $8.00 |
+| Claude | `claude-sonnet-4-6` | $3.00 | $15.00 |
+| Gemini | `gemini-3.1-pro-preview` | $2.00 | $12.00 |
+
+### Exploratory Tier — `--tier exploratory`
+
+OpenAI-only GPT-5-nano reasoning model probe. Uses the Responses API with `reasoning.effort: 'low'` to minimise non-deterministic thinking tokens. Included as a forward-looking supplementary analysis.
+
+| Provider | Model | Input/MTok | Output/MTok | Determinism |
+|---|---|---|---|---|
+| OpenAI | `gpt-5-nano` | $0.05 | $0.40 | No temp/seed — reasoning model |
+
+Reasoning models (GPT-5 family, o3, o4-mini) do not support `temperature` or `seed` parameters. They use a separate code path (`callOpenAIReasoning`) that calls the OpenAI Responses API instead of Chat Completions. Claude and Gemini are not available in this tier.
+
+### Recommended Runs for Thesis
+
+| Tier | Command | Repetitions | Purpose | Est. Cost |
+|---|---|---|---|---|
+| Primary | `npm run evaluate:all -- --persist --repetitions 10` | 10 | Main analysis | ~$5 |
+| Validation | `npm run evaluate:all -- --persist --tier validation --repetitions 5` | 5 | Cross-tier robustness | ~$7 |
+| Exploratory | `npm run evaluate:openai -- --persist --tier exploratory --repetitions 5` | 5 | Reasoning model probe | ~$0.50 |
+
 ## Default Models
 
-| Provider | Default model | Higher accuracy alternative |
-|---|---|---|
-| OpenAI | `gpt-4.1-mini` | `gpt-4.1` |
-| Claude | `claude-haiku-4-5` | `claude-opus-4-5` |
-| Gemini | `gemini-2.5-flash` | `gemini-2.5-pro` |
-
-Models can be changed in the `PROVIDER_CONFIG` table at the top of `evaluate-gaio.mjs`.
+See "Model Tiers" above. Models are configured in the `TIER_CONFIGS` table in `evaluate.mjs`.
 
 ## JSON Enforcement Per Provider
 
