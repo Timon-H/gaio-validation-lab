@@ -29,6 +29,7 @@ pnpm-debug.log*
 
 # Evaluation results
 results*/
+.gaio-local-db/
 
 # Repomix
 *repomix*
