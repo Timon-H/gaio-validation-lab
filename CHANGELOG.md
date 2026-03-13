@@ -2,6 +2,22 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.0.1] - 2026-03-13
+
+### Added
+
+- Quality automation baseline:
+  - GitHub Actions workflow at `.github/workflows/quality.yml`
+  - `test:ci` server-backed gate using `start-server-and-test`
+  - `test:integrity` experiment invariants check (`scripts/test-integrity.mjs`)
+- Pre-commit automation:
+  - `simple-git-hooks` `pre-commit` hook
+  - `lint-staged` staged-file formatting/linting
+
+### Documentation
+
+- Updated README and script/replication docs to cover quality gates, integrity checks, CI workflow, and pre-commit hooks.
+
 ## [1.0.0] - 2026-03-13
 
 ### Release Summary

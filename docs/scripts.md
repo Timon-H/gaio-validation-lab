@@ -98,6 +98,61 @@ node --env-file=.env ./scripts/test-extract.mjs --persist https://gaio-validatio
 
 `--persist` requires `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
 
+## Experiment Integrity Check (`test-integrity.mjs`)
+
+Validates experiment invariants for all variants:
+
+- HTTP status is healthy (`2xx/3xx`)
+- Middleware headers remain canonical (`X-Test-Group`, `X-Variant-Id`)
+- Core marker pattern is unchanged (JSON-LD, NOSCRIPT, DSD, MICRODATA)
+
+### Commands (Integrity)
+
+```bash
+# Default target: http://127.0.0.1:4321
+npm run test:integrity
+
+# Explicit target URL
+node ./scripts/test-integrity.mjs http://127.0.0.1:4321
+```
+
+This script is intended as a hard guard before running evaluation campaigns.
+
+## Quality Automation
+
+### Local Commands
+
+```bash
+# Lint + markdown checks
+npm run lint
+
+# Build
+npm run build
+
+# Server-backed experiment checks (starts app, then runs test scripts)
+npm run test:ci
+```
+
+For a full local gate, run `npm run lint && npm run build && npm run test:ci`.
+
+`test:ci` starts the local app and runs:
+
+- `test:bots`
+- `test:extract`
+- `test:integrity`
+
+### Pre-commit Hook
+
+- Git hooks are managed by `simple-git-hooks` (`prepare` script).
+- `pre-commit` runs `npm run lint:staged`.
+- `lint-staged` applies Prettier to staged code/config files and Prettier + markdownlint fixes for staged Markdown.
+
+### CI Workflow
+
+- GitHub Actions workflow: `.github/workflows/quality.yml`
+- Trigger: push to `main` and all pull requests
+- Steps: `npm ci` → `npm run lint` → `npm run build` → `npm run test:ci`
+
 ## IndexNow Submission (`indexnow.mjs`)
 
 Submits all variant URLs to IndexNow (`https://api.indexnow.org/IndexNow`) after deployment.

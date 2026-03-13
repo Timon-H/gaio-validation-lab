@@ -1,27 +1,32 @@
 {
   "name": "gaio-validation-lab",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Minimalist environment to validate and benchmark generative AI optimization approaches on web-components",
   "type": "module",
   "scripts": {
     "dev": "astro dev",
+    "dev:ci": "astro dev --host 127.0.0.1 --port 4321",
     "build": "astro check && astro build",
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
     "lint": "npm run format:check && npm run lint:md",
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
     "lint:md:fix": "markdownlint-cli2 --fix \"**/*.md\"",
+    "lint:staged": "lint-staged",
     "astro": "astro",
     "test:bots": "node ./scripts/test-bots.mjs",
     "test:extract": "node ./scripts/test-extract.mjs",
     "test:extract:persist": "node --env-file=.env ./scripts/test-extract.mjs --persist",
+    "test:integrity": "node ./scripts/test-integrity.mjs",
     "test:all": "npm run test:bots && npm run test:extract",
+    "test:ci": "start-server-and-test dev:ci http://127.0.0.1:4321 \"npm run test:bots -- http://127.0.0.1:4321 && npm run test:extract -- http://127.0.0.1:4321 && npm run test:integrity -- http://127.0.0.1:4321\"",
     "evaluate:openai": "node --env-file=.env ./scripts/evaluate.mjs --provider openai",
     "evaluate:claude": "node --env-file=.env ./scripts/evaluate.mjs --provider claude",
     "evaluate:gemini": "node --env-file=.env ./scripts/evaluate.mjs --provider gemini",
     "evaluate:all": "node --env-file=.env ./scripts/evaluate.mjs --provider all",
     "preview": "astro build && astro preview",
-    "indexnow": "node --env-file=.env ./scripts/indexnow.mjs"
+    "indexnow": "node --env-file=.env ./scripts/indexnow.mjs",
+    "prepare": "simple-git-hooks"
   },
   "repository": {
     "type": "git",
@@ -79,10 +84,13 @@
     "@anthropic-ai/sdk": "^0.78.0",
     "@astrojs/check": "^0.9.6",
     "@google/generative-ai": "^0.24.1",
+    "lint-staged": "^16.3.3",
     "markdownlint-cli2": "^0.21.0",
     "openai": "^6.25.0",
     "prettier": "^3.8.1",
     "prettier-plugin-astro": "^0.14.1",
+    "simple-git-hooks": "^2.13.1",
+    "start-server-and-test": "^2.1.5",
     "typescript": "^5.9.3"
   },
   "engines": {
@@ -91,5 +99,17 @@
   "overrides": {
     "path-to-regexp": ">=8.3.0",
     "lodash": ">=4.17.23"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npm run lint:staged"
+  },
+  "lint-staged": {
+    "**/*.{js,mjs,ts,astro,json,cff,yml,yaml}": [
+      "prettier --write"
+    ],
+    "**/*.md": [
+      "prettier --write",
+      "markdownlint-cli2 --fix"
+    ]
   }
 }

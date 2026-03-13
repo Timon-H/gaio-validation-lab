@@ -20,6 +20,8 @@ cd gaio-validation-lab
 npm install
 ```
 
+`npm install` also runs `prepare`, which installs the pre-commit hook (`npm run lint:staged`).
+
 ---
 
 ## 2. Environment Configuration
@@ -71,6 +73,23 @@ The eight variant pages are available at:
 | `/test-noscript`  | `<noscript>` fallbacks only        |
 | `/test-dsd`       | Declarative Shadow DOM only        |
 | `/test-microdata` | Microdata only                     |
+
+---
+
+## 3a. Quality Gate (Recommended Before Experiments)
+
+Run the local quality gate before extraction/evaluation campaigns:
+
+```bash
+# Lint + build
+npm run lint
+npm run build
+
+# Server-backed experiment checks
+npm run test:ci
+```
+
+`test:ci` starts the local app and executes bot-header validation, extraction smoke checks, and the variant integrity check.
 
 ---
 
