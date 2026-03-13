@@ -43,15 +43,20 @@ SUPABASE_URL=https://your-project-id.supabase.co
 SUPABASE_ANON_KEY=eyJhbGci...
 ```
 
-The `INDEXNOW_KEY` and `SITE_HOST` variables in `.env.example` are optional overrides for `scripts/indexnow.mjs`. They default to the deployed Vercel project values and do not need to be set for local evaluation.
+The `INDEXNOW_KEY` and `SITE_HOST` variables are only needed when you run `npm run indexnow`. They are required for that script and have no effect on local extraction/evaluation runs.
+
+Initialize Supabase schema before any `--persist` run:
+
+1. Open Supabase SQL Editor.
+2. Execute [`supabase/schema.sql`](../supabase/schema.sql).
 
 ---
 
-## 3. Build and Preview (Local)
+## 3. Build and Run Locally
 
 ```bash
 npm run build       # TypeScript check + Astro build
-npm run preview     # Serve the production build locally at http://localhost:4321
+npm run dev         # Local server at http://localhost:4321
 ```
 
 The eight variant pages are available at:
@@ -89,7 +94,7 @@ npm run test:extract:persist   # requires SUPABASE_URL + SUPABASE_ANON_KEY in .e
 
 ## 5. Bot User-Agent Simulation
 
-Checks that the middleware correctly identifies AI crawler user-agent strings and sets `X-AI-Bot-Detected` and `X-Test-Group` response headers. Requires the local preview server (step 3) or the live deployment.
+Checks that the middleware correctly identifies AI crawler user-agent strings and sets `X-AI-Bot-Detected` and `X-Test-Group` response headers. Requires the local dev server (step 3) or the live deployment.
 
 ```bash
 npm run test:bots
@@ -104,7 +109,7 @@ Expected output: a table showing each simulated bot UA, the detected group, and 
 Runs the structured extraction benchmark against all 8 variants using a chosen LLM provider. Each variant is evaluated **n times** for variance measurement.
 
 ```bash
-# Run against the local build (http://localhost:4321, requires preview server running)
+# Run against local server (http://localhost:4321, requires npm run dev)
 npm run evaluate:openai
 npm run evaluate:claude
 npm run evaluate:gemini
@@ -160,15 +165,20 @@ Each run produces a CSV in `results/`. Open any CSV in a spreadsheet tool or par
 If results were persisted, query the `llm_eval_comparison` view:
 
 ```sql
-SELECT variant_id, provider, model,
-  AVG(tarife_count), AVG(faq_count),
-  AVG(form_felder_count)
+SELECT *
 FROM llm_eval_comparison
-GROUP BY variant_id, provider, model
-ORDER BY variant_id;
+ORDER BY variant_id, provider, model, tier;
 ```
 
-Or use the Supabase dashboard: **Table Editor → llm_eval_comparison**.
+You can also inspect structural extraction aggregates:
+
+```sql
+SELECT *
+FROM extraction_comparison
+ORDER BY variant_id, extractor;
+```
+
+For full database usage, see [`docs/database.md`](database.md).
 
 ---
 
@@ -192,4 +202,4 @@ Each call generates a new timestamped CSV; aggregate multiple runs for more reli
 - **API quotas:** Gemini free-tier quota may throttle or reject requests during high-load periods. The script includes automatic retry logic with exponential backoff.
 - **Live vs. local differences:** Passing `--url https://gaio-validation-lab.vercel.app` evaluates the deployed Vercel URL; the default targets `localhost:4321`. Results should be identical given the same HTML output, but network latency and caching may introduce minor differences.
 - **`/combined` and `/test-dsd` are SSR-only:** These two variants disable client-side hydration to keep the initial HTML deterministic. Other variants use standard Astro SSR with client-side Lit hydration.
-- **`seed` support varies by provider:** OpenAI and Gemini support `seed: 42`; Claude does not currently expose a seed parameter. Temperature is fixed at `0.0` for all providers.
+- **`seed` support varies by provider:** OpenAI uses `seed: 42`; Claude and Gemini do not currently expose a seed parameter in this script path. Temperature is fixed at `0.0` for all providers except OpenAI reasoning models.

@@ -31,7 +31,7 @@ npm run evaluate:claude -- --persist
 npm run evaluate:gemini -- --persist
 ```
 
-Results are always written to `results/gaio_evaluation_<provider>.csv`. With `--persist`, each run is also inserted into the `llm_evaluation_results` Supabase table, enabling cross-provider and cross-run comparisons via the `llm_eval_comparison` SQL view.
+Results are always written to `results/gaio_evaluation_<provider>_<timestamp>.csv`. With `--persist`, each run is also inserted into the `llm_evaluation_results` Supabase table (including `tier`, `variant_id`, and `base_url`), enabling cross-provider and cross-run comparisons via the `llm_eval_comparison` SQL view.
 
 ## Environment Variables
 
@@ -111,15 +111,12 @@ The script includes `callLLMWithRetry()` which handles 429 responses by parsing 
 
 ## Supabase Schema
 
-The `llm_evaluation_results` table stores one row per variant × provider run. The `llm_eval_comparison` view aggregates averages across runs:
+The `llm_evaluation_results` table stores one row per variant x provider run. The `llm_eval_comparison` view aggregates averages across runs and keeps model tier in the grouping:
 
 ```sql
-SELECT variant_id, provider, model,
-  AVG(tarife_count), AVG(faq_count),
-  AVG(produktkarten_count), AVG(form_felder_count),
-  SUM(hat_kontakt::int), SUM(hat_anbieter::int)
-FROM llm_evaluation_results
-GROUP BY variant_id, provider, model;
+SELECT *
+FROM llm_eval_comparison
+ORDER BY variant_id, provider, model, tier;
 ```
 
-See [`supabase/schema.sql`](../supabase/schema.sql) for the full DDL.
+See [`supabase/schema.sql`](../supabase/schema.sql) for the full DDL and [`docs/database.md`](database.md) for operational usage.
