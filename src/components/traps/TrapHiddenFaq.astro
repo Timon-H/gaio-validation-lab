@@ -10,22 +10,27 @@
  * aria-hidden="true" causes an LLM to *exclude* content that is visually present.
  *
  * Remediation variants:
- *   - default:       4th FAQ fully visible -> faq count = 4
- *   - aria=true:     aria-hidden="true" on the accordion item -> faq count = 3 (suppressed)
- *   - noscript=true: fully visible + additional <noscript> label (no suppression) -> faq = 4
+ *   - default:       dxp-accordion-element only; headline/body are stripped by the
+ *                    evaluation pipeline → item is invisible to the LLM
+ *   - aria=true:     aria-hidden="true" on the accordion item → LLM excludes the item
+ *                    even if a non-stripped channel (aria-label) exposes the other 3
+ *   - noscript=true: additional <noscript> fallback alongside the element → item visible
  *
  * Note: The JSON-LD FAQPage schema in the jsonld / combined pages enumerates exactly
  * 3 Question objects. Whether the model uses the JSON-LD count as ground truth (3)
  * or the HTML content count (4) is itself a measurable GAIO effect.
  *
  * Expected signal (faq count):
- *   - default, noscript, semantic, dsd, jsonld, microdata: faq = 4
- *   - aria=true, combined: faq = 3 (aria-hidden suppresses the 4th item)
+ *   - noscript, dsd:           faq = 4  (non-stripped fallback channel exposes the item)
+ *   - jsonld, microdata:       faq = 3  (structured data enumerates 3; 4th not encoded)
+ *   - aria=true, combined:     faq = 3  (aria-hidden suppresses the 4th item)
+ *   - semantic, control:       faq = 0  (no non-stripped channel; semantic wrappers alone
+ *                                        do not expose shadow DOM content)
  */
 interface Props {
   /** Apply ARIA suppression: adds aria-hidden="true" to the 4th FAQ item */
   aria?: boolean;
-  /** Apply noscript remediation: adds a visible <noscript> version (no suppression) */
+  /** Apply noscript remediation: adds a visible <noscript> fallback (no suppression) */
   noscript?: boolean;
 }
 

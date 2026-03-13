@@ -11,7 +11,9 @@
  * A number input without a label (non-ARIA) vs. with aria-label (ARIA) creates
  * a clean discriminating signal.
  *
- * Remediation: `aria` pages add aria-label to the input element.
+ * Remediation variants:
+ *   - aria=true:   adds aria-label to the input — field identity becomes machine-readable
+ *   - default:     no label — field has only an opaque name attribute ("f_coverage")
  *
  * Expected signal (formFelder count):
  *   - aria=false: LLM may not recognise the unlabelled number input as a named field
