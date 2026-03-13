@@ -59,8 +59,8 @@ node ./scripts/test-bots.mjs https://gaio-validation-lab.vercel.app
 ### What It Checks
 
 - `X-AI-Bot-Detected` header matches expected bot group.
-- `X-Test-Group` header is present for each variant route.
-- `X-Variant-Id` header exposes the canonical variant ID.
+- `X-Test-Group` header matches the expected route slug for each variant.
+- `X-Variant-Id` header matches the canonical variant ID for each route.
 - HTTP status remains healthy under HEAD requests.
 
 No credentials are required.

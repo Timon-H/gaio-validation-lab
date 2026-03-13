@@ -18,6 +18,7 @@
  */
 import { html, css, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
 import { DxpFormBase, formBaseStyles } from './dxp-form-base';
 
 export interface RadioOption {
@@ -27,10 +28,21 @@ export interface RadioOption {
 
 @customElement('dxp-input-radio')
 export class DxpInputRadio extends DxpFormBase {
+  private static _instanceCounter = 0;
+  private readonly _groupId: string;
+  private readonly _groupLabelId: string;
 
   static styles = [
     formBaseStyles,
     css`
+
+    .radio-group-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--dxp-form-label-color, #333);
+    }
 
     .radio-group {
       display: flex;
@@ -59,6 +71,9 @@ export class DxpInputRadio extends DxpFormBase {
     }
 
     .radio-column > label {
+      display: inline-flex;
+      margin: 0;
+      font-weight: normal;
       cursor: pointer;
       font-size: 1rem;
       color: var(--dxp-radio-text-color, #333);
@@ -94,6 +109,9 @@ export class DxpInputRadio extends DxpFormBase {
 
   constructor() {
     super();
+    const uid = ++DxpInputRadio._instanceCounter;
+    this._groupId = `dxp-radio-group-${uid}`;
+    this._groupLabelId = `dxp-radio-group-label-${uid}`;
     this.requiredErrorText = 'Bitte wählen Sie eine Option.';
   }
 
@@ -137,38 +155,47 @@ export class DxpInputRadio extends DxpFormBase {
 
   render() {
     const options = this._getOptions();
-    const groupId = `${this.name || 'dxp-radio'}-group`;
+    const groupName = this.name || this._groupId;
 
     return html`
-      ${this.renderLabel(groupId)}
-      <div class="radio-group" id=${groupId} role="radiogroup" aria-label=${this.label || this.name}>
-        ${options.map(option => html`
-          <div class="radio-column">
-            ${this.labelDirection === 'left' ? html`
-              <label for="radio_${option.value}">${option.label}</label>
-              <input
-                type="radio"
-                id="radio_${option.value}"
-                name=${this.name}
-                .value=${option.value}
-                ?checked=${this.value === option.value}
-                ?required=${this._isRequired}
-                @change=${() => this._handleChange(option)}
-              />
-            ` : html`
-              <input
-                type="radio"
-                id="radio_${option.value}"
-                name=${this.name}
-                .value=${option.value}
-                ?checked=${this.value === option.value}
-                ?required=${this._isRequired}
-                @change=${() => this._handleChange(option)}
-              />
-              <label for="radio_${option.value}">${option.label}</label>
-            `}
-          </div>
-        `)}
+      ${this.label ? html`<div class="radio-group-label" id=${this._groupLabelId}>${this.label}</div>` : nothing}
+      <div
+        class="radio-group"
+        id=${this._groupId}
+        role="radiogroup"
+        aria-labelledby=${ifDefined(this.label ? this._groupLabelId : undefined)}
+        aria-label=${ifDefined(!this.label && this.name ? this.name : undefined)}
+      >
+        ${options.map((option, index) => {
+          const optionId = `${this._groupId}-option-${index}`;
+          return html`
+            <div class="radio-column">
+              ${this.labelDirection === 'left' ? html`
+                <label for=${optionId}>${option.label}</label>
+                <input
+                  type="radio"
+                  id=${optionId}
+                  name=${groupName}
+                  .value=${option.value}
+                  ?checked=${this.value === option.value}
+                  ?required=${this._isRequired}
+                  @change=${() => this._handleChange(option)}
+                />
+              ` : html`
+                <input
+                  type="radio"
+                  id=${optionId}
+                  name=${groupName}
+                  .value=${option.value}
+                  ?checked=${this.value === option.value}
+                  ?required=${this._isRequired}
+                  @change=${() => this._handleChange(option)}
+                />
+                <label for=${optionId}>${option.label}</label>
+              `}
+            </div>
+          `;
+        })}
       </div>
       ${this._invalid ? html`<div class="error-message">${this.requiredErrorText}</div>` : nothing}
     `;

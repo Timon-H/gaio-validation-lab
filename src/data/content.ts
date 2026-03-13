@@ -266,7 +266,7 @@ export function buildGaioSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    name: `DXP ${PAGE_TITLE.split(' – ')[0]} – ${PAGE_TITLE.split(' – ')[1]}`.replace('DXP DXP', 'DXP'),
+    name: PAGE_TITLE,
     description: PAGE_DESCRIPTION,
     about: {
       '@type': 'FinancialProduct',

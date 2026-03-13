@@ -21,5 +21,5 @@ export const VARIANTS = Object.freeze([
 /** Just the IDs (e.g. for CLI validation). */
 export const VARIANT_IDS = VARIANTS.map(v => v.id);
 
-/** Just the path slugs without leading slash (e.g. for URL building). */
+/** Just the variant paths including leading slash (e.g. '/control'). */
 export const VARIANT_PATHS = VARIANTS.map(v => v.path);
