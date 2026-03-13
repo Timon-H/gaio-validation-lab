@@ -6,7 +6,9 @@ This page documents all executable scripts in `scripts/` and how they relate to 
 
 - Variant routing comes from `src/data/variants.mjs` (`VARIANTS`, `VARIANT_PATHS`) and is shared by middleware and scripts.
 - Supabase writes use `src/lib/supabase.mjs` (`supabaseInsert`).
-- Scripts that persist data require `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
+- Persisting scripts support two modes:
+	- Supabase mode: `SUPABASE_URL` + `SUPABASE_ANON_KEY`
+	- Local mode: `GAIO_LOCAL_PERSIST=true` (writes JSONL files to `.gaio-local-db/`)
 - NPM shortcuts for `evaluate:*`, `indexnow`, and `test:extract:persist` load `.env` via Node `--env-file`.
 - Database setup and query examples are documented in [docs/database.md](database.md).
 
@@ -29,6 +31,9 @@ npm run evaluate:all -- --tier validation --repetitions 5
 
 # Optional persistence to Supabase
 npm run evaluate:all -- --persist --repetitions 5
+
+# Optional local persistence (no external DB)
+$env:GAIO_LOCAL_PERSIST='true'; npm run evaluate:all -- --persist --repetitions 5
 ```
 
 ### Flags
@@ -81,6 +86,9 @@ node ./scripts/test-extract.mjs https://gaio-validation-lab.vercel.app
 # Persist to Supabase (uses .env via npm script)
 npm run test:extract:persist
 
+# Persist locally (no external DB)
+$env:GAIO_LOCAL_PERSIST='true'; npm run test:extract:persist
+
 # Persist against production
 node --env-file=.env ./scripts/test-extract.mjs --persist https://gaio-validation-lab.vercel.app
 ```
@@ -95,8 +103,9 @@ node --env-file=.env ./scripts/test-extract.mjs --persist https://gaio-validatio
 - Fixed-width console report per variant and bot.
 - Marker assertions for LD, NOSCRIPT, DSD, and MICRODATA expectations.
 - Optional DB writes to `extraction_results` when `--persist` is set.
+- Local mode writes JSONL rows to `.gaio-local-db/extraction_results.jsonl`.
 
-`--persist` requires `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
+`--persist` requires either Supabase credentials or `GAIO_LOCAL_PERSIST=true`.
 
 ## IndexNow Submission (`indexnow.mjs`)
 
@@ -125,13 +134,18 @@ The script builds `urlList` from `VARIANT_PATHS`, so every benchmark route is su
 
 ## Middleware (`src/middleware.ts`)
 
-Detects 16 AI crawler groups by user-agent and logs visits to Supabase `bot_logs` with `variant_id`, path, latency, and status.
+Detects AI crawler groups by user-agent and logs visits to `bot_logs` with `variant_id`, path, latency, and status.
 
 | Group | User-agent tokens |
 | --- | --- |
 | ChatGPT | `GPTBot`, `ChatGPT-User`, `OAI-SearchBot`, `ChatGPT Agent` |
 | Claude | `ClaudeBot`, `Claude-Web`, `Claude-User`, `Claude-SearchBot`, `anthropic-ai` |
 | Gemini | `Google-Extended`, `Gemini-Deep-Research`, `Google-NotebookLM`, `NotebookLM`, `GoogleAgent-Mariner` |
+| Copilot | `GitHubCopilot`, `GitHub-Copilot`, `Copilot` |
+| Cursor | `Cursor` |
+| Windsurf | `Windsurf`, `Codeium` |
+| Cline | `Cline` |
+| Continue | `Continue` |
 | Perplexity | `PerplexityBot`, `Perplexity-User` |
 | CommonCrawl | `CCBot` |
 | Applebot | `Applebot`, `Applebot-Extended` |
@@ -146,7 +160,7 @@ Detects 16 AI crawler groups by user-agent and logs visits to Supabase `bot_logs
 | Manus | `Manus-User` |
 | Amazon | `Amazonbot`, `amazon-kendra`, `AmazonBuyForMe` |
 
-`SUPABASE_URL` and `SUPABASE_ANON_KEY` are optional. Detection headers still work when keys are absent; only persistence is skipped.
+`SUPABASE_URL` and `SUPABASE_ANON_KEY` are optional. Detection headers still work when keys are absent. To persist without Supabase, set `GAIO_LOCAL_PERSIST=true` and middleware writes JSONL rows to `.gaio-local-db/bot_logs.jsonl`.
 
 ## Database Views
 

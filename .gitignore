@@ -27,6 +27,9 @@ pnpm-debug.log*
 # Vercel
 .vercel
 
+# Local persistence files
+.gaio-local-db/
+
 # Evaluation results
 results*/
 

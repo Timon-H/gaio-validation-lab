@@ -41,11 +41,15 @@ GEMINI_API_KEY=AIza...
 # Required only for --persist runs
 SUPABASE_URL=https://your-project-id.supabase.co
 SUPABASE_ANON_KEY=eyJhbGci...
+
+# Optional local persistence mode (no external DB)
+# GAIO_LOCAL_PERSIST=true
+# GAIO_LOCAL_DB_DIR=.gaio-local-db
 ```
 
 The `INDEXNOW_KEY` and `SITE_HOST` variables are only needed when you run `npm run indexnow`. They are required for that script and have no effect on local extraction/evaluation runs.
 
-Initialize Supabase schema before any `--persist` run:
+Initialize Supabase schema before any `--persist` run that targets Supabase:
 
 1. Open Supabase SQL Editor.
 2. Execute [`supabase/schema.sql`](../supabase/schema.sql).
@@ -87,7 +91,13 @@ Expected output: a table showing per-variant word counts, heading counts, link c
 To persist the results to Supabase:
 
 ```bash
-npm run test:extract:persist   # requires SUPABASE_URL + SUPABASE_ANON_KEY in .env
+npm run test:extract:persist   # Supabase mode: requires SUPABASE_URL + SUPABASE_ANON_KEY in .env
+```
+
+To persist locally without Supabase:
+
+```powershell
+$env:GAIO_LOCAL_PERSIST='true'; npm run test:extract:persist
 ```
 
 ---
@@ -131,6 +141,14 @@ npm run evaluate:openai -- --url https://gaio-validation-lab.vercel.app --persis
 
 This requires `SUPABASE_URL` and `SUPABASE_ANON_KEY` in `.env`.
 
+For local persistence instead of Supabase:
+
+```powershell
+$env:GAIO_LOCAL_PERSIST='true'; npm run evaluate:openai -- --persist
+```
+
+Local rows are written to `.gaio-local-db/llm_evaluation_results.jsonl` (and `.gaio-local-db/extraction_results.jsonl` for extraction tests).
+
 To run a different model tier, pass `--tier`:
 
 ```bash
@@ -147,7 +165,7 @@ npm run evaluate:openai -- --tier exploratory --repetitions 5
 |---|---|---|
 | `--provider <id>` | — | Provider to use: `openai`, `claude`, `gemini`, or `all` |
 | `--url <base-url>` | `http://localhost:4321` | Base URL for all variant fetches |
-| `--persist` | off | Write results to Supabase in addition to CSV |
+| `--persist` | off | Persist results in addition to CSV (Supabase or local JSONL mode) |
 | `--repetitions <n>` | `1` | Number of extraction runs per variant |
 | `--variant <id>` | all | Run a single variant only (e.g. `--variant control`) |
 | `--tier <tier>` | `primary` | Model tier: `primary`, `validation`, or `exploratory`. See [`docs/evaluation.md`](evaluation.md) for tier details. |

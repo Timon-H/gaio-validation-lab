@@ -9,6 +9,11 @@ const AI_BOTS = [
   { name: 'ChatGPT', regex: /GPTBot|OAI-SearchBot|ChatGPT-User|ChatGPT Agent/i },
   { name: 'Claude', regex: /ClaudeBot|Claude-Web|Claude-User|Claude-SearchBot|anthropic-ai/i },
   { name: 'Gemini', regex: /Google-Extended|Gemini-Deep-Research|Google-NotebookLM|NotebookLM|GoogleAgent-Mariner/i },
+  { name: 'Copilot', regex: /GitHubCopilot|GitHub-Copilot|Copilot/i },
+  { name: 'Cursor', regex: /Cursor/i },
+  { name: 'Windsurf', regex: /Windsurf|Codeium/i },
+  { name: 'Cline', regex: /Cline/i },
+  { name: 'Continue', regex: /Continue/i },
   { name: 'Perplexity', regex: /PerplexityBot|Perplexity-User/i },
   { name: 'CommonCrawl', regex: /CCBot/i },
   { name: 'Applebot', regex: /Applebot/i },
@@ -40,12 +45,14 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
   const detectedBot = AI_BOTS.find(bot => bot.regex.test(userAgent));
   const isAiBot = !!detectedBot;
+  const localPersistEnabled = /^(1|true|yes|on)$/i.test(process.env.GAIO_LOCAL_PERSIST ?? '');
   const hasSupabaseConfig = Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY);
+  const hasPersistenceConfig = localPersistEnabled || hasSupabaseConfig;
 
   const response = await next();
   const duration = Date.now() - start;
 
-  if (isAiBot && hasSupabaseConfig) {
+  if (isAiBot && hasPersistenceConfig) {
     const logData = {
       bot_name: detectedBot?.name || 'Unknown',
       variant_id: variantId,
@@ -61,7 +68,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     if (result.ok) {
       console.log(`GAIO_LOG_SUCCESS: ${detectedBot?.name} recorded.`);
     } else {
-      console.error('GAIO_LOG_ERROR (Supabase):', result.error);
+      console.error('GAIO_LOG_ERROR (Persistence):', result.error);
     }
   }
 

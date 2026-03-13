@@ -46,6 +46,8 @@ npm run build  # production build
 
 Copy `.env.example` to `.env` and add your API keys. See [`docs/replication.md`](docs/replication.md) for full step-by-step replication instructions, including LLM evaluation and result persistence.
 
+For local persistence testing without Supabase, set `GAIO_LOCAL_PERSIST=true` before running any `--persist` command. Rows are written to `.gaio-local-db/*.jsonl` in the repository.
+
 ## Project Structure
 
 ```

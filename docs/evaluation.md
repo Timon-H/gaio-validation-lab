@@ -29,13 +29,16 @@ npm run evaluate:openai -- --tier exploratory --repetitions 5
 npm run evaluate:openai -- --persist
 npm run evaluate:claude -- --persist
 npm run evaluate:gemini -- --persist
+
+# Persist results locally (no external DB)
+$env:GAIO_LOCAL_PERSIST='true'; npm run evaluate:openai -- --persist
 ```
 
-Results are always written to `results/gaio_evaluation_<provider>_<timestamp>.csv`. With `--persist`, each run is also inserted into the `llm_evaluation_results` Supabase table (including `tier`, `variant_id`, and `base_url`), enabling cross-provider and cross-run comparisons via the `llm_eval_comparison` SQL view.
+Results are always written to `results/gaio_evaluation_<provider>_<timestamp>.csv`. With `--persist`, each run is persisted either to Supabase (`llm_evaluation_results`, including `tier`, `variant_id`, and `base_url`) or to local JSONL files when `GAIO_LOCAL_PERSIST=true`.
 
 ## Environment Variables
 
-Running the evaluation requires an LLM provider API key. Running with `--persist` additionally requires `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
+Running the evaluation requires an LLM provider API key. Running with `--persist` supports either Supabase credentials or local JSONL persistence.
 
 | Variable | Required for |
 |---|---|
@@ -44,6 +47,8 @@ Running the evaluation requires an LLM provider API key. Running with `--persist
 | `GEMINI_API_KEY` | Gemini provider |
 | `SUPABASE_URL` | `--persist` flag |
 | `SUPABASE_ANON_KEY` | `--persist` flag |
+| `GAIO_LOCAL_PERSIST` | Optional local `--persist` mode (set to `true`) |
+| `GAIO_LOCAL_DB_DIR` | Optional local output folder (default: `.gaio-local-db`) |
 
 Add the relevant keys to your `.env` file. The npm scripts load them automatically via Node's native `--env-file` flag.
 

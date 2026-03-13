@@ -88,7 +88,7 @@ RLS is enabled but intentionally permissive (anon insert/read) for the lab envir
 
 ## Key Conventions
 
-- **`--persist` flag**: Any evaluation/extraction script writes to Supabase only when `--persist` is passed. Without it, results go to stdout/CSV only.
+- **`--persist` flag**: Evaluation/extraction scripts persist only when `--persist` is passed. By default this uses Supabase; set `GAIO_LOCAL_PERSIST=true` for local JSONL persistence. Without `--persist`, results go to stdout/CSV only.
 - **`--url` flag**: Evaluation scripts default to `http://localhost:4321`; pass `--url` to target production.
 - **Variant IDs** used across scripts and DB: `control`, `combined`, `jsonld`, `semantic`, `aria`, `noscript`, `dsd`, `microdata`
 - **`useDefineForClassFields: false`** in tsconfig is required for Lit decorators — do not change this.

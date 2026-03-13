@@ -55,8 +55,9 @@ Providers:
   all      → runs openai, claude, gemini sequentially; all three API keys required
 
 Options:
-  --persist               Write results to Supabase in addition to CSV output.
-                          Requires SUPABASE_URL and SUPABASE_ANON_KEY.
+  --persist               Persist results in addition to CSV output.
+                          Requires SUPABASE_URL/SUPABASE_ANON_KEY unless
+                          GAIO_LOCAL_PERSIST=true is set.
   --url <base-url>        Override the target base URL (default: http://localhost:4321).
                           Example: --url https://gaio-validation-lab.vercel.app
   --repetitions <n>       Number of runs per variant (default: 1).
@@ -164,6 +165,8 @@ const MAX_TOKENS = 2048;
 const RETRY_BUFFER_MS = 2000;
 const BACKOFF_INTERVAL_MS = 15_000;
 const INTER_REQUEST_DELAY_MS = 1000;
+const LOCAL_PERSIST_ENABLED = /^(1|true|yes|on)$/i.test(process.env.GAIO_LOCAL_PERSIST ?? '');
+const LOCAL_DB_DIR = process.env.GAIO_LOCAL_DB_DIR || '.gaio-local-db';
 const REPETITIONS = Number.isFinite(REPETITIONS_ARG) && REPETITIONS_ARG > 0 ? REPETITIONS_ARG : 1;
 
 const ALL_VARIANTS = ALL_VARIANTS_SOURCE;
@@ -422,11 +425,11 @@ async function callLLMWithRetry(provider, htmlContent, config, apiKey) {
 }
 
 // ---------------------------------------------------------------------------
-// Supabase persistence
+// Persistence helpers (Supabase or local JSONL)
 // ---------------------------------------------------------------------------
 
 /**
- * Persists a single evaluation result row to the Supabase `llm_evaluation_results` table.
+ * Persists a single evaluation result row to `llm_evaluation_results`.
  * @param {object} payload - Row data matching the table schema.
  * @returns {Promise<boolean>} `true` if the insert succeeded, `false` otherwise.
  */
@@ -592,7 +595,7 @@ async function runProviderEvaluation(provider, config, apiKey) {
   if (PERSIST) {
     const persisted = results.filter(r => r.dbStatus === 'OK').length;
     const failed    = results.filter(r => r.dbStatus === 'ERR').length;
-    console.log(`💾 Database: ${persisted} persisted / ${failed} failed`);
+    console.log(`💾 Persistence: ${persisted} persisted / ${failed} failed`);
   }
 }
 
@@ -603,11 +606,16 @@ async function runProviderEvaluation(provider, config, apiKey) {
  */
 async function runEvaluation() {
   if (PERSIST) {
-    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+    if (!LOCAL_PERSIST_ENABLED && (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY)) {
       console.error('❌ Error: --persist requires SUPABASE_URL and SUPABASE_ANON_KEY to be set.');
+      console.error('   Alternatively set GAIO_LOCAL_PERSIST=true for local JSONL persistence.');
       process.exit(1);
     }
-    console.log(`💾 Persist mode: results will be written to Supabase (${process.env.SUPABASE_URL})`);
+    if (LOCAL_PERSIST_ENABLED) {
+      console.log(`💾 Persist mode: results will be written locally to ${LOCAL_DB_DIR}`);
+    } else {
+      console.log(`💾 Persist mode: results will be written to Supabase (${process.env.SUPABASE_URL})`);
+    }
   }
 
   const providersToRun = PROVIDER === 'all' ? ['openai', 'claude', 'gemini'] : [PROVIDER];
@@ -643,7 +651,11 @@ async function runEvaluation() {
   }
 
   if (PERSIST) {
-    console.log(`\n   Query: SELECT * FROM llm_evaluation_results ORDER BY created_at DESC;`);
+    if (LOCAL_PERSIST_ENABLED) {
+      console.log(`\n   Local data: ${LOCAL_DB_DIR}/llm_evaluation_results.jsonl`);
+    } else {
+      console.log(`\n   Query: SELECT * FROM llm_evaluation_results ORDER BY created_at DESC;`);
+    }
   }
 }
 

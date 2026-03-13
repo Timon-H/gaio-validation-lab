@@ -6,7 +6,7 @@
  * What it does:
  * - Fetches every variant route using a small extractor/bot set.
  * - Reports structural markers (word count, headings, links, GAIO marker presence).
- * - Optionally persists rows to Supabase `extraction_results` with `--persist`.
+ * - Optionally persists rows to `extraction_results` with `--persist`.
  *
  * Usage:
  *   node ./scripts/test-extract.mjs [--persist] [baseUrl]
@@ -28,14 +28,22 @@ const args = process.argv.slice(2);
 const mode = args.includes('--persist') ? 'persist' : 'dry-run';
 const baseUrlArg = args.find((arg) => arg.startsWith('http'));
 const baseUrl = baseUrlArg ?? 'http://localhost:4321';
+const LOCAL_PERSIST_ENABLED = /^(1|true|yes|on)$/i.test(process.env.GAIO_LOCAL_PERSIST ?? '');
+const LOCAL_DB_DIR = process.env.GAIO_LOCAL_DB_DIR || '.gaio-local-db';
 
 if (mode === 'persist') {
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
-    console.error('ERROR: --persist mode requires SUPABASE_URL and SUPABASE_ANON_KEY env vars.');
+  if (!LOCAL_PERSIST_ENABLED && (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY)) {
+    console.error('ERROR: --persist mode requires a persistence target.');
+    console.error('Set GAIO_LOCAL_PERSIST=true to use local JSONL persistence instead.');
+    console.error('Or set SUPABASE_URL and SUPABASE_ANON_KEY for Supabase mode.');
     console.error('Set them in your shell or .env file.');
     process.exit(1);
   }
-  console.log(`Supabase: ${process.env.SUPABASE_URL} (persist mode)`);
+  if (LOCAL_PERSIST_ENABLED) {
+    console.log(`Local persistence: ${LOCAL_DB_DIR} (persist mode)`);
+  } else {
+    console.log(`Supabase: ${process.env.SUPABASE_URL} (persist mode)`);
+  }
 }
 
 const variants = VARIANTS.map((variant) => ({
@@ -214,9 +222,13 @@ console.log('      out in comparisons. Focus on the unique GAIO variable per arm
 
 if (mode === 'persist') {
   console.log('');
-  console.log(`Database: ${colors.green}${persisted} persisted${colors.reset} / ${colors.red}${failed} failed${colors.reset}`);
-  console.log('Query your results: SELECT * FROM extraction_results ORDER BY created_at DESC;');
-  console.log('Or use the extraction_comparison view for aggregated stats.');
+  console.log(`Persistence: ${colors.green}${persisted} persisted${colors.reset} / ${colors.red}${failed} failed${colors.reset}`);
+  if (LOCAL_PERSIST_ENABLED) {
+    console.log(`Local data file: ${LOCAL_DB_DIR}/extraction_results.jsonl`);
+  } else {
+    console.log('Query your results: SELECT * FROM extraction_results ORDER BY created_at DESC;');
+    console.log('Or use the extraction_comparison view for aggregated stats.');
+  }
 }
 
 if (assertFailed > 0) {
@@ -310,7 +322,7 @@ function extractFirstJsonLd(html) {
 }
 
 /**
- * Persists a single extraction result row to the Supabase `extraction_results` table.
+ * Persists a single extraction result row to `extraction_results`.
  * @param {object} payload - Row data matching the table schema.
  * @returns {Promise<boolean>} `true` if the insert succeeded, `false` otherwise.
  */
