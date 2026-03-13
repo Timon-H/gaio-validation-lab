@@ -33,22 +33,25 @@ const { aria = false, noscript: includeNoscript = false } = Astro.props;
 ---
 
 {aria ? (
-  <dxp-accordion-element id="faq-4" aria-hidden="true">
-    <span slot="headline">Wie lange ist mein Versicherungsschutz aktiv?</span>
-    <p>Ihr Versicherungsschutz beginnt ab dem in Ihrer Police genannten Datum und l&auml;uft bis zur gew&auml;hlten Vertragslaufzeit. Eine Verl&auml;ngerung erfolgt automatisch, sofern Sie nicht fristgerecht k&uuml;ndigen.</p>
-  </dxp-accordion-element>
+  <dxp-accordion-element
+    id="faq-4"
+    aria-hidden="true"
+    headline="Wie lange ist mein Versicherungsschutz aktiv?"
+    body="Ihr Versicherungsschutz beginnt ab dem in Ihrer Police genannten Datum und läuft bis zur gewählten Vertragslaufzeit. Eine Verlängerung erfolgt automatisch, sofern Sie nicht fristgerecht kündigen."
+  ></dxp-accordion-element>
 ) : (
-  <dxp-accordion-element id="faq-4">
-    <span slot="headline">Wie lange ist mein Versicherungsschutz aktiv?</span>
-    <p>Ihr Versicherungsschutz beginnt ab dem in Ihrer Police genannten Datum und l&auml;uft bis zur gew&auml;hlten Vertragslaufzeit. Eine Verl&auml;ngerung erfolgt automatisch, sofern Sie nicht fristgerecht k&uuml;ndigen.</p>
-  </dxp-accordion-element>
+  <dxp-accordion-element
+    id="faq-4"
+    headline="Wie lange ist mein Versicherungsschutz aktiv?"
+    body="Ihr Versicherungsschutz beginnt ab dem in Ihrer Police genannten Datum und läuft bis zur gewählten Vertragslaufzeit. Eine Verlängerung erfolgt automatisch, sofern Sie nicht fristgerecht kündigen."
+  ></dxp-accordion-element>
 )}
 
 {includeNoscript && (
   <noscript>
     <div style="padding: 0.5rem 0; border-top: 1px solid #eee; margin-top: 0.5rem;">
       <strong>Wie lange ist mein Versicherungsschutz aktiv?</strong>
-      <p>Ihr Versicherungsschutz beginnt ab dem in Ihrer Police genannten Datum und laeuft bis zur gewaehlten Vertragslaufzeit.</p>
+      <p>Ihr Versicherungsschutz beginnt ab dem in Ihrer Police genannten Datum und läuft bis zur gewählten Vertragslaufzeit. Eine Verlängerung erfolgt automatisch, sofern Sie nicht fristgerecht kündigen.</p>
     </div>
   </noscript>
 )}

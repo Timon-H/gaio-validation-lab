@@ -63,18 +63,18 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
   <!-- ACCORDION -->
   <div style="margin: 2rem 0;">
     <dxp-accordion aria-label="FAQ-Bereich mit 3 Fragen">
-      <dxp-accordion-element id="faq-1" aria-label="Was ist eine Haftpflichtversicherung?">
-        <span slot="headline">Was ist eine Haftpflichtversicherung?</span>
-        <p>Eine Haftpflichtversicherung schützt Sie vor Schadensersatzansprüchen Dritter. Sie übernimmt die Kosten, wenn Sie versehentlich Schäden an Personen oder deren Eigentum verursachen.</p>
-      </dxp-accordion-element>
-      <dxp-accordion-element id="faq-2" aria-label="Wie berechne ich meinen Beitrag?">
-        <span slot="headline">Wie berechne ich meinen Beitrag?</span>
-        <p>Ihr Beitrag hängt von verschiedenen Faktoren ab, wie z.B. Ihrem Alter, Ihrem Wohnort und dem gewünschten Versicherungsschutz. Nutzen Sie unseren Online-Rechner für eine individuelle Berechnung.</p>
-      </dxp-accordion-element>
-      <dxp-accordion-element id="faq-3" aria-label="Kann ich meine Versicherung online kündigen?">
-        <span slot="headline">Kann ich meine Versicherung online kündigen?</span>
-        <p>Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit.</p>
-      </dxp-accordion-element>
+      <dxp-accordion-element id="faq-1" aria-label="Was ist eine Haftpflichtversicherung?"
+        headline="Was ist eine Haftpflichtversicherung?"
+        body="Eine Haftpflichtversicherung schützt Sie vor Schadensersatzansprüchen Dritter. Sie übernimmt die Kosten, wenn Sie versehentlich Schäden an Personen oder deren Eigentum verursachen."
+      ></dxp-accordion-element>
+      <dxp-accordion-element id="faq-2" aria-label="Wie berechne ich meinen Beitrag?"
+        headline="Wie berechne ich meinen Beitrag?"
+        body="Ihr Beitrag hängt von verschiedenen Faktoren ab, wie z.B. Ihrem Alter, Ihrem Wohnort und dem gewünschten Versicherungsschutz. Nutzen Sie unseren Online-Rechner für eine individuelle Berechnung."
+      ></dxp-accordion-element>
+      <dxp-accordion-element id="faq-3" aria-label="Kann ich meine Versicherung online kündigen?"
+        headline="Kann ich meine Versicherung online kündigen?"
+        body="Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit."
+      ></dxp-accordion-element>
       <TrapHiddenFaq aria />
     </dxp-accordion>
   </div>
@@ -82,15 +82,11 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
   <!-- CARD -->
   <div style="margin: 2rem 0;">
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
-      <dxp-card aria-label="Privathaftpflicht – ab 3,50 € monatlich, empfohlen">
+      <dxp-card aria-label="Privathaftpflicht – ab 3,50 € monatlich, empfohlen" card-title="Privathaftpflicht" card-description="Umfassender Schutz für Ihren Alltag – ab 3,50 € im Monat.">
         <span slot="badge" style="background: #e3f2fd; color: #0066cc;">Empfohlen</span>
-        <h3 slot="header-title">Privathaftpflicht</h3>
-        <p slot="teaser-text">Umfassender Schutz für Ihren Alltag – ab 3,50 € im Monat.</p>
         <dxp-button slot="buttons">Jetzt abschließen</dxp-button>
       </dxp-card>
-      <dxp-card aria-label="Hausratversicherung – Schutz gegen Einbruch, Feuer und Wasserschäden">
-        <h3 slot="header-title">Hausratversicherung</h3>
-        <p slot="teaser-text">Schützen Sie Ihr Hab und Gut gegen Einbruch, Feuer und Wasserschäden.</p>
+      <dxp-card aria-label="Hausratversicherung – Schutz gegen Einbruch, Feuer und Wasserschäden" card-title="Hausratversicherung" card-description="Schützen Sie Ihr Hab und Gut gegen Einbruch, Feuer und Wasserschäden.">
         <dxp-button slot="buttons" variant="secondary">Details ansehen</dxp-button>
       </dxp-card>
     </div>
@@ -98,13 +94,8 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
 
   <!-- FLYOUT -->
   <div style="margin: 2rem 0;">
-    <dxp-flyout flyout-position="left" aria-label="Kontaktinformationen: Telefon 0800 123 456 789, Mo–Fr 8–18 Uhr">
+    <dxp-flyout flyout-position="left" aria-label="Kontaktinformationen: Telefon 0800 123 456 789, Mo–Fr 8–18 Uhr" phone="0800 123 456 789" hours="Mo–Fr: 8:00–18:00 Uhr">
       <dxp-button slot="content" variant="secondary">Hilfe & Kontakt</dxp-button>
-      <div slot="flyout" style="padding: 0.5rem;">
-        <p style="margin: 0 0 0.5rem;"><strong>Kundenservice</strong></p>
-        <p style="margin: 0;">Telefon: 0800 123 456 789</p>
-        <p style="margin: 0;">Mo–Fr: 8:00–18:00 Uhr</p>
-      </div>
     </dxp-flyout>
   </div>
 

@@ -106,18 +106,18 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
       </div>
     </div>
     <dxp-accordion>
-      <dxp-accordion-element id="faq-1">
-        <span slot="headline">Was ist eine Haftpflichtversicherung?</span>
-        <p>Eine Haftpflichtversicherung schützt Sie vor Schadensersatzansprüchen Dritter. Sie übernimmt die Kosten, wenn Sie versehentlich Schäden an Personen oder deren Eigentum verursachen.</p>
-      </dxp-accordion-element>
-      <dxp-accordion-element id="faq-2">
-        <span slot="headline">Wie berechne ich meinen Beitrag?</span>
-        <p>Ihr Beitrag hängt von verschiedenen Faktoren ab, wie z.B. Ihrem Alter, Ihrem Wohnort und dem gewünschten Versicherungsschutz. Nutzen Sie unseren Online-Rechner für eine individuelle Berechnung.</p>
-      </dxp-accordion-element>
-      <dxp-accordion-element id="faq-3">
-        <span slot="headline">Kann ich meine Versicherung online kündigen?</span>
-        <p>Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit.</p>
-      </dxp-accordion-element>
+      <dxp-accordion-element id="faq-1"
+        headline="Was ist eine Haftpflichtversicherung?"
+        body="Eine Haftpflichtversicherung schützt Sie vor Schadensersatzansprüchen Dritter. Sie übernimmt die Kosten, wenn Sie versehentlich Schäden an Personen oder deren Eigentum verursachen."
+      ></dxp-accordion-element>
+      <dxp-accordion-element id="faq-2"
+        headline="Wie berechne ich meinen Beitrag?"
+        body="Ihr Beitrag hängt von verschiedenen Faktoren ab, wie z.B. Ihrem Alter, Ihrem Wohnort und dem gewünschten Versicherungsschutz. Nutzen Sie unseren Online-Rechner für eine individuelle Berechnung."
+      ></dxp-accordion-element>
+      <dxp-accordion-element id="faq-3"
+        headline="Kann ich meine Versicherung online kündigen?"
+        body="Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit."
+      ></dxp-accordion-element>
       <TrapHiddenFaq />
     </dxp-accordion>
   </div>
@@ -133,10 +133,8 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
           <meta itemprop="priceCurrency" content="EUR" />
           <meta itemprop="description" content="Grundschutz – Deckungssumme 5 Mio. €, Selbstbeteiligung 150 €" />
         </div>
-        <dxp-card>
+        <dxp-card card-title="Privathaftpflicht" card-description="Umfassender Schutz für Ihren Alltag – ab 3,50 € im Monat.">
           <span slot="badge" style="background: #e3f2fd; color: #0066cc;">Empfohlen</span>
-          <h3 slot="header-title">Privathaftpflicht</h3>
-          <p slot="teaser-text">Umfassender Schutz für Ihren Alltag – ab 3,50 € im Monat.</p>
           <dxp-button slot="buttons">Jetzt abschließen</dxp-button>
         </dxp-card>
       </div>
@@ -148,9 +146,7 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
           <meta itemprop="priceCurrency" content="EUR" />
           <meta itemprop="description" content="Schutz gegen Einbruch, Feuer und Wasserschäden" />
         </div>
-        <dxp-card>
-          <h3 slot="header-title">Hausratversicherung</h3>
-          <p slot="teaser-text">Schützen Sie Ihr Hab und Gut gegen Einbruch, Feuer und Wasserschäden.</p>
+        <dxp-card card-title="Hausratversicherung" card-description="Schützen Sie Ihr Hab und Gut gegen Einbruch, Feuer und Wasserschäden.">
           <dxp-button slot="buttons" variant="secondary">Details ansehen</dxp-button>
         </dxp-card>
       </div>
@@ -164,13 +160,8 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
       <meta itemprop="telephone" content="+49-800-123-456-789" />
       <meta itemprop="hoursAvailable" content="Mo-Fr 08:00-18:00" />
     </div>
-    <dxp-flyout flyout-position="left">
+    <dxp-flyout flyout-position="left" phone="0800 123 456 789" hours="Mo–Fr: 8:00–18:00 Uhr">
       <dxp-button slot="content" variant="secondary">Hilfe & Kontakt</dxp-button>
-      <div slot="flyout" style="padding: 0.5rem;">
-        <p style="margin: 0 0 0.5rem;"><strong>Kundenservice</strong></p>
-        <p style="margin: 0;">Telefon: 0800 123 456 789</p>
-        <p style="margin: 0;">Mo–Fr: 8:00–18:00 Uhr</p>
-      </div>
     </dxp-flyout>
   </div>
 

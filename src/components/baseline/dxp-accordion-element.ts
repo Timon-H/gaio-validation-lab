@@ -11,6 +11,8 @@
  * - ARIA attributes (aria-expanded, aria-controls, aria-hidden, role)
  * - Custom event dispatching (TOGGLE_ACCORDION_ELEMENT)
  * - Slot-based content: headline slot + default slot for body
+ * - headline / body data attributes: when set, content renders inside shadow DOM
+ *   so Declarative Shadow DOM is the sole data channel (slots are then absent)
  * - Focus management on expand
  * - data-event-label tracking attribute
  * - categories attribute for filtering
@@ -86,6 +88,16 @@ export class DxpAccordionElement extends LitElement {
   @property({ type: String, attribute: 'categories', reflect: true })
   categories: string = '';
 
+  // Data attributes: when set, content renders inside shadow DOM rather than via light DOM
+  // slots. This makes DSD the sole accessible channel — both attributes are stripped by the
+  // evaluation pipeline before the LLM sees the HTML, so only the DSD-rendered
+  // <template shadowrootmode="open"> content survives to the model.
+  @property({ type: String, attribute: 'headline' })
+  headline: string = '';
+
+  @property({ type: String, attribute: 'body' })
+  bodyText: string = '';
+
   toggle() {
     this.expanded = !this.expanded;
     const event = new CustomEvent(TOGGLE_ACCORDION_ELEMENT, {
@@ -125,7 +137,7 @@ export class DxpAccordionElement extends LitElement {
           data-event-label="${this.dataEventLabel}"
           id="accordion-header"
         >
-          <slot name="headline"></slot>
+          ${this.headline ? this.headline : html`<slot name="headline"></slot>`}
           <span class="icon ${this.expanded ? 'toggle-icon' : ''}">▼</span>
         </div>
         <div
@@ -136,7 +148,7 @@ export class DxpAccordionElement extends LitElement {
           aria-labelledby="accordion-header"
           tabindex="-1"
         >
-          <slot></slot>
+          ${this.bodyText ? html`<p>${this.bodyText}</p>` : html`<slot></slot>`}
         </div>
       </section>
     `;

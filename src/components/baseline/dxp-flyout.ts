@@ -14,6 +14,8 @@
  * - Open direction: upwards support
  * - Click-outside-to-close behavior
  * - Slot-based: content (trigger), flyout (panel content)
+ * - phone / hours data attributes: when set, contact info renders inside shadow DOM
+ *   so Declarative Shadow DOM is the sole data channel (slot="flyout" is then absent)
  * - Other flyout auto-close when new one opens
  */
 import { LitElement, html, css } from 'lit';
@@ -151,6 +153,16 @@ export class DxpFlyout extends LitElement {
   @property({ type: Boolean, attribute: 'open-upwards', reflect: true })
   isOpenUpwards: boolean = false;
 
+  // Data attributes: when set, contact info renders inside shadow DOM rather than via
+  // the slot="flyout" light DOM child. This makes DSD the sole accessible channel —
+  // both attributes are stripped by the evaluation pipeline before the LLM sees the
+  // HTML, so only the DSD-rendered <template shadowrootmode="open"> content survives.
+  @property({ type: String, attribute: 'phone' })
+  phone: string = '';
+
+  @property({ type: String, attribute: 'hours' })
+  hours: string = '';
+
   connectedCallback() {
     super.connectedCallback();
     this._handleOutsideClick = this._handleOutsideClick.bind(this);
@@ -197,7 +209,13 @@ export class DxpFlyout extends LitElement {
         ${!this.hideCloseSymbol ? html`
           <button class="close-flyout-button" @click=${this._close}>✕</button>
         ` : ''}
-        <slot name="flyout"></slot>
+        ${this.phone || this.hours ? html`
+          <div style="padding: 0.5rem;">
+            <p style="margin: 0 0 0.5rem;"><strong>Kundenservice</strong></p>
+            ${this.phone ? html`<p style="margin: 0;">Telefon: ${this.phone}</p>` : ''}
+            ${this.hours ? html`<p style="margin: 0;">${this.hours}</p>` : ''}
+          </div>
+        ` : html`<slot name="flyout"></slot>`}
       </div>
     `;
   }
