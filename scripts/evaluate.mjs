@@ -437,22 +437,38 @@ async function persistEvalResult(payload) {
 // ---------------------------------------------------------------------------
 
 /**
- * Fetches the HTML of a page variant, stripping HTML comments to reduce token usage.
+ * Fetches the HTML of a page variant and applies preprocessing steps:
+ *   1. Strips HTML comments to reduce token usage.
+ *   2. Strips <nav> to prevent experimental variant names from leaking.
+ *   3. Strips host element data attributes to remove spoilers. These attributes
+ *      carry the same content as what each GAIO technique encodes (JSON-LD,
+ *      DSD <template>, noscript, ARIA, microdata), so leaving them in the raw
+ *      HTML would give the LLM equal access on all variants — including control —
+ *      and collapse the experimental contrast.
+ *      Stripped attributes: tariffs=, headline=, body=, card-title=,
+ *      card-description=, phone=, hours=, options=
+ *      Safe for DSD: renderLitToString() emits shadow content inside a
+ *      <template shadowrootmode="open"> block that is structurally independent
+ *      of host element attributes — removing these attributes preserves the DSD
+ *      signal intact.
  * @param {string} url - Full URL of the variant to fetch.
- * @returns {Promise<string>} Raw HTML with comments removed.
+ * @returns {Promise<string>} Preprocessed HTML ready for LLM extraction.
  */
 async function fetchHtml(url) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
   const raw = await response.text();
-  // Strip HTML comments to reduce token usage.
-  // Strip <nav>...</nav> to prevent experimental variant names (e.g. "JSON-LD",
-  // "Semantic", "ARIA") from leaking into the LLM context — the BaseLayout nav
-  // lists all eight variants by name, which would reveal the experimental design
-  // and could bias extraction behaviour.
   return raw
     .replace(/<!--[\s\S]*?-->/g, '')
-    .replace(/<nav[\s\S]*?<\/nav>/gi, '');
+    .replace(/<nav[\s\S]*?<\/nav>/gi, '')
+    .replace(/\s+tariffs=(?:'[^']*'|"[^"]*")/g, '')
+    .replace(/\s+headline=(?:'[^']*'|"[^"]*")/g, '')
+    .replace(/\s+body=(?:'[^']*'|"[^"]*")/g, '')
+    .replace(/\s+card-title=(?:'[^']*'|"[^"]*")/g, '')
+    .replace(/\s+card-description=(?:'[^']*'|"[^"]*")/g, '')
+    .replace(/\s+phone=(?:'[^']*'|"[^"]*")/g, '')
+    .replace(/\s+hours=(?:'[^']*'|"[^"]*")/g, '')
+    .replace(/\s+options=(?:'[^']*'|"[^"]*")/g, '');
 }
 
 /**

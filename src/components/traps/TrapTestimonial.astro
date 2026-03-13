@@ -10,8 +10,9 @@
  * ("Bei meiner Police zahle ich nur 12 €…") which is plausible as a tariff price.
  * There is no comparative phrasing that would pre-disambiguate it for an LLM.
  *
- * Remediation: `semantic` pages wrap the quote in <figure>/<blockquote>/<figcaption>,
- * which are semantic HTML quotation landmarks. Non-semantic pages use a bare <p>.
+ * Remediation variants:
+ *   - semantic=true:  wraps in <figure>/<blockquote>/<figcaption> — semantic quotation landmarks
+ *   - default:        bare <p> — no quotation semantics
  *
  * Note: The JSON-LD variant provides an alternative signal — the schema Offer list in
  * <head> enumerates exactly 3 offers, providing a machine-readable contract that

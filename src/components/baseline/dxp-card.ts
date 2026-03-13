@@ -11,6 +11,8 @@
  * - lowered style variation
  * - Extensive slot system: badge, header-title, subtitle, teaser-text,
  *   media, secondary-title, body-text, list, read-more, buttons, link, caption
+ * - card-title / card-description data attributes: when set, content renders inside
+ *   shadow DOM so Declarative Shadow DOM is the sole data channel (slots are then absent)
  * - Section visibility based on slotted content
  */
 import { LitElement, html, css } from 'lit';
@@ -129,6 +131,18 @@ export class DxpCard extends LitElement {
       font-size: 0.75rem;
       color: #999;
     }
+
+    .card-title-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .card-description-text {
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      color: #333;
+    }
   `;
 
   @property({ type: String, reflect: true })
@@ -142,6 +156,16 @@ export class DxpCard extends LitElement {
 
   @property({ type: Boolean, attribute: 'centered-list' })
   centeredList: boolean = false;
+
+  // Data attributes: when set, title and description render inside shadow DOM rather than
+  // via light DOM slots. This makes DSD the sole accessible channel — both attributes are
+  // stripped by the evaluation pipeline before the LLM sees the HTML, so only the
+  // DSD-rendered <template shadowrootmode="open"> content survives.
+  @property({ type: String, attribute: 'card-title' })
+  cardTitle: string = '';
+
+  @property({ type: String, attribute: 'card-description' })
+  cardDescription: string = '';
 
   render() {
     return html`
@@ -157,9 +181,9 @@ export class DxpCard extends LitElement {
           <div class="badge-container">
             <slot name="badge"></slot>
           </div>
-          <slot name="header-title"></slot>
+          ${this.cardTitle ? html`<div class="card-title-text">${this.cardTitle}</div>` : html`<slot name="header-title"></slot>`}
           <slot name="subtitle"></slot>
-          <slot name="teaser-text"></slot>
+          ${this.cardDescription ? html`<p class="card-description-text">${this.cardDescription}</p>` : html`<slot name="teaser-text"></slot>`}
         </div>
 
         <div class="content" id="content">

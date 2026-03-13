@@ -6,8 +6,9 @@
  * tariff comparison. The trap tests whether semantic HTML can signal to an LLM
  * that this block is supplementary content and should NOT be counted as main tariffs.
  *
- * Remediation: `semantic` pages wrap with <aside> (landmark for supplementary content).
- * Non-semantic pages use a plain <div>, giving the LLM no structural cue.
+ * Remediation variants:
+ *   - semantic=true:  wraps in <aside> (landmark for supplementary content)
+ *   - default:        plain <div> — no structural cue to the LLM
  *
  * Expected signal (tarife count):
  *   - semantic=false: LLM may include the 2 KFZ tariffs → returns 5 instead of 3
