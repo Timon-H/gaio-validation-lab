@@ -10,7 +10,7 @@
  *   node evaluate.mjs --provider openai       # OpenAI only (primary tier)
  *   node evaluate.mjs --provider all          # All three providers sequentially
  *   node evaluate.mjs --provider all --tier validation   # Higher-capability models
- *   node evaluate.mjs --provider openai --tier exploratory  # GPT-5-nano reasoning model
+ *   node evaluate.mjs --provider openai --tier exploratory  # GPT-5-mini reasoning model
  *
  * Required environment variables (per provider):
  *   openai  → OPENAI_API_KEY
@@ -55,7 +55,7 @@ Usage: node evaluate.mjs --provider <provider> [options]
 Providers:
   openai   → uses OPENAI_API_KEY    (model: gpt-4.1-mini)
   claude   → uses ANTHROPIC_API_KEY  (model: claude-haiku-4-5)
-  gemini   → uses GEMINI_API_KEY     (model: gemini-3-flash-preview)
+  gemini   → uses GEMINI_API_KEY     (model: gemini-2.5-flash)
   all      → runs openai, claude, gemini sequentially; all three API keys required
 
 Options:
@@ -67,9 +67,9 @@ Options:
   --variant <id>          Run only a single variant (default: all).
                           IDs: control, jsonld, semantic, aria, noscript, dsd, microdata, combined
   --tier <tier>           Model tier to use (default: primary).
-                          primary      → cost-effective models (gpt-4.1-mini, haiku-4-5, flash)
-                          validation   → higher-capability models (gpt-4.1, sonnet-4.6, 3.1-pro)
-                          exploratory  → reasoning model probe (gpt-5-nano only, openai provider)
+                          primary      → cost-effective models (gpt-4.1-mini, claude-haiku-4-5, gemini-2.5-flash)
+                          validation   → higher-capability models (gpt-4.1, claude-sonnet-4-5, gemini-2.5-pro)
+                          exploratory  → reasoning model probe (gpt-5-mini only, openai provider)
 
 Npm shortcuts (pass flags after --):
   npm run evaluate:openai -- --persist
@@ -106,7 +106,7 @@ if (!SUPPORTED_TIERS.includes(TIER)) {
 //                same API surface and determinism controls, used with
 //                fewer repetitions to confirm that results generalise
 //                across model capability levels.
-// exploratory  — OpenAI-only GPT-5-nano reasoning model probe.
+// exploratory  — OpenAI-only GPT-5-mini reasoning model probe.
 //                Uses the Responses API with reasoning.effort: 'low'.
 //                No temperature/seed support — non-deterministic by design.
 //                Included as a forward-looking supplementary analysis.
@@ -123,7 +123,7 @@ const TIER_CONFIGS = {
     },
     gemini: {
       envVar: "GEMINI_API_KEY",
-      model: "gemini-3-flash-preview",
+      model: "gemini-2.5-flash",
     },
   },
   validation: {
@@ -133,17 +133,17 @@ const TIER_CONFIGS = {
     },
     claude: {
       envVar: "ANTHROPIC_API_KEY",
-      model: "claude-sonnet-4-6",
+      model: "claude-sonnet-4-5",
     },
     gemini: {
       envVar: "GEMINI_API_KEY",
-      model: "gemini-3.1-pro-preview",
+      model: "gemini-2.5-pro",
     },
   },
   exploratory: {
     openai: {
       envVar: "OPENAI_API_KEY",
-      model: "gpt-5-nano",
+      model: "gpt-5-mini",
       reasoning: true, // flag: use Responses API with reasoning.effort
     },
   },
@@ -269,7 +269,7 @@ Antworte ausschließlich mit einem validen JSON-Objekt exakt nach folgendem Sche
 /**
  * Sends the page HTML to OpenAI (Chat Completions API) and returns the raw JSON string.
  * Uses `response_format: json_object` to guarantee valid JSON output.
- * Used for non-reasoning models (gpt-4.1 family).
+ * Used for non-reasoning models (e.g., gpt-4.1 family).
  * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
  * @param {string} model - OpenAI model ID.
  * @param {string} apiKey - OpenAI API key.
@@ -306,7 +306,8 @@ async function callOpenAIReasoning(htmlContent, model, apiKey) {
     reasoning: { effort: "low" },
     text: { format: { type: "json_object" } },
     instructions: SYSTEM_PROMPT,
-    input: htmlContent,
+    // Responses json_object requires "json" to appear in the input messages.
+    input: `Return a valid json object only.\n\n${htmlContent}`,
   });
   return response.output_text;
 }
@@ -559,6 +560,8 @@ async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
 
     return {
       provider,
+      model: config.model,
+      tier: TIER,
       variantId: variant.id,
       run: runIndex,
       extractedTariffs: counts.tarife,
@@ -574,6 +577,8 @@ async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
     console.error(`❌ Error in variant "${variant.id}":`, error.message);
     return {
       provider,
+      model: config.model,
+      tier: TIER,
       variantId: variant.id,
       run: runIndex,
       extractedTariffs: "ERROR",
@@ -596,7 +601,8 @@ async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
  * @returns {Promise<void>}
  */
 async function runProviderEvaluation(provider, config, apiKey) {
-  const outputFile = `./results/gaio_evaluation_${provider}_${new Date().toISOString().replace(/:/g, "-").replace(/\..+/, "")}.csv`;
+  const modelSlug = config.model.replace(/[^a-zA-Z0-9._-]+/g, "-");
+  const outputFile = `./results/gaio_evaluation_${provider}_${modelSlug}_${new Date().toISOString().replace(/:/g, "-").replace(/\..+/, "")}.csv`;
   console.log(
     `🚀 Starting GAIO evaluation pipeline  [provider: ${provider}, model: ${config.model}, tier: ${TIER}]`,
   );
@@ -613,11 +619,11 @@ async function runProviderEvaluation(provider, config, apiKey) {
   }
 
   const csvHeader =
-    "Provider,Variant_ID,Run,Tarife,FAQ,Produktkarten,FormFelder,Hat_Kontakt,Hat_Anbieter,DB,Raw_JSON_Output\n";
+    "Provider,Model,Tier,Variant_ID,Run,Tarife,FAQ,Produktkarten,FormFelder,Hat_Kontakt,Hat_Anbieter,DB,Raw_JSON_Output\n";
   const csvRows = results
     .map(
       (r) =>
-        `${r.provider},${r.variantId},${r.run},${r.extractedTariffs},${r.extractedFaq},${r.extractedKarten},${r.extractedFormFelder},${r.hatKontakt},${r.hatAnbieter},${r.dbStatus},"${r.rawOutput}"`,
+        `${r.provider},${r.model},${r.tier},${r.variantId},${r.run},${r.extractedTariffs},${r.extractedFaq},${r.extractedKarten},${r.extractedFormFelder},${r.hatKontakt},${r.hatAnbieter},${r.dbStatus},"${r.rawOutput}"`,
     )
     .join("\n");
 
