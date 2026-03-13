@@ -139,7 +139,7 @@ npm run evaluate:claude -- --url https://gaio-validation-lab.vercel.app
 npm run evaluate:gemini -- --url https://gaio-validation-lab.vercel.app
 ```
 
-Results are written to `results/gaio_evaluation_<provider>_<timestamp>.csv`. The `results/` directory is gitignored; CSV files are generated locally.
+Results are written to `results/gaio_evaluation_<provider>_<model>_<timestamp>.csv`. The `results/` directory is gitignored; CSV files are generated locally.
 
 To additionally persist each run to the Supabase `llm_evaluation_results` table:
 
@@ -156,7 +156,7 @@ To run a different model tier, pass `--tier`:
 # Run the validation tier (higher-capability models)
 npm run evaluate:all -- --tier validation --repetitions 5
 
-# Run the exploratory tier (GPT-5-nano reasoning model)
+# Run the exploratory tier (GPT-5-mini reasoning model)
 npm run evaluate:openai -- --tier exploratory --repetitions 5
 ```
 

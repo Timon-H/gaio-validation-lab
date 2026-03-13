@@ -40,7 +40,7 @@ npm run evaluate:all -- --persist --repetitions 5
 - `--url <base-url>`
 - `--persist`
 
-Output is always written to `results/gaio_evaluation_<provider>_<timestamp>.csv`.
+Output is always written to `results/gaio_evaluation_<provider>_<model>_<timestamp>.csv`.
 
 ## Bot Simulation (`test-bots.mjs`)
 

@@ -6,6 +6,8 @@ This version is calibrated to the Claude run from today:
 
 `results/gaio_evaluation_claude_2026-03-13T09-38-20.csv`
 
+Note: newer runs include the model in the filename.
+
 ---
 
 ## CSV Format
@@ -13,7 +15,7 @@ This version is calibrated to the Claude run from today:
 Each evaluation run produces a file named:
 
 ```
-results/gaio_evaluation_<provider>_<timestamp>.csv
+results/gaio_evaluation_<provider>_<model>_<timestamp>.csv
 ```
 
 ### Column Reference
@@ -21,6 +23,8 @@ results/gaio_evaluation_<provider>_<timestamp>.csv
 | Column            | Type        | Description                                                                                      |
 | ----------------- | ----------- | ------------------------------------------------------------------------------------------------ |
 | `Provider`        | string      | LLM provider: `openai`, `claude`, or `gemini`                                                    |
+| `Model`           | string      | Concrete model used for the run (for example `gpt-4.1-mini`, `claude-sonnet-4-5`)                |
+| `Tier`            | string      | Tier selected via CLI: `primary`, `validation`, `exploratory`                                    |
 | `Variant_ID`      | string      | Variant key: `control`, `jsonld`, `semantic`, `aria`, `noscript`, `dsd`, `microdata`, `combined` |
 | `Run`             | integer     | Repetition index within one execution (1..n)                                                     |
 | `Tarife`          | integer     | Number of tariffs extracted                                                                      |
@@ -31,6 +35,8 @@ results/gaio_evaluation_<provider>_<timestamp>.csv
 | `Hat_Anbieter`    | 0 or 1      | Whether provider name was extracted (1 = yes)                                                    |
 | `DB`              | string      | Persistence status: `-`, `OK`, `ERR`, or `ERROR`                                                 |
 | `Raw_JSON_Output` | JSON string | Full structured output returned by the model                                                     |
+
+Note: older CSV files generated before this change may not include `Model` and `Tier` columns.
 
 ---
 
