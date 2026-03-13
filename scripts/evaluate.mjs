@@ -22,6 +22,8 @@ import fs from 'fs';
 import { OpenAI } from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { VARIANTS as ALL_VARIANTS_SOURCE } from '../src/data/variants.mjs';
+import { supabaseInsert } from '../src/lib/supabase.mjs';
 
 // ---------------------------------------------------------------------------
 // CLI argument parsing
@@ -140,6 +142,11 @@ const TIER_CONFIGS = {
 };
 
 // Resolve the provider config for the chosen tier
+/**
+ * Resolves provider configuration from the selected tier.
+ * @param {'openai'|'claude'|'gemini'} provider - Provider key.
+ * @returns {{ envVar: string, model: string, reasoning?: boolean } | null}
+ */
 function getProviderConfig(provider) {
   const tierConfig = TIER_CONFIGS[TIER];
   if (!tierConfig[provider]) {
@@ -152,18 +159,14 @@ function getProviderConfig(provider) {
 // General configuration
 // ---------------------------------------------------------------------------
 const BASE_URL = URL_OVERRIDE ?? 'http://localhost:4321';
+const OPENAI_SEED = 42;
+const MAX_TOKENS = 2048;
+const RETRY_BUFFER_MS = 2000;
+const BACKOFF_INTERVAL_MS = 15_000;
+const INTER_REQUEST_DELAY_MS = 1000;
 const REPETITIONS = Number.isFinite(REPETITIONS_ARG) && REPETITIONS_ARG > 0 ? REPETITIONS_ARG : 1;
 
-const ALL_VARIANTS = [
-  { id: 'control',    path: '/control' },
-  { id: 'jsonld',     path: '/test-jsonld' },
-  { id: 'semantic',   path: '/test-semantic' },
-  { id: 'aria',       path: '/test-aria' },
-  { id: 'noscript',   path: '/test-noscript' },
-  { id: 'dsd',        path: '/test-dsd' },
-  { id: 'microdata',  path: '/test-microdata' },
-  { id: 'combined',   path: '/combined' },
-];
+const ALL_VARIANTS = ALL_VARIANTS_SOURCE;
 
 if (VARIANT_FILTER && !ALL_VARIANTS.some(v => v.id === VARIANT_FILTER)) {
   console.error(`❌ Unknown variant "${VARIANT_FILTER}". Choose from: ${ALL_VARIANTS.map(v => v.id).join(', ')}`);
@@ -255,6 +258,8 @@ Antworte ausschließlich mit einem validen JSON-Objekt exakt nach folgendem Sche
  * Uses `response_format: json_object` to guarantee valid JSON output.
  * Used for non-reasoning models (gpt-4.1 family).
  * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
+ * @param {string} model - OpenAI model ID.
+ * @param {string} apiKey - OpenAI API key.
  * @returns {Promise<string>} JSON string extracted by the model.
  */
 async function callOpenAI(htmlContent, model, apiKey) {
@@ -262,7 +267,7 @@ async function callOpenAI(htmlContent, model, apiKey) {
   const completion = await client.chat.completions.create({
     model,
     temperature: 0.0,  // Deterministic output for consistent evaluation
-    seed: 42,          // Fixed seed for reproducibility (if supported by the model)
+    seed: OPENAI_SEED,          // Fixed seed for reproducibility (if supported by the model)
     response_format: { type: 'json_object' },
     messages: [
       { role: 'system', content: SYSTEM_PROMPT },
@@ -277,6 +282,8 @@ async function callOpenAI(htmlContent, model, apiKey) {
  * Uses reasoning.effort: 'low' to minimise non-deterministic thinking tokens.
  * NOTE: Reasoning models do not support temperature or seed parameters.
  * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
+ * @param {string} model - OpenAI reasoning model ID.
+ * @param {string} apiKey - OpenAI API key.
  * @returns {Promise<string>} JSON string extracted by the model.
  */
 async function callOpenAIReasoning(htmlContent, model, apiKey) {
@@ -295,13 +302,15 @@ async function callOpenAIReasoning(htmlContent, model, apiKey) {
  * Sends the page HTML to Anthropic Claude and returns the raw JSON string response.
  * Uses assistant prefilling (starting with `{`) to force JSON-only output.
  * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
+ * @param {string} model - Claude model ID.
+ * @param {string} apiKey - Anthropic API key.
  * @returns {Promise<string>} JSON string extracted by the model.
  */
 async function callClaude(htmlContent, model, apiKey) {
   const client = new Anthropic({ apiKey });
   const message = await client.messages.create({
     model,
-    max_tokens: 2048,
+    max_tokens: MAX_TOKENS,
     temperature: 0.0,
     system: SYSTEM_PROMPT,
     messages: [
@@ -322,6 +331,8 @@ async function callClaude(htmlContent, model, apiKey) {
  * Sends the page HTML to Google Gemini and returns the raw JSON string response.
  * Uses `responseMimeType: application/json` to guarantee valid JSON output.
  * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
+ * @param {string} modelName - Gemini model ID.
+ * @param {string} apiKey - Google AI API key.
  * @returns {Promise<string>} JSON string extracted by the model.
  */
 async function callGemini(htmlContent, modelName, apiKey) {
@@ -341,7 +352,10 @@ async function callGemini(htmlContent, modelName, apiKey) {
 /**
  * Dispatches an LLM call to the configured provider.
  * Routes OpenAI reasoning models to the Responses API.
+ * @param {'openai'|'claude'|'gemini'} provider - Provider key.
  * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
+ * @param {{ model: string, reasoning?: boolean }} config - Provider model config.
+ * @param {string} apiKey - Provider API key.
  * @returns {Promise<string>} JSON string extracted by the model.
  */
 async function callLLM(provider, htmlContent, config, apiKey) {
@@ -363,10 +377,15 @@ async function callLLM(provider, htmlContent, config, apiKey) {
 // ---------------------------------------------------------------------------
 const MAX_RETRIES = 3;
 
+/**
+ * Parses provider retry hints (e.g. `"retryDelay":"52s"`) from an error string.
+ * @param {string} errorMessage - Raw SDK error message.
+ * @returns {number|null} Wait duration in milliseconds, or null when unavailable.
+ */
 function parseRetryDelayMs(errorMessage) {
   // Gemini embeds retryDelay in the error JSON, e.g. "retryDelay":"52s"
   const match = errorMessage.match(/"retryDelay"\s*:\s*"(\d+(?:\.\d+)?)s"/);
-  if (match) return Math.ceil(parseFloat(match[1]) * 1000) + 2000; // +2s buffer
+  if (match) return Math.ceil(parseFloat(match[1]) * 1000) + RETRY_BUFFER_MS; // +2s buffer
   return null;
 }
 
@@ -374,7 +393,10 @@ function parseRetryDelayMs(errorMessage) {
  * Wraps `callLLM` with retry logic for 429 rate-limit errors.
  * Parses the provider-suggested retry delay from the error message and waits
  * accordingly, falling back to linear backoff (15s, 30s, 45s).
+ * @param {'openai'|'claude'|'gemini'} provider - Provider key.
  * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
+ * @param {{ model: string, reasoning?: boolean }} config - Provider model config.
+ * @param {string} apiKey - Provider API key.
  * @returns {Promise<string>} JSON string extracted by the model.
  */
 async function callLLMWithRetry(provider, htmlContent, config, apiKey) {
@@ -390,7 +412,7 @@ async function callLLMWithRetry(provider, htmlContent, config, apiKey) {
       if (!is429 || attempt === MAX_RETRIES) throw err;
 
       const suggestedMs = parseRetryDelayMs(msg);
-      const waitMs = suggestedMs ?? (attempt * 15_000); // fallback: 15s, 30s, 45s
+      const waitMs = suggestedMs ?? (attempt * BACKOFF_INTERVAL_MS); // fallback: 15s, 30s, 45s
       const waitSec = Math.round(waitMs / 1000);
       console.warn(`  ⏸  Rate limited (attempt ${attempt}/${MAX_RETRIES}). Waiting ${waitSec}s before retry...`);
       await new Promise(r => setTimeout(r, waitMs));
@@ -409,27 +431,11 @@ async function callLLMWithRetry(provider, htmlContent, config, apiKey) {
  * @returns {Promise<boolean>} `true` if the insert succeeded, `false` otherwise.
  */
 async function persistEvalResult(payload) {
-  try {
-    const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/llm_evaluation_results`, {
-      method: 'POST',
-      headers: {
-        apikey: process.env.SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json',
-        Prefer: 'return=minimal',
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (response.status === 201) return true;
-
-    const text = await response.text().catch(() => '(no body)');
-    console.error('Persist failed:', response.status, text);
-    return false;
-  } catch (err) {
-    console.error('Persist exception:', err);
-    return false;
+  const result = await supabaseInsert('llm_evaluation_results', payload);
+  if (!result.ok) {
+    console.error('Persist failed:', result.status, result.error);
   }
+  return result.ok;
 }
 
 // ---------------------------------------------------------------------------
@@ -474,6 +480,9 @@ async function fetchHtml(url) {
 /**
  * Evaluates a single page variant for one run index.
  * Fetches the HTML, calls the LLM, parses the response, and optionally persists the result.
+ * @param {'openai'|'claude'|'gemini'} provider - Provider key.
+ * @param {{ model: string, reasoning?: boolean }} config - Provider model config.
+ * @param {string} apiKey - Provider API key.
  * @param {{ id: string, path: string }} variant - Variant descriptor.
  * @param {number} runIndex - 1-based repetition index.
  * @returns {Promise<object>} Result row ready for CSV serialisation.
@@ -502,8 +511,10 @@ async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
       const ok = await persistEvalResult({
         provider,
         model:               config.model,
+        tier:                TIER,
         variant_id:          variant.id,
         run:                 runIndex,
+        base_url:            BASE_URL,
         tarife_count:        counts.tarife,
         faq_count:           counts.faq,
         produktkarten_count: counts.produktkarten,
@@ -546,6 +557,13 @@ async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
   }
 }
 
+/**
+ * Runs evaluation for one provider across all selected variants and repetitions.
+ * @param {'openai'|'claude'|'gemini'} provider - Provider key.
+ * @param {{ model: string, reasoning?: boolean }} config - Provider model config.
+ * @param {string} apiKey - Provider API key.
+ * @returns {Promise<void>}
+ */
 async function runProviderEvaluation(provider, config, apiKey) {
   const outputFile = `./results/gaio_evaluation_${provider}_${new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '')}.csv`;
   console.log(`🚀 Starting GAIO evaluation pipeline  [provider: ${provider}, model: ${config.model}, tier: ${TIER}]`);
@@ -557,7 +575,7 @@ async function runProviderEvaluation(provider, config, apiKey) {
       const res = await evaluateVariant(provider, config, apiKey, variant, i);
       results.push(res);
       // Pause between requests to avoid rate limits and give the server time to recover
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise(r => setTimeout(r, INTER_REQUEST_DELAY_MS));
     }
   }
 
@@ -578,6 +596,11 @@ async function runProviderEvaluation(provider, config, apiKey) {
   }
 }
 
+/**
+ * Entrypoint for the evaluation pipeline.
+ * Validates configuration, dispatches provider runs, and prints summary output.
+ * @returns {Promise<void>}
+ */
 async function runEvaluation() {
   if (PERSIST) {
     if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {

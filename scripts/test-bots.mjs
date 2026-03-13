@@ -1,17 +1,27 @@
 #!/usr/bin/env node
 
+/**
+ * GAIO middleware bot-detection header validation.
+ *
+ * Sends HEAD requests to all variant routes with representative bot/user-agent tokens
+ * and validates that middleware responds with expected `X-AI-Bot-Detected` and
+ * `X-Test-Group` headers.
+ *
+ * Usage:
+ *   node ./scripts/test-bots.mjs [baseUrl]
+ *
+ * Examples:
+ *   node ./scripts/test-bots.mjs
+ *   node ./scripts/test-bots.mjs https://gaio-validation-lab.vercel.app
+ */
+
+import { VARIANTS } from '../src/data/variants.mjs';
+
 const baseUrl = process.argv[2] ?? 'http://localhost:4321';
 
-const variants = [
-  'control',
-  'combined',
-  'test-jsonld',
-  'test-semantic',
-  'test-noscript',
-  'test-aria',
-  'test-dsd',
-  'test-microdata',
-];
+const variants = VARIANTS.map(v => v.path.replace(/^\//, ''));
+
+const FETCH_TIMEOUT_MS = 4000;
 
 const bots = [
   { userAgent: 'GPTBot', expected: 'ChatGPT' },
@@ -76,7 +86,7 @@ for (const variant of variants) {
 
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 4000);
+      const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
       try {
         response = await fetch(url, {
           method: 'HEAD',

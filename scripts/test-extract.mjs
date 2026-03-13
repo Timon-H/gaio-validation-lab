@@ -1,6 +1,28 @@
 #!/usr/bin/env node
 
+/**
+ * GAIO structural extraction smoke test.
+ *
+ * What it does:
+ * - Fetches every variant route using a small extractor/bot set.
+ * - Reports structural markers (word count, headings, links, GAIO marker presence).
+ * - Optionally persists rows to Supabase `extraction_results` with `--persist`.
+ *
+ * Usage:
+ *   node ./scripts/test-extract.mjs [--persist] [baseUrl]
+ *
+ * Examples:
+ *   node ./scripts/test-extract.mjs
+ *   node ./scripts/test-extract.mjs https://gaio-validation-lab.vercel.app
+ *   node --env-file=.env ./scripts/test-extract.mjs --persist
+ */
+
 import { createHash } from 'node:crypto';
+import { VARIANTS } from '../src/data/variants.mjs';
+import { supabaseInsert } from '../src/lib/supabase.mjs';
+
+const FETCH_TIMEOUT_MS = 4000;
+const MAX_TEXT_LENGTH = 10_000;
 
 const args = process.argv.slice(2);
 const mode = args.includes('--persist') ? 'persist' : 'dry-run';
@@ -16,16 +38,10 @@ if (mode === 'persist') {
   console.log(`Supabase: ${process.env.SUPABASE_URL} (persist mode)`);
 }
 
-const variants = [
-  'control',
-  'combined',
-  'test-jsonld',
-  'test-semantic',
-  'test-noscript',
-  'test-aria',
-  'test-dsd',
-  'test-microdata',
-];
+const variants = VARIANTS.map((variant) => ({
+  id: variant.id,
+  slug: variant.path.replace(/^\//, ''),
+}));
 
 const bots = [
   {
@@ -56,14 +72,14 @@ const colors = {
 // aria/sem are not asserted: BaseLayout <nav> produces infrastructure positives
 // on all pages, making false-negatives impossible to distinguish from real signals.
 const expected = {
-  'control':        { ld: false, nosc: false, dsd: false, md: false },
-  'test-jsonld':    { ld: true,  nosc: false, dsd: false, md: false },
-  'test-semantic':  { ld: false, nosc: false, dsd: false, md: false },
-  'test-noscript':  { ld: false, nosc: true,  dsd: false, md: false },
-  'test-aria':      { ld: false, nosc: false, dsd: false, md: false },
-  'test-dsd':       { ld: false, nosc: false, dsd: true,  md: false },
-  'test-microdata': { ld: false, nosc: false, dsd: false, md: true  },
-  'combined':       { ld: true,  nosc: false, dsd: true,  md: true  },
+  control:   { ld: false, nosc: false, dsd: false, md: false },
+  jsonld:    { ld: true,  nosc: false, dsd: false, md: false },
+  semantic:  { ld: false, nosc: false, dsd: false, md: false },
+  noscript:  { ld: false, nosc: true,  dsd: false, md: false },
+  aria:      { ld: false, nosc: false, dsd: false, md: false },
+  dsd:       { ld: false, nosc: false, dsd: true,  md: false },
+  microdata: { ld: false, nosc: false, dsd: false, md: true  },
+  combined:  { ld: true,  nosc: false, dsd: true,  md: true  },
 };
 
 const header = [
@@ -97,11 +113,11 @@ let assertFailed = 0;
 
 for (const variant of variants) {
   for (const bot of bots) {
-    const url = `${baseUrl}/${variant}`;
+    const url = `${baseUrl}/${variant.slug}`;
     const html = await fetchHtml(url, bot.ua);
 
     if (!html) {
-      logRow(variant, bot.name, ['ERR', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
+      logRow(variant.id, bot.name, ['ERR', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
       failed += 1;
       continue;
     }
@@ -128,11 +144,11 @@ for (const variant of variants) {
     ];
 
     // Assert marker pattern once per variant (first bot is sufficient; HTML is UA-invariant).
-    if (bot === bots[0] && expected[variant]) {
+    if (bot === bots[0] && expected[variant.id]) {
       const actual = { ld: hasJsonLd, nosc: hasNoscript, dsd: hasDsd, md: hasMicrodata };
-      const fails = Object.entries(expected[variant]).filter(([k, v]) => actual[k] !== v);
+      const fails = Object.entries(expected[variant.id]).filter(([k, v]) => actual[k] !== v);
       fails.forEach(([k, v]) => {
-        console.log(`  ${colors.red}[ASSERT]${colors.reset} ${variant}: expected ${k}=${v}, got ${actual[k]}`);
+        console.log(`  ${colors.red}[ASSERT]${colors.reset} ${variant.id}: expected ${k}=${v}, got ${actual[k]}`);
       });
       assertFailed += fails.length;
     }
@@ -141,12 +157,14 @@ for (const variant of variants) {
 
     if (mode === 'persist') {
       const contentHash = createHash('sha256').update(text).digest('hex');
-      const textContent = text.slice(0, 10000);
+      const textContent = text.slice(0, MAX_TEXT_LENGTH);
       const jsonLd = extractFirstJsonLd(html);
 
       const payload = {
-        test_group: variant,
+        variant_id: variant.id,
         extractor: bot.name,
+        request_url: url,
+        base_url: baseUrl,
         content_hash: contentHash,
         text_content: textContent,
         json_ld: jsonLd,
@@ -171,7 +189,7 @@ for (const variant of variants) {
       }
     }
 
-    logRow(variant, bot.name, [String(wordCount), String(headingCount), String(linkCount), ...labels, dbStatus]);
+    logRow(variant.id, bot.name, [String(wordCount), String(headingCount), String(linkCount), ...labels, dbStatus]);
   }
   console.log('');
 }
@@ -181,13 +199,13 @@ console.log('Legend: LD=JSON-LD, ARIA=aria-label, SEM=semantic HTML, NOSC=<noscr
 console.log('');
 console.log('Expected GAIO variable pattern (LD / ARIA / SEM / NOSC / DSD):');
 console.log('  control           → no  / no  / no  / no  / no');
-console.log('  test-jsonld     → YES / no  / no  / no  / no');
-console.log('  test-semantic   → no  / no  / YES / no  / no');
-console.log('  test-noscript   → no  / no  / no  / YES / no');
-console.log('  test-aria       → no  / YES / no  / no  / no');
-console.log('  test-dsd          → no  / no  / no  / no  / YES');
+console.log('  jsonld            → YES / no  / no  / no  / no');
+console.log('  semantic          → no  / no  / YES / no  / no');
+console.log('  noscript          → no  / no  / no  / YES / no');
+console.log('  aria              → no  / YES / no  / no  / no');
+console.log('  dsd               → no  / no  / no  / no  / YES');
 console.log('  combined          → YES / YES / YES / no  / YES (DSD supersedes noscript)');
-console.log('  test-microdata  → no / no  / no  / no  / no  / YES (microdata)');
+console.log('  microdata         → no  / no  / no  / no  / YES (microdata)');
 console.log('        MD=microdata (itemscope/itemtype/itemprop)');
 console.log('');
 console.log('NOTE: SEM/ARIA may show infrastructure positives (BaseLayout <nav>, DSD');
@@ -198,7 +216,7 @@ if (mode === 'persist') {
   console.log('');
   console.log(`Database: ${colors.green}${persisted} persisted${colors.reset} / ${colors.red}${failed} failed${colors.reset}`);
   console.log('Query your results: SELECT * FROM extraction_results ORDER BY created_at DESC;');
-  console.log('Or use the gaio_comparison view for aggregated stats.');
+  console.log('Or use the extraction_comparison view for aggregated stats.');
 }
 
 if (assertFailed > 0) {
@@ -219,7 +237,7 @@ if (assertFailed > 0) process.exit(1);
  */
 async function fetchHtml(url, userAgent) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 4000);
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
     const response = await fetch(url, {
       method: 'GET',
@@ -297,28 +315,11 @@ function extractFirstJsonLd(html) {
  * @returns {Promise<boolean>} `true` if the insert succeeded, `false` otherwise.
  */
 async function persistResult(payload) {
-  try {
-    const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/extraction_results`, {
-      method: 'POST',
-      headers: {
-        apikey: process.env.SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json',
-        Prefer: 'return=minimal',
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (response?.status === 201) return true;
-
-    // Diagnostic output for failures
-    const text = await response.text().catch(() => '(no body)');
-    console.error('Persist failed:', response.status, text);
-    return false;
-  } catch (err) {
-    console.error('Persist exception:', err);
-    return false;
+  const result = await supabaseInsert('extraction_results', payload);
+  if (!result.ok) {
+    console.error('Persist failed:', result.status, result.error);
   }
+  return result.ok;
 }
 
 /**
