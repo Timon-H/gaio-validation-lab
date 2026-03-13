@@ -16,39 +16,18 @@
  * - Default value support
  * - Error display
  */
-import { LitElement, html, css, nothing } from 'lit';
+import { html, css, nothing } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
+import { DxpFormBase, formBaseStyles } from './dxp-form-base';
 
 let textInputIdCounter = 0;
 
 @customElement('dxp-text-input')
-export class DxpTextInput extends LitElement {
+export class DxpTextInput extends DxpFormBase {
 
-  static styles = css`
-    :host {
-      display: block;
-      margin-bottom: 1rem;
-    }
-
-    label {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 600;
-      margin-bottom: 0.375rem;
-      color: var(--dxp-input-label-color, #333);
-    }
-
-    .label-row {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-
-    .tooltip {
-      font-size: 0.75rem;
-      color: #999;
-      cursor: help;
-    }
+  static styles = [
+    formBaseStyles,
+    css`
 
     .DXP-Input-Wrapper {
       position: relative;
@@ -111,7 +90,8 @@ export class DxpTextInput extends LitElement {
     :host([invalid]) .DXP-Input-Error {
       display: block;
     }
-  `;
+    `,
+  ];
 
   @property({ type: String, attribute: 'autocomplete' })
   autocomplete: string = 'off';
@@ -122,20 +102,8 @@ export class DxpTextInput extends LitElement {
   @property({ type: Boolean, attribute: 'disabled', reflect: true })
   disabled: boolean = false;
 
-  @property({ type: Boolean, attribute: 'required', reflect: true })
-  required: boolean = false;
-
-  @property({ type: String, attribute: 'default', reflect: true })
-  default: string = '';
-
   @property({ type: String, attribute: 'inline-label' })
   inlineLabel: string = '';
-
-  @property({ type: String, attribute: 'label' })
-  label: string = '';
-
-  @property({ type: String, attribute: 'name', reflect: true })
-  name: string = '';
 
   @property({ type: String, attribute: 'placeholder', reflect: true })
   placeholder: string = '';
@@ -148,9 +116,6 @@ export class DxpTextInput extends LitElement {
 
   @property({ type: String, attribute: 'regex-error-text' })
   regexErrorText: string = '';
-
-  @property({ type: String, attribute: 'required-error-text' })
-  requiredErrorText: string = '';
 
   @property({ type: String, attribute: 'tooltip-text' })
   tooltipText: string = '';
@@ -197,12 +162,6 @@ export class DxpTextInput extends LitElement {
     }
   }
 
-  firstUpdated() {
-    if (!this.value && this.default) {
-      this.value = this.default;
-    }
-  }
-
   private _validate(): boolean {
     const val = this.value;
     if (this.required && !val) {
@@ -219,38 +178,28 @@ export class DxpTextInput extends LitElement {
 
   private _handleInput(event: Event) {
     this._invalid = false;
-    this.dispatchEvent(new CustomEvent('@TextInput/input', {
-      detail: { value: (event.target as HTMLInputElement).value },
-      bubbles: true,
-      composed: true,
-    }));
+    this._dispatchEvent('@TextInput/input', {
+      value: (event.target as HTMLInputElement).value,
+    });
   }
 
   private _handleChange(event: Event) {
-    this.dispatchEvent(new CustomEvent('@TextInput/change', {
-      detail: { value: (event.target as HTMLInputElement).value },
-      bubbles: true,
-      composed: true,
-    }));
+    this._dispatchEvent('@TextInput/change', {
+      value: (event.target as HTMLInputElement).value,
+    });
   }
 
   private _handleBlur(_event: Event) {
     this._validate();
-    this.dispatchEvent(new CustomEvent('@TextInput/blur', {
-      detail: { value: this.value, valid: !this._invalid },
-      bubbles: true,
-      composed: true,
-    }));
+    this._dispatchEvent('@TextInput/blur', {
+      value: this.value,
+      valid: !this._invalid,
+    });
   }
 
   render() {
     return html`
-      ${this.label ? html`
-        <div class="label-row">
-          <label for=${this.refId}>${this.label}</label>
-          ${this.tooltipText ? html`<span class="tooltip" title=${this.tooltipText}>ⓘ</span>` : nothing}
-        </div>
-      ` : nothing}
+      ${this.renderLabel(this.refId, this.tooltipText)}
       <div class="DXP-Input-Wrapper">
         <input
           autocomplete=${this.autocomplete}

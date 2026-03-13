@@ -407,7 +407,7 @@ export class DxpTariffComparison extends LitElement {
                       <span>${mod.name || mod.moduleName || ''}</span>
                       ${config ? html`
                         <span class="module-value">
-                          ${config.mark ? html`<span class="module-mark">${config.mark}</span>` : ''}
+                          ${config.mark ? html`<span class="module-mark">${config.mark}</span>` : nothing}
                           ${config.value?.selectedText || ''}
                         </span>
                       ` : html`<span class="module-value">—</span>`}

@@ -15,7 +15,7 @@
  *   shadow DOM so Declarative Shadow DOM is the sole data channel (slots are then absent)
  * - Section visibility based on slotted content
  */
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
 export type CardVariant = 'vertical' | 'horizontal' | 'horizontal-reverse';
@@ -171,7 +171,7 @@ export class DxpCard extends LitElement {
     return html`
       <div
         class="card"
-        style=${this.backgroundColor ? `background-color: ${this.backgroundColor}` : ''}
+        style=${this.backgroundColor ? `background-color: ${this.backgroundColor}` : nothing}
       >
         <div class="media-section">
           <slot name="media"></slot>

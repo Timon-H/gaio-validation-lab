@@ -12,7 +12,7 @@
  * - Event tracking attributes (data-event-label, data-event-type, etc.)
  * - Click handler delegation
  */
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 
@@ -132,7 +132,7 @@ export class DxpButton extends LitElement {
         aria-controls=${ifDefined(this.buttonAriaControls)}
       >
         <slot name="icon">
-          ${this.icon ? html`<span class="icon">${this.icon}</span>` : ''}
+          ${this.icon ? html`<span class="icon">${this.icon}</span>` : nothing}
         </slot>
         <div class="image-label-container">
           <slot name="image"></slot>

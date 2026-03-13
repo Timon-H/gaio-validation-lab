@@ -18,7 +18,7 @@
  *   so Declarative Shadow DOM is the sole data channel (slot="flyout" is then absent)
  * - Other flyout auto-close when new one opens
  */
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
 export type FlyoutPosition = 'left' | 'right' | 'center';
@@ -208,12 +208,12 @@ export class DxpFlyout extends LitElement {
       <div class="flyout-container" @click=${(e: Event) => e.stopPropagation()}>
         ${!this.hideCloseSymbol ? html`
           <button class="close-flyout-button" @click=${this._close}>✕</button>
-        ` : ''}
+        ` : nothing}
         ${this.phone || this.hours ? html`
           <div style="padding: 0.5rem;">
             <p style="margin: 0 0 0.5rem;"><strong>Kundenservice</strong></p>
-            ${this.phone ? html`<p style="margin: 0;">Telefon: ${this.phone}</p>` : ''}
-            ${this.hours ? html`<p style="margin: 0;">${this.hours}</p>` : ''}
+            ${this.phone ? html`<p style="margin: 0;">Telefon: ${this.phone}</p>` : nothing}
+            ${this.hours ? html`<p style="margin: 0;">${this.hours}</p>` : nothing}
           </div>
         ` : html`<slot name="flyout"></slot>`}
       </div>
