@@ -1,4 +1,8 @@
 import type { MiddlewareHandler } from 'astro';
+import { VARIANTS } from './data/variants.mjs';
+import { supabaseInsert } from './lib/supabase.mjs';
+
+const SUPABASE_TIMEOUT_MS = 1000;
 
 // Definition of relevant AI crawlers
 const AI_BOTS = [
@@ -25,34 +29,26 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   const url = new URL(request.url);
   const userAgent = request.headers.get('user-agent') || '';
 
-  const isControl = url.pathname.startsWith('/control');
-  const isCombined = url.pathname.startsWith('/combined');
-  const isIsolatedTest = url.pathname.startsWith('/test-jsonld')
-    || url.pathname.startsWith('/test-semantic')
-    || url.pathname.startsWith('/test-noscript')
-    || url.pathname.startsWith('/test-aria')
-    || url.pathname.startsWith('/test-dsd')
-    || url.pathname.startsWith('/test-microdata');
-  
-  if (!isControl && !isCombined && !isIsolatedTest) {
+  const matchedVariant = VARIANTS.find((variant) => url.pathname.startsWith(variant.path));
+  if (!matchedVariant) {
     return next();
   }
 
   const start = Date.now();
-  // Use the first path segment as the group identifier
-  const group = url.pathname.split('/').filter(Boolean)[0] || 'unknown';
+  const variantId = matchedVariant.id;
+  const group = matchedVariant.path.replace(/^\//, '');
 
   const detectedBot = AI_BOTS.find(bot => bot.regex.test(userAgent));
   const isAiBot = !!detectedBot;
+  const hasSupabaseConfig = Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY);
 
   const response = await next();
   const duration = Date.now() - start;
-  
-  if (isAiBot) {
-    // Prepare log data for Supabase (matches bot_logs schema)
+
+  if (isAiBot && hasSupabaseConfig) {
     const logData = {
       bot_name: detectedBot?.name || 'Unknown',
-      test_group: group,
+      variant_id: variantId,
       path: url.pathname,
       user_agent: userAgent,
       method: request.method,
@@ -60,48 +56,21 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
       latency_ms: duration
     };
 
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_ANON_KEY;
+    const result = await supabaseInsert('bot_logs', logData, { timeout: SUPABASE_TIMEOUT_MS });
 
-    if (supabaseUrl && supabaseKey) {
-      // AbortController stops slow requests to prevent hanging the middleware
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1000); // 1 second timeout
-
-      try {
-        const resp = await fetch(`${supabaseUrl}/rest/v1/bot_logs`, {
-          method: 'POST',
-          headers: {
-            'apikey': supabaseKey,
-            'Authorization': `Bearer ${supabaseKey}`,
-            'Content-Type': 'application/json',
-            'Prefer': 'return=minimal'
-          },
-          body: JSON.stringify(logData),
-          signal: controller.signal
-        });
-
-        if (resp?.ok) {
-          console.log(`GAIO_LOG_SUCCESS: ${detectedBot?.name} recorded.`);
-        } else {
-          const body = await resp.text().catch(() => '(no body)');
-          console.error('GAIO_LOG_ERROR (Supabase):', resp.status, body);
-        }
-      } catch (err) {
-        console.error("GAIO_LOG_ERROR (Supabase):", err instanceof Error && err.name === 'AbortError'
-          ? "Timeout reached"
-          : err);
-      } finally {
-        clearTimeout(timeoutId);
-      }
+    if (result.ok) {
+      console.log(`GAIO_LOG_SUCCESS: ${detectedBot?.name} recorded.`);
+    } else {
+      console.error('GAIO_LOG_ERROR (Supabase):', result.error);
     }
   }
 
   // Headers for manual verification
   response.headers.set('X-Test-Group', group);
+  response.headers.set('X-Variant-Id', variantId);
   const botHeaderValue = isAiBot && detectedBot ? detectedBot.name : 'false';
   response.headers.set('X-AI-Bot-Detected', botHeaderValue);
-  
+
   response.headers.set('X-Response-Time', `${duration}ms`);
 
   return response;

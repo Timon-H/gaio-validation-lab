@@ -18,8 +18,9 @@
  * 
  * Simplified: Uses native-like dropdown instead of tippy.js overlay
  */
-import { LitElement, html, css, nothing } from 'lit';
+import { html, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { DxpFormBase, formBaseStyles } from './dxp-form-base';
 
 export interface DropdownOption {
   key: string;
@@ -29,33 +30,11 @@ export interface DropdownOption {
 }
 
 @customElement('dxp-dropdown-v1')
-export class DxpDropdown extends LitElement {
+export class DxpDropdown extends DxpFormBase {
 
-  static styles = css`
-    :host {
-      display: block;
-      margin-bottom: 1rem;
-    }
-
-    label {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 600;
-      margin-bottom: 0.375rem;
-      color: var(--dxp-dropdown-label-color, #333);
-    }
-
-    .label-row {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-
-    .tooltip {
-      font-size: 0.75rem;
-      color: #999;
-      cursor: help;
-    }
+  static styles = [
+    formBaseStyles,
+    css`
 
     .dropdown-wrapper {
       position: relative;
@@ -111,10 +90,8 @@ export class DxpDropdown extends LitElement {
       display: none;
     }
 
-    .error-container {
-      font-size: 0.75rem;
+    .error-message {
       color: var(--dxp-dropdown-error-color, #d32f2f);
-      margin-top: 0.25rem;
       min-height: 1rem;
     }
 
@@ -125,10 +102,8 @@ export class DxpDropdown extends LitElement {
     select.placeholder {
       color: #6b6b6b;
     }
-  `;
-
-  @property({ type: String, attribute: 'name' })
-  name: string = '';
+    `,
+  ];
 
   @property({ type: String, attribute: 'placeholder' })
   placeholder: string = '';
@@ -136,20 +111,8 @@ export class DxpDropdown extends LitElement {
   @property({ type: String, attribute: 'options' })
   options: string = '';
 
-  @property({ type: String, attribute: 'default' })
-  default: string = '';
-
-  @property({ type: Boolean, attribute: 'required', reflect: true })
-  required: boolean = false;
-
-  @property({ type: String, attribute: 'required-error-text' })
-  requiredErrorText: string = 'Es muss ein Wert ausgewählt werden.';
-
   @property({ type: String, attribute: 'inline-label' })
   inlineLabel: string = '';
-
-  @property({ type: String, attribute: 'label' })
-  label: string = '';
 
   @property({ type: String, attribute: 'tooltip-text' })
   tooltipText: string = '';
@@ -161,8 +124,17 @@ export class DxpDropdown extends LitElement {
   @property({ type: Boolean, attribute: 'invalid', reflect: true })
   private _invalid: boolean = false;
 
+  constructor() {
+    super();
+    this.requiredErrorText = 'Es muss ein Wert ausgewählt werden.';
+  }
+
   get value(): string {
     return this.selectedKey;
+  }
+
+  set value(nextValue: string) {
+    this.selectedKey = nextValue ?? '';
   }
 
   get data(): FormData {
@@ -186,22 +158,15 @@ export class DxpDropdown extends LitElement {
     }
   }
 
-  firstUpdated() {
-    if (this.default) {
-      this.selectedKey = this.default;
-    }
-  }
-
   private _handleChange(event: Event) {
     const select = event.target as HTMLSelectElement;
-    this.selectedKey = select.value;
+    this.value = select.value;
     this._invalid = false;
 
-    this.dispatchEvent(new CustomEvent('@Dropdown/change', {
-      detail: { key: this.selectedKey, value: select.options[select.selectedIndex]?.text },
-      bubbles: true,
-      composed: true,
-    }));
+    this._dispatchEvent('@Dropdown/change', {
+      key: this.value,
+      value: select.options[select.selectedIndex]?.text,
+    });
   }
 
   private _handleBlur() {
@@ -215,12 +180,7 @@ export class DxpDropdown extends LitElement {
     const visibleOptions = options.filter(o => !o.hidden);
 
     return html`
-      ${this.label ? html`
-        <div class="label-row">
-          <label for="select-${this.name}">${this.label}</label>
-          ${this.tooltipText ? html`<span class="tooltip" title=${this.tooltipText}>ⓘ</span>` : nothing}
-        </div>
-      ` : nothing}
+      ${this.renderLabel(`select-${this.name}`, this.tooltipText)}
       <div class="dropdown-wrapper">
         <select
           id="select-${this.name}"
@@ -239,7 +199,7 @@ export class DxpDropdown extends LitElement {
         <span class="arrow">▼</span>
         <div class="inline-label" id="inline-label">${this.inlineLabel}</div>
       </div>
-      <div class="error-container" id="Error-Container">
+      <div class="error-message" id="Error-Container">
         ${this._invalid ? this.requiredErrorText : nothing}
       </div>
     `;

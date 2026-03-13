@@ -1,41 +1,44 @@
 ---
 /**
  * Isolated Test: <noscript> Light DOM Fallbacks Only
- * 
+ *
  * Same components as Baseline (Shadow DOM, <div> wrappers, no JSON-LD, no ARIA),
  * but WITH <noscript> blocks providing Light DOM content for each component.
- * 
+ *
  * Isolates the effect of Light DOM fallbacks on AI extractability.
  * Crawlers that don't execute JS will see the fallback content.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import TrapCoverageAmount from '../../components/traps/TrapCoverageAmount.astro';
-import TrapBirthYear from '../../components/traps/TrapBirthYear.astro';
-import TrapTestimonial from '../../components/traps/TrapTestimonial.astro';
-import TrapDeprecatedTariff from '../../components/traps/TrapDeprecatedTariff.astro';
-import TrapCrossSell from '../../components/traps/TrapCrossSell.astro';
-import TrapAriaHiddenBonus from '../../components/traps/TrapAriaHiddenBonus.astro';
-import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
+import {
+  TrapAriaHiddenBonus,
+  TrapBirthYear,
+  TrapCoverageAmount,
+  TrapCrossSell,
+  TrapDeprecatedTariff,
+  TrapHiddenFaq,
+  TrapTestimonial,
+} from '../../components/traps/index.ts';
+import {
+  PAGE_TITLE, PAGE_DESCRIPTION, INTRO, BUTTONS, TEXT_INPUTS,
+  DROPDOWN, RADIO, FAQS, CARDS, FLYOUT, TARIFF, FOOTER_LINK,
+} from '../../data/content';
 ---
 
-<BaseLayout 
-  title="DXP Versicherungen – Tarifvergleich & Übersicht"
-  description="Vergleichen Sie unsere Haftpflicht-, Hausrat- und Kaskoversicherungen. Berechnen Sie Ihren individuellen Beitrag online."
->
+<BaseLayout title={PAGE_TITLE} description={PAGE_DESCRIPTION}>
   <script>
     import '../../components/baseline/index.ts';
   </script>
 
   <div style="margin-top: 1.5rem;">
-    <h2>Unsere Versicherungsprodukte</h2>
-    <p>Entdecken Sie unsere umfangreichen Versicherungslösungen – von der Privathaftpflicht bis zur Hausratversicherung.</p>
+    <h2>{INTRO.heading}</h2>
+    <p>{INTRO.description}</p>
   </div>
 
   <!-- BUTTON -->
   <div style="margin: 2rem 0;">
-    <dxp-button>Jetzt berechnen</dxp-button>
-    <dxp-button variant="secondary">Mehr erfahren</dxp-button>
-    <dxp-button disabled>Nicht verfügbar</dxp-button>
+    <dxp-button>{BUTTONS.primary}</dxp-button>
+    <dxp-button variant="secondary">{BUTTONS.secondary}</dxp-button>
+    <dxp-button disabled>{BUTTONS.disabled}</dxp-button>
     <noscript>
       <ul>
         <li><a href="/berechnen">Jetzt berechnen</a></li>
@@ -46,8 +49,21 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
 
   <!-- TEXT INPUT -->
   <div style="margin: 2rem 0;">
-    <dxp-text-input label="Vorname" name="vorname" placeholder="Max" required required-error-text="Bitte geben Sie Ihren Vornamen ein."></dxp-text-input>
-    <dxp-text-input label="E-Mail" name="email" type="email" placeholder="max@example.de" regex="^[^@]+@[^@]+\.[^@]+$" regex-error-text="Bitte geben Sie eine gültige E-Mail-Adresse ein."></dxp-text-input>
+    <dxp-text-input
+      label={TEXT_INPUTS.vorname.label}
+      name={TEXT_INPUTS.vorname.name}
+      placeholder={TEXT_INPUTS.vorname.placeholder}
+      required
+      required-error-text={TEXT_INPUTS.vorname.requiredErrorText}
+    ></dxp-text-input>
+    <dxp-text-input
+      label={TEXT_INPUTS.email.label}
+      name={TEXT_INPUTS.email.name}
+      type={TEXT_INPUTS.email.type}
+      placeholder={TEXT_INPUTS.email.placeholder}
+      regex={TEXT_INPUTS.email.regex}
+      regex-error-text={TEXT_INPUTS.email.regexErrorText}
+    ></dxp-text-input>
     <noscript>
       <form>
         <label for="fallback-vorname">Vorname (Pflichtfeld)</label>
@@ -62,7 +78,13 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
 
   <!-- DROPDOWN -->
   <div style="margin: 2rem 0;">
-    <dxp-dropdown-v1 label="Versicherungstyp" name="versicherungstyp" placeholder="Bitte wählen..." options='[{"key":"haftpflicht","value":"Haftpflichtversicherung"},{"key":"kasko","value":"Kaskoversicherung"},{"key":"teilkasko","value":"Teilkaskoversicherung"}]' required></dxp-dropdown-v1>
+    <dxp-dropdown-v1
+      label={DROPDOWN.label}
+      name={DROPDOWN.name}
+      placeholder={DROPDOWN.placeholder}
+      options={DROPDOWN.options}
+      required
+    ></dxp-dropdown-v1>
     <noscript>
       <label for="fallback-versicherung">Versicherungstyp</label>
       <select id="fallback-versicherung" name="versicherungstyp">
@@ -76,7 +98,12 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
 
   <!-- RADIO -->
   <div style="margin: 2rem 0;">
-    <dxp-input-radio label="Zahlungsweise" name="zahlungsweise" options='[{"value":"monatlich","label":"Monatlich"},{"value":"quartal","label":"Vierteljährlich"},{"value":"jaehrlich","label":"Jährlich"}]' default="monatlich"></dxp-input-radio>
+    <dxp-input-radio
+      label={RADIO.label}
+      name={RADIO.name}
+      options={RADIO.options}
+      default={RADIO.default}
+    ></dxp-input-radio>
     <noscript>
       <fieldset>
         <legend>Zahlungsweise</legend>
@@ -92,18 +119,13 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
   <!-- ACCORDION -->
   <div style="margin: 2rem 0;">
     <dxp-accordion>
-      <dxp-accordion-element id="faq-1"
-        headline="Was ist eine Haftpflichtversicherung?"
-        body="Eine Haftpflichtversicherung schützt Sie vor Schadensersatzansprüchen Dritter. Sie übernimmt die Kosten, wenn Sie versehentlich Schäden an Personen oder deren Eigentum verursachen."
-      ></dxp-accordion-element>
-      <dxp-accordion-element id="faq-2"
-        headline="Wie berechne ich meinen Beitrag?"
-        body="Ihr Beitrag hängt von verschiedenen Faktoren ab, wie z.B. Ihrem Alter, Ihrem Wohnort und dem gewünschten Versicherungsschutz. Nutzen Sie unseren Online-Rechner für eine individuelle Berechnung."
-      ></dxp-accordion-element>
-      <dxp-accordion-element id="faq-3"
-        headline="Kann ich meine Versicherung online kündigen?"
-        body="Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum Ende der Vertragslaufzeit."
-      ></dxp-accordion-element>
+      {FAQS.map(faq => (
+        <dxp-accordion-element
+          id={faq.id}
+          headline={faq.headline}
+          body={faq.body}
+        ></dxp-accordion-element>
+      ))}
       <TrapHiddenFaq noscript />
     </dxp-accordion>
     <noscript>
@@ -122,9 +144,9 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
   <div style="margin: 2rem 0;">
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
       <div>
-        <dxp-card card-title="Privathaftpflicht" card-description="Umfassender Schutz für Ihren Alltag – ab 3,50 € im Monat.">
-          <span slot="badge" style="background: #e3f2fd; color: #0066cc;">Empfohlen</span>
-          <dxp-button slot="buttons">Jetzt abschließen</dxp-button>
+        <dxp-card card-title={CARDS[0].title} card-description={CARDS[0].description}>
+          <span slot="badge" style="background: #e3f2fd; color: #0066cc;">{CARDS[0].badge}</span>
+          <dxp-button slot="buttons">{CARDS[0].button}</dxp-button>
         </dxp-card>
         <noscript>
           <h4>Privathaftpflicht</h4>
@@ -132,8 +154,8 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
         </noscript>
       </div>
       <div>
-        <dxp-card card-title="Hausratversicherung" card-description="Schützen Sie Ihr Hab und Gut gegen Einbruch, Feuer und Wasserschäden.">
-          <dxp-button slot="buttons" variant="secondary">Details ansehen</dxp-button>
+        <dxp-card card-title={CARDS[1].title} card-description={CARDS[1].description}>
+          <dxp-button slot="buttons" variant="secondary">{CARDS[1].button}</dxp-button>
         </dxp-card>
         <noscript>
           <h4>Hausratversicherung</h4>
@@ -145,8 +167,8 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
 
   <!-- FLYOUT -->
   <div style="margin: 2rem 0;">
-    <dxp-flyout flyout-position="left" phone="0800 123 456 789" hours="Mo–Fr: 8:00–18:00 Uhr">
-      <dxp-button slot="content" variant="secondary">Hilfe & Kontakt</dxp-button>
+    <dxp-flyout flyout-position={FLYOUT.position} phone={FLYOUT.phone} hours={FLYOUT.hours}>
+      <dxp-button slot="content" variant="secondary">{FLYOUT.button}</dxp-button>
     </dxp-flyout>
     <noscript>
       <address>
@@ -162,7 +184,11 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
     <TrapTestimonial />
     <TrapDeprecatedTariff />
     <TrapAriaHiddenBonus />
-    <dxp-tariff-comparison headline="Unsere Tarife im Vergleich" sub-headline="Wählen Sie den passenden Schutz für Ihre Bedürfnisse" tariffs='{"prefix":"ab","productName":"Haftpflicht","suffix":"€","tariffData":[{"id":"basis","name":"Basis","period":"monthly","premium":"3,50","description":"Grundschutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"5 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"150 €"}}]},{"id":"komfort","name":"Komfort","period":"monthly","premium":"5,90","highlighted":true,"overline":"Beliebteste Wahl","description":"Erweiterter Schutz","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"10 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]},{"id":"premium","name":"Premium","period":"monthly","premium":"9,80","description":"Rundum-Sorglos","buttons":[{"label":"Auswählen"}],"moduleConfigs":[{"moduleReference":"deckung","moduleReferenceUuid":"1","value":{"selectedText":"50 Mio. €"}},{"moduleReference":"selbstbeteiligung","moduleReferenceUuid":"2","value":{"selectedText":"0 €"}}]}],"moduleGroups":[{"name":"Leistungen","modules":[{"moduleName":"deckung","name":"Deckungssumme","uuid":"1"},{"moduleName":"selbstbeteiligung","name":"Selbstbeteiligung","uuid":"2"}]}]}'></dxp-tariff-comparison>
+    <dxp-tariff-comparison
+      headline={TARIFF.headline}
+      sub-headline={TARIFF.subHeadline}
+      tariffs={TARIFF.data}
+    ></dxp-tariff-comparison>
     <noscript>
       <table>
         <caption>Haftpflichtversicherung – Tarifvergleich</caption>
@@ -181,6 +207,6 @@ import TrapHiddenFaq from '../../components/traps/TrapHiddenFaq.astro';
   <TrapCrossSell />
 
   <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #4a5dc9;">
-    <a href="/">← Zur Übersicht</a>
+    <a href={FOOTER_LINK.href}>{FOOTER_LINK.text}</a>
   </p>
 </BaseLayout>

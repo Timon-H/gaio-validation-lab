@@ -1,17 +1,30 @@
 #!/usr/bin/env node
 
+/**
+ * GAIO middleware bot-detection header validation.
+ *
+ * Sends HEAD requests to all variant routes with representative bot/user-agent tokens
+ * and validates that middleware responds with expected `X-AI-Bot-Detected`,
+ * `X-Test-Group`, and `X-Variant-Id` headers.
+ *
+ * Usage:
+ *   node ./scripts/test-bots.mjs [baseUrl]
+ *
+ * Examples:
+ *   node ./scripts/test-bots.mjs
+ *   node ./scripts/test-bots.mjs https://gaio-validation-lab.vercel.app
+ */
+
+import { VARIANTS } from '../src/data/variants.mjs';
+
 const baseUrl = process.argv[2] ?? 'http://localhost:4321';
 
-const variants = [
-  'control',
-  'combined',
-  'test-jsonld',
-  'test-semantic',
-  'test-noscript',
-  'test-aria',
-  'test-dsd',
-  'test-microdata',
-];
+const variants = VARIANTS.map(v => ({
+  id: v.id,
+  slug: v.path.replace(/^\//, ''),
+}));
+
+const FETCH_TIMEOUT_MS = 4000;
 
 const bots = [
   { userAgent: 'GPTBot', expected: 'ChatGPT' },
@@ -68,15 +81,15 @@ console.log(`${colors.green}============================================${colors
 console.log('');
 
 for (const variant of variants) {
-  const url = `${baseUrl}/${variant}`;
-  console.log(`${colors.yellow}--- ${variant} ---${colors.reset}`);
+  const url = `${baseUrl}/${variant.slug}`;
+  console.log(`${colors.yellow}--- ${variant.slug} ---${colors.reset}`);
 
   for (const { userAgent, expected } of bots) {
     let response;
 
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 4000);
+      const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
       try {
         response = await fetch(url, {
           method: 'HEAD',
@@ -95,20 +108,32 @@ for (const variant of variants) {
     }
 
     const actualBot = response.headers.get('x-ai-bot-detected') ?? '';
-    const actualGroup = response.headers.get('x-test-group') ?? '';
+    const actualGroup = response.headers.get('x-test-group') ?? '(none)';
+    const actualVariantId = response.headers.get('x-variant-id') ?? '(none)';
     const httpStatus = response.status;
 
-    if (actualBot.includes(expected)) {
+    const botOk = actualBot.includes(expected);
+    const groupOk = actualGroup === variant.slug;
+    const variantIdOk = actualVariantId === variant.id;
+    const statusOk = httpStatus >= 200 && httpStatus < 400;
+
+    if (botOk && groupOk && variantIdOk && statusOk) {
       console.log(
-        `  ${userAgent} → ${colors.green}[OK]${colors.reset} Bot=${actualBot} Group=${actualGroup} HTTP=${httpStatus}`,
+        `  ${userAgent} → ${colors.green}[OK]${colors.reset} Bot=${actualBot} Group=${actualGroup} Variant=${actualVariantId} HTTP=${httpStatus}`,
       );
       pass += 1;
-    } else {
-      console.log(
-        `  ${userAgent} → ${colors.red}[FAIL]${colors.reset} Expected=${expected} Got=${actualBot || '(none)'} HTTP=${httpStatus}`,
-      );
-      fail += 1;
+      continue;
     }
+
+    const reasons = [
+      !botOk ? `Bot expected=${expected} got=${actualBot || '(none)'}` : '',
+      !groupOk ? `X-Test-Group expected=${variant.slug} got=${actualGroup}` : '',
+      !variantIdOk ? `X-Variant-Id expected=${variant.id} got=${actualVariantId}` : '',
+      !statusOk ? `HTTP expected 2xx/3xx got=${httpStatus}` : '',
+    ].filter(Boolean).join('; ');
+
+    console.log(`  ${userAgent} → ${colors.red}[FAIL]${colors.reset} ${reasons}`);
+    fail += 1;
   }
 
   console.log('');

@@ -80,7 +80,7 @@ Measure how different GAIO measures affect crawler/LLM extraction from the **ini
 ### Measurement Approach
 
 - Use the extraction script to capture text content, structural markers, and schema presence per variant.
-- The LLM evaluation script runs each variant × provider combination **n times** with `temperature: 0.0` and `seed: 42` for reproducibility. Results are reported as mean ± standard deviation.
+- The LLM evaluation script runs each variant × provider combination **n times** with `temperature: 0.0` and `seed: 42` where supported for reproducibility. Results are reported as mean ± standard deviation.
 - Compare variant outputs against the control baseline to quantify the independent contribution of each GAIO measure.
 
 ### Threats to Validity

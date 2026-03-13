@@ -1,22 +1,31 @@
 #!/usr/bin/env node
 
+/**
+ * Submits all benchmark variant URLs to the IndexNow API.
+ *
+ * Environment:
+ * - SITE_HOST: public host name (without protocol)
+ * - INDEXNOW_KEY: key filename/token that must be deployed at /<key>.txt
+ *
+ * Usage:
+ *   node --env-file=.env ./scripts/indexnow.mjs
+ */
+
+import { VARIANT_PATHS } from '../src/data/variants.mjs';
+
 const KEY = process.env.INDEXNOW_KEY;
 const HOST = process.env.SITE_HOST;
+
+if (!KEY || !HOST) {
+  console.error('Missing required env vars: INDEXNOW_KEY and SITE_HOST');
+  process.exit(1);
+}
 
 const body = {
   host: HOST,
   key: KEY,
   keyLocation: `https://${HOST}/${KEY}.txt`,
-  urlList: [
-    'control',
-    'combined',
-    'test-jsonld',
-    'test-semantic',
-    'test-noscript',
-    'test-aria',
-    'test-dsd',
-    'test-microdata',
-  ].map(path => `https://${HOST}/${path}`),
+  urlList: VARIANT_PATHS.map(path => `https://${HOST}${path}`),
 };
 
 console.log('Submitting to IndexNow...');
