@@ -4,14 +4,14 @@ This repository benchmarks how different HTML markup techniques affect content e
 
 Shadow DOM — used extensively in component-driven DXP architectures — is opaque to most AI crawlers by default. This lab benchmarks six **GAIO (Generative AI Optimization)** measures that make Shadow DOM content machine-readable:
 
-| Measure | Technique |
-|---|---|
-| **JSON-LD** | Structured `schema.org` data in `<head>` |
-| **Semantic HTML** | `<section>`, `<article>`, `<aside>` landmark wrappers |
-| **ARIA** | `aria-label` / `aria-labelledby` on custom element hosts |
-| `<noscript>` | Light DOM fallbacks for no-JS parsers |
-| **Declarative Shadow DOM** | SSR-rendered shadow content via `@lit-labs/ssr` |
-| **Microdata** | Inline `itemscope` / `itemprop` attributes |
+| Measure                    | Technique                                                |
+| -------------------------- | -------------------------------------------------------- |
+| **JSON-LD**                | Structured `schema.org` data in `<head>`                 |
+| **Semantic HTML**          | `<section>`, `<article>`, `<aside>` landmark wrappers    |
+| **ARIA**                   | `aria-label` / `aria-labelledby` on custom element hosts |
+| `<noscript>`               | Light DOM fallbacks for no-JS parsers                    |
+| **Declarative Shadow DOM** | SSR-rendered shadow content via `@lit-labs/ssr`          |
+| **Microdata**              | Inline `itemscope` / `itemprop` attributes               |
 
 ## Research Questions
 
@@ -25,16 +25,16 @@ Each GAIO measure is isolated to a separate page variant to quantify its indepen
 
 Eight variants of the same insurance page content, each isolating a single GAIO variable:
 
-| Variant | GAIO Measure | URL |
-|---|---|---|
-| Control | None — bare Shadow DOM baseline | [/control](https://gaio-validation-lab.vercel.app/control) |
-| Combined | All measures combined | [/combined](https://gaio-validation-lab.vercel.app/combined) |
-| JSON-LD only | Structured data in `<head>` | [/test-jsonld](https://gaio-validation-lab.vercel.app/test-jsonld) |
-| Semantic HTML only | `<section>`, `<article>`, `<aside>` wrappers | [/test-semantic](https://gaio-validation-lab.vercel.app/test-semantic) |
-| ARIA only | `aria-label` / `aria-labelledby` on host elements | [/test-aria](https://gaio-validation-lab.vercel.app/test-aria) |
-| `<noscript>` only | Light DOM fallbacks for no-JS crawlers | [/test-noscript](https://gaio-validation-lab.vercel.app/test-noscript) |
-| Declarative Shadow DOM | SSR-rendered shadow content via `@lit-labs/ssr` | [/test-dsd](https://gaio-validation-lab.vercel.app/test-dsd) |
-| Microdata only | Inline `schema.org` `itemscope`/`itemprop` attributes | [/test-microdata](https://gaio-validation-lab.vercel.app/test-microdata) |
+| Variant                | GAIO Measure                                          | URL                                                                      |
+| ---------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------ |
+| Control                | None — bare Shadow DOM baseline                       | [/control](https://gaio-validation-lab.vercel.app/control)               |
+| Combined               | All measures combined                                 | [/combined](https://gaio-validation-lab.vercel.app/combined)             |
+| JSON-LD only           | Structured data in `<head>`                           | [/test-jsonld](https://gaio-validation-lab.vercel.app/test-jsonld)       |
+| Semantic HTML only     | `<section>`, `<article>`, `<aside>` wrappers          | [/test-semantic](https://gaio-validation-lab.vercel.app/test-semantic)   |
+| ARIA only              | `aria-label` / `aria-labelledby` on host elements     | [/test-aria](https://gaio-validation-lab.vercel.app/test-aria)           |
+| `<noscript>` only      | Light DOM fallbacks for no-JS crawlers                | [/test-noscript](https://gaio-validation-lab.vercel.app/test-noscript)   |
+| Declarative Shadow DOM | SSR-rendered shadow content via `@lit-labs/ssr`       | [/test-dsd](https://gaio-validation-lab.vercel.app/test-dsd)             |
+| Microdata only         | Inline `schema.org` `itemscope`/`itemprop` attributes | [/test-microdata](https://gaio-validation-lab.vercel.app/test-microdata) |
 
 ## Quick Start
 
@@ -88,15 +88,15 @@ docs/
 
 ## Documentation
 
-| Document | Contents |
-|---|---|
-| [docs/test-design.md](docs/test-design.md) | Multi-arm variant design, constants, BaseLayout, research questions, methodology |
-| [docs/traps.md](docs/traps.md) | Seven embedded test traps with per-variant implementation and signal matrix |
-| [docs/database.md](docs/database.md) | Supabase schema setup, writer payload contracts, and view query examples |
-| [docs/evaluation.md](docs/evaluation.md) | LLM evaluation script — commands, models, env vars, Supabase schema |
-| [docs/scripts.md](docs/scripts.md) | Bot simulation, content extraction, middleware reference |
-| [docs/replication.md](docs/replication.md) | Full step-by-step replication guide |
-| [docs/results-interpretation.md](docs/results-interpretation.md) | How to read and analyse the evaluation CSV outputs |
+| Document                                                         | Contents                                                                         |
+| ---------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| [docs/test-design.md](docs/test-design.md)                       | Multi-arm variant design, constants, BaseLayout, research questions, methodology |
+| [docs/traps.md](docs/traps.md)                                   | Seven embedded test traps with per-variant implementation and signal matrix      |
+| [docs/database.md](docs/database.md)                             | Supabase schema setup, writer payload contracts, and view query examples         |
+| [docs/evaluation.md](docs/evaluation.md)                         | LLM evaluation script — commands, models, env vars, Supabase schema              |
+| [docs/scripts.md](docs/scripts.md)                               | Bot simulation, content extraction, middleware reference                         |
+| [docs/replication.md](docs/replication.md)                       | Full step-by-step replication guide                                              |
+| [docs/results-interpretation.md](docs/results-interpretation.md) | How to read and analyse the evaluation CSV outputs                               |
 
 ## Technologies
 

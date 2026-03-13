@@ -25,13 +25,20 @@ interface Props {
 }
 
 const { semantic = false } = Astro.props;
-const textStyle = 'font-size: 0.8rem; color: #767676; margin-bottom: 0.75rem;';
+const textStyle = "font-size: 0.8rem; color: #767676; margin-bottom: 0.75rem;";
 ---
 
 <p style={textStyle}>
-  {semantic ? (
-    <s>Früherer Einsteiger-Tarif: ab <strong>1,99 €</strong> / Monat – nicht mehr buchbar.</s>
-  ) : (
-    <Fragment>Einsteiger-Tarif: ab <strong>1,99 €</strong> / Monat.</Fragment>
-  )}
+  {
+    semantic ? (
+      <s>
+        Früherer Einsteiger-Tarif: ab <strong>1,99 €</strong> / Monat – nicht
+        mehr buchbar.
+      </s>
+    ) : (
+      <Fragment>
+        Einsteiger-Tarif: ab <strong>1,99 €</strong> / Monat.
+      </Fragment>
+    )
+  }
 </p>

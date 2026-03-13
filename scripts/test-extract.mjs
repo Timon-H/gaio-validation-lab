@@ -17,22 +17,24 @@
  *   node --env-file=.env ./scripts/test-extract.mjs --persist
  */
 
-import { createHash } from 'node:crypto';
-import { VARIANTS } from '../src/data/variants.mjs';
-import { supabaseInsert } from '../src/lib/supabase.mjs';
+import { createHash } from "node:crypto";
+import { VARIANTS } from "../src/data/variants.mjs";
+import { supabaseInsert } from "../src/lib/supabase.mjs";
 
 const FETCH_TIMEOUT_MS = 4000;
 const MAX_TEXT_LENGTH = 10_000;
 
 const args = process.argv.slice(2);
-const mode = args.includes('--persist') ? 'persist' : 'dry-run';
-const baseUrlArg = args.find((arg) => arg.startsWith('http'));
-const baseUrl = baseUrlArg ?? 'http://localhost:4321';
+const mode = args.includes("--persist") ? "persist" : "dry-run";
+const baseUrlArg = args.find((arg) => arg.startsWith("http"));
+const baseUrl = baseUrlArg ?? "http://localhost:4321";
 
-if (mode === 'persist') {
+if (mode === "persist") {
   if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
-    console.error('ERROR: --persist mode requires SUPABASE_URL and SUPABASE_ANON_KEY env vars.');
-    console.error('Set them in your shell or .env file.');
+    console.error(
+      "ERROR: --persist mode requires SUPABASE_URL and SUPABASE_ANON_KEY env vars.",
+    );
+    console.error("Set them in your shell or .env file.");
     process.exit(1);
   }
   console.log(`Supabase: ${process.env.SUPABASE_URL} (persist mode)`);
@@ -40,72 +42,76 @@ if (mode === 'persist') {
 
 const variants = VARIANTS.map((variant) => ({
   id: variant.id,
-  slug: variant.path.replace(/^\//, ''),
+  slug: variant.path.replace(/^\//, ""),
 }));
 
 const bots = [
   {
-    name: 'GPTBot',
-    ua: 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)',
+    name: "GPTBot",
+    ua: "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",
   },
   {
-    name: 'ClaudeBot',
-    ua: 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)',
+    name: "ClaudeBot",
+    ua: "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",
   },
   {
-    name: 'GoogleBot',
-    ua: 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+    name: "GoogleBot",
+    ua: "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
   },
   {
-    name: 'curl',
-    ua: 'curl/8.0',
+    name: "curl",
+    ua: "curl/8.0",
   },
 ];
 
 const colors = {
-  green: '\x1b[0;32m',
-  red: '\x1b[0;31m',
-  reset: '\x1b[0m',
+  green: "\x1b[0;32m",
+  red: "\x1b[0;31m",
+  reset: "\x1b[0m",
 };
 
 // Expected GAIO marker pattern per variant.
 // aria/sem are not asserted: BaseLayout <nav> produces infrastructure positives
 // on all pages, making false-negatives impossible to distinguish from real signals.
 const expected = {
-  control:   { ld: false, nosc: false, dsd: false, md: false },
-  jsonld:    { ld: true,  nosc: false, dsd: false, md: false },
-  semantic:  { ld: false, nosc: false, dsd: false, md: false },
-  noscript:  { ld: false, nosc: true,  dsd: false, md: false },
-  aria:      { ld: false, nosc: false, dsd: false, md: false },
-  dsd:       { ld: false, nosc: false, dsd: true,  md: false },
-  microdata: { ld: false, nosc: false, dsd: false, md: true  },
-  combined:  { ld: true,  nosc: false, dsd: true,  md: true  },
+  control: { ld: false, nosc: false, dsd: false, md: false },
+  jsonld: { ld: true, nosc: false, dsd: false, md: false },
+  semantic: { ld: false, nosc: false, dsd: false, md: false },
+  noscript: { ld: false, nosc: true, dsd: false, md: false },
+  aria: { ld: false, nosc: false, dsd: false, md: false },
+  dsd: { ld: false, nosc: false, dsd: true, md: false },
+  microdata: { ld: false, nosc: false, dsd: false, md: true },
+  combined: { ld: true, nosc: false, dsd: true, md: true },
 };
 
 const header = [
-  'VARIANT'.padEnd(22),
-  'BOT'.padEnd(10),
-  'WORDS'.padStart(6),
-  'HEADS'.padStart(5),
-  'LINKS'.padStart(5),
-  'LD'.padStart(5),
-  'ARIA'.padStart(5),
-  'SEM'.padStart(5),
-  'NOSC'.padStart(5),
-  'DSD'.padStart(5),
-  'MD'.padStart(4),
-  'DB',
-].join(' | ');
+  "VARIANT".padEnd(22),
+  "BOT".padEnd(10),
+  "WORDS".padStart(6),
+  "HEADS".padStart(5),
+  "LINKS".padStart(5),
+  "LD".padStart(5),
+  "ARIA".padStart(5),
+  "SEM".padStart(5),
+  "NOSC".padStart(5),
+  "DSD".padStart(5),
+  "MD".padStart(4),
+  "DB",
+].join(" | ");
 
-console.log('============================================');
-console.log('GAIO Content Extraction Test');
+console.log("============================================");
+console.log("GAIO Content Extraction Test");
 console.log(`Base URL: ${baseUrl}`);
 console.log(`Mode:     ${mode}`);
-console.log(`Variants: ${variants.length}  |  Bots: ${bots.map((entry) => entry.name).join(' ')}`);
-console.log('============================================');
-console.log('');
+console.log(
+  `Variants: ${variants.length}  |  Bots: ${bots.map((entry) => entry.name).join(" ")}`,
+);
+console.log("============================================");
+console.log("");
 console.log(header);
-console.log('-------------------------------------------------------------------------------------------------------------');
+console.log(
+  "-------------------------------------------------------------------------------------------------------------",
+);
 
 let persisted = 0;
 let failed = 0;
@@ -117,7 +123,18 @@ for (const variant of variants) {
     const html = await fetchHtml(url, bot.ua);
 
     if (!html) {
-      logRow(variant.id, bot.name, ['ERR', '-', '-', '-', '-', '-', '-', '-', '-', '-']);
+      logRow(variant.id, bot.name, [
+        "ERR",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+      ]);
       failed += 1;
       continue;
     }
@@ -129,34 +146,45 @@ for (const variant of variants) {
 
     const hasJsonLd = /application\/ld\+json/i.test(html);
     const hasAria = /aria-label/i.test(html);
-    const hasSemantic = /<(section|article|address|aside|nav|main)\b/i.test(html);
+    const hasSemantic = /<(section|article|address|aside|nav|main)\b/i.test(
+      html,
+    );
     const hasNoscript = /<noscript>/i.test(html);
     const hasDsd = /shadowrootmode/i.test(html);
     const hasMicrodata = /\b(itemscope|itemtype|itemprop)\b/i.test(html);
 
     const labels = [
-      hasJsonLd ? 'YES' : 'no',
-      hasAria ? 'YES' : 'no',
-      hasSemantic ? 'YES' : 'no',
-      hasNoscript ? 'YES' : 'no',
-      hasDsd ? 'YES' : 'no',
-      hasMicrodata ? 'YES' : 'no',
+      hasJsonLd ? "YES" : "no",
+      hasAria ? "YES" : "no",
+      hasSemantic ? "YES" : "no",
+      hasNoscript ? "YES" : "no",
+      hasDsd ? "YES" : "no",
+      hasMicrodata ? "YES" : "no",
     ];
 
     // Assert marker pattern once per variant (first bot is sufficient; HTML is UA-invariant).
     if (bot === bots[0] && expected[variant.id]) {
-      const actual = { ld: hasJsonLd, nosc: hasNoscript, dsd: hasDsd, md: hasMicrodata };
-      const fails = Object.entries(expected[variant.id]).filter(([k, v]) => actual[k] !== v);
+      const actual = {
+        ld: hasJsonLd,
+        nosc: hasNoscript,
+        dsd: hasDsd,
+        md: hasMicrodata,
+      };
+      const fails = Object.entries(expected[variant.id]).filter(
+        ([k, v]) => actual[k] !== v,
+      );
       fails.forEach(([k, v]) => {
-        console.log(`  ${colors.red}[ASSERT]${colors.reset} ${variant.id}: expected ${k}=${v}, got ${actual[k]}`);
+        console.log(
+          `  ${colors.red}[ASSERT]${colors.reset} ${variant.id}: expected ${k}=${v}, got ${actual[k]}`,
+        );
       });
       assertFailed += fails.length;
     }
 
-    let dbStatus = '-';
+    let dbStatus = "-";
 
-    if (mode === 'persist') {
-      const contentHash = createHash('sha256').update(text).digest('hex');
+    if (mode === "persist") {
+      const contentHash = createHash("sha256").update(text).digest("hex");
       const textContent = text.slice(0, MAX_TEXT_LENGTH);
       const jsonLd = extractFirstJsonLd(html);
 
@@ -189,42 +217,66 @@ for (const variant of variants) {
       }
     }
 
-    logRow(variant.id, bot.name, [String(wordCount), String(headingCount), String(linkCount), ...labels, dbStatus]);
+    logRow(variant.id, bot.name, [
+      String(wordCount),
+      String(headingCount),
+      String(linkCount),
+      ...labels,
+      dbStatus,
+    ]);
   }
-  console.log('');
+  console.log("");
 }
 
-console.log('============================================');
-console.log('Legend: LD=JSON-LD, ARIA=aria-label, SEM=semantic HTML, NOSC=<noscript>, DSD=Declarative Shadow DOM, DB=database status');
-console.log('');
-console.log('Expected GAIO variable pattern (LD / ARIA / SEM / NOSC / DSD):');
-console.log('  control           → no  / no  / no  / no  / no');
-console.log('  jsonld            → YES / no  / no  / no  / no');
-console.log('  semantic          → no  / no  / YES / no  / no');
-console.log('  noscript          → no  / no  / no  / YES / no');
-console.log('  aria              → no  / YES / no  / no  / no');
-console.log('  dsd               → no  / no  / no  / no  / YES');
-console.log('  combined          → YES / YES / YES / no  / YES (DSD supersedes noscript)');
-console.log('  microdata         → no  / no  / no  / no  / YES (microdata)');
-console.log('        MD=microdata (itemscope/itemtype/itemprop)');
-console.log('');
-console.log('NOTE: SEM/ARIA may show infrastructure positives (BaseLayout <nav>, DSD');
-console.log('      template internals). These are constant across all pages and cancel');
-console.log('      out in comparisons. Focus on the unique GAIO variable per arm.');
+console.log("============================================");
+console.log(
+  "Legend: LD=JSON-LD, ARIA=aria-label, SEM=semantic HTML, NOSC=<noscript>, DSD=Declarative Shadow DOM, DB=database status",
+);
+console.log("");
+console.log("Expected GAIO variable pattern (LD / ARIA / SEM / NOSC / DSD):");
+console.log("  control           → no  / no  / no  / no  / no");
+console.log("  jsonld            → YES / no  / no  / no  / no");
+console.log("  semantic          → no  / no  / YES / no  / no");
+console.log("  noscript          → no  / no  / no  / YES / no");
+console.log("  aria              → no  / YES / no  / no  / no");
+console.log("  dsd               → no  / no  / no  / no  / YES");
+console.log(
+  "  combined          → YES / YES / YES / no  / YES (DSD supersedes noscript)",
+);
+console.log("  microdata         → no  / no  / no  / no  / YES (microdata)");
+console.log("        MD=microdata (itemscope/itemtype/itemprop)");
+console.log("");
+console.log(
+  "NOTE: SEM/ARIA may show infrastructure positives (BaseLayout <nav>, DSD",
+);
+console.log(
+  "      template internals). These are constant across all pages and cancel",
+);
+console.log(
+  "      out in comparisons. Focus on the unique GAIO variable per arm.",
+);
 
-if (mode === 'persist') {
-  console.log('');
-  console.log(`Database: ${colors.green}${persisted} persisted${colors.reset} / ${colors.red}${failed} failed${colors.reset}`);
-  console.log('Query your results: SELECT * FROM extraction_results ORDER BY created_at DESC;');
-  console.log('Or use the extraction_comparison view for aggregated stats.');
+if (mode === "persist") {
+  console.log("");
+  console.log(
+    `Database: ${colors.green}${persisted} persisted${colors.reset} / ${colors.red}${failed} failed${colors.reset}`,
+  );
+  console.log(
+    "Query your results: SELECT * FROM extraction_results ORDER BY created_at DESC;",
+  );
+  console.log("Or use the extraction_comparison view for aggregated stats.");
 }
 
 if (assertFailed > 0) {
-  console.log(`\n${colors.red}✗ ${assertFailed} marker assertion(s) failed — check for cross-contamination.${colors.reset}`);
+  console.log(
+    `\n${colors.red}✗ ${assertFailed} marker assertion(s) failed — check for cross-contamination.${colors.reset}`,
+  );
 } else {
-  console.log(`\n${colors.green}✓ All marker assertions passed.${colors.reset}`);
+  console.log(
+    `\n${colors.green}✓ All marker assertions passed.${colors.reset}`,
+  );
 }
-console.log('============================================');
+console.log("============================================");
 
 if (assertFailed > 0) process.exit(1);
 
@@ -240,15 +292,15 @@ async function fetchHtml(url, userAgent) {
   const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
     const response = await fetch(url, {
-      method: 'GET',
+      method: "GET",
       signal: controller.signal,
       headers: {
-        'User-Agent': userAgent,
+        "User-Agent": userAgent,
       },
     });
     return await response.text();
   } catch {
-    return '';
+    return "";
   } finally {
     clearTimeout(timeout);
   }
@@ -260,7 +312,10 @@ async function fetchHtml(url, userAgent) {
  * @returns {string} Plain text content.
  */
 function stripHtml(html) {
-  return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  return html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 /**
@@ -292,7 +347,9 @@ function countMatches(text, regex) {
  * @returns {object|null} Parsed JSON-LD object, or `null` if absent or invalid.
  */
 function extractFirstJsonLd(html) {
-  const match = html.match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i);
+  const match = html.match(
+    /<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i,
+  );
   if (!match || !match[1]) {
     return null;
   }
@@ -315,9 +372,9 @@ function extractFirstJsonLd(html) {
  * @returns {Promise<boolean>} `true` if the insert succeeded, `false` otherwise.
  */
 async function persistResult(payload) {
-  const result = await supabaseInsert('extraction_results', payload);
+  const result = await supabaseInsert("extraction_results", payload);
   if (!result.ok) {
-    console.error('Persist failed:', result.status, result.error);
+    console.error("Persist failed:", result.status, result.error);
   }
   return result.ok;
 }
@@ -343,7 +400,7 @@ function logRow(variant, botName, values) {
     String(dsd).padStart(5),
     String(md).padStart(4),
     db,
-  ].join(' | ');
+  ].join(" | ");
 
   console.log(row);
 }

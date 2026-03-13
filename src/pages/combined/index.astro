@@ -17,8 +17,8 @@
  * interactive rendering still lives inside Shadow DOM.
  * DSD supersedes <noscript> as a content accessibility mechanism.
  */
-import { renderLitToString, html } from '../../lib/lit-ssr.ts';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import { renderLitToString, html } from "../../lib/lit-ssr.ts";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import {
   TrapAriaHiddenBonus,
   TrapBirthYear,
@@ -26,31 +26,50 @@ import {
   TrapCrossSell,
   TrapDeprecatedTariff,
   TrapTestimonial,
-} from '../../components/traps/index.ts';
+} from "../../components/traps/index.ts";
 import {
-  PAGE_TITLE, PAGE_DESCRIPTION, INTRO, BUTTONS, TEXT_INPUTS,
-  DROPDOWN, RADIO, FAQS, TRAP_FAQ, CARDS, FLYOUT, TARIFF, FOOTER_LINK,
-  SECTION_HEADINGS, ARIA_LABELS, buildGaioSchema,
-} from '../../data/content';
+  PAGE_TITLE,
+  PAGE_DESCRIPTION,
+  INTRO,
+  BUTTONS,
+  TEXT_INPUTS,
+  DROPDOWN,
+  RADIO,
+  FAQS,
+  TRAP_FAQ,
+  CARDS,
+  FLYOUT,
+  TARIFF,
+  FOOTER_LINK,
+  SECTION_HEADINGS,
+  ARIA_LABELS,
+  buildGaioSchema,
+} from "../../data/content";
 
 // Import all component side-effects (registers custom elements for SSR)
-import '../../components/baseline/dxp-button.ts';
-import '../../components/baseline/dxp-text-input.ts';
-import '../../components/baseline/dxp-dropdown.ts';
-import '../../components/baseline/dxp-input-radio.ts';
-import '../../components/baseline/dxp-accordion.ts';
-import '../../components/baseline/dxp-accordion-element.ts';
-import '../../components/baseline/dxp-card.ts';
-import '../../components/baseline/dxp-flyout.ts';
-import '../../components/baseline/dxp-tariff-comparison.ts';
+import "../../components/baseline/dxp-button.ts";
+import "../../components/baseline/dxp-text-input.ts";
+import "../../components/baseline/dxp-dropdown.ts";
+import "../../components/baseline/dxp-input-radio.ts";
+import "../../components/baseline/dxp-accordion.ts";
+import "../../components/baseline/dxp-accordion-element.ts";
+import "../../components/baseline/dxp-card.ts";
+import "../../components/baseline/dxp-flyout.ts";
+import "../../components/baseline/dxp-tariff-comparison.ts";
 
 const gaioSchema = buildGaioSchema();
 
 // Server-render each component section to DSD HTML strings
 const buttonHtml = await renderLitToString(html`
-  <dxp-button aria-label=${ARIA_LABELS.buttonPrimary}>${BUTTONS.primary}</dxp-button>
-  <dxp-button variant="secondary" aria-label=${ARIA_LABELS.buttonSecondary}>${BUTTONS.secondary}</dxp-button>
-  <dxp-button disabled aria-label=${ARIA_LABELS.buttonDisabled}>${BUTTONS.disabled}</dxp-button>
+  <dxp-button aria-label=${ARIA_LABELS.buttonPrimary}
+    >${BUTTONS.primary}</dxp-button
+  >
+  <dxp-button variant="secondary" aria-label=${ARIA_LABELS.buttonSecondary}
+    >${BUTTONS.secondary}</dxp-button
+  >
+  <dxp-button disabled aria-label=${ARIA_LABELS.buttonDisabled}
+    >${BUTTONS.disabled}</dxp-button
+  >
 `);
 
 const textInputHtml = await renderLitToString(html`
@@ -95,14 +114,16 @@ const radioHtml = await renderLitToString(html`
 
 const accordionHtml = await renderLitToString(html`
   <dxp-accordion aria-label=${ARIA_LABELS.accordion}>
-    ${FAQS.map(faq => html`
-      <dxp-accordion-element
-        id=${faq.id}
-        aria-label=${faq.headline}
-        headline=${faq.headline}
-        body=${faq.body}
-      ></dxp-accordion-element>
-    `)}
+    ${FAQS.map(
+      (faq) => html`
+        <dxp-accordion-element
+          id=${faq.id}
+          aria-label=${faq.headline}
+          headline=${faq.headline}
+          body=${faq.body}
+        ></dxp-accordion-element>
+      `,
+    )}
     <!-- Trap 7 (TrapHiddenFaq) inlined here because Lit SSR requires template literals;
          the Astro component version is used on all non-SSR pages. -->
     <dxp-accordion-element
@@ -120,7 +141,9 @@ const cardHtml1 = await renderLitToString(html`
     card-title=${CARDS[0].title}
     card-description=${CARDS[0].description}
   >
-    <span slot="badge" style="background: #e3f2fd; color: #0066cc;">${CARDS[0].badge}</span>
+    <span slot="badge" style="background: #e3f2fd; color: #0066cc;"
+      >${CARDS[0].badge}</span
+    >
     <dxp-button slot="buttons">${CARDS[0].button}</dxp-button>
   </dxp-card>
 `);
@@ -131,7 +154,9 @@ const cardHtml2 = await renderLitToString(html`
     card-title=${CARDS[1].title}
     card-description=${CARDS[1].description}
   >
-    <dxp-button slot="buttons" variant="secondary">${CARDS[1].button}</dxp-button>
+    <dxp-button slot="buttons" variant="secondary"
+      >${CARDS[1].button}</dxp-button
+    >
   </dxp-card>
 `);
 
@@ -156,7 +181,11 @@ const tariffHtml = await renderLitToString(html`
 `);
 ---
 
-<BaseLayout title={PAGE_TITLE} description={PAGE_DESCRIPTION} schemaData={gaioSchema}>
+<BaseLayout
+  title={PAGE_TITLE}
+  description={PAGE_DESCRIPTION}
+  schemaData={gaioSchema}
+>
   <!-- SSR-only: hydration intentionally omitted to avoid duplicate late client rendering. -->
 
   <section aria-labelledby="page-heading" style="margin-top: 1.5rem;">
@@ -172,8 +201,16 @@ const tariffHtml = await renderLitToString(html`
   </section>
 
   <!-- TEXT INPUT — DSD + Semantic + ARIA + Microdata -->
-  <section aria-label="Kontaktformular" style="margin: 2rem 0;" itemscope itemtype="https://schema.org/Person">
-    <meta itemprop="description" content="Persönliche Angaben: Vorname und E-Mail-Adresse für ein individuelles Versicherungsangebot" />
+  <section
+    aria-label="Kontaktformular"
+    style="margin: 2rem 0;"
+    itemscope
+    itemtype="https://schema.org/Person"
+  >
+    <meta
+      itemprop="description"
+      content="Persönliche Angaben: Vorname und E-Mail-Adresse für ein individuelles Versicherungsangebot"
+    />
     <h3>{SECTION_HEADINGS.textInputs.heading}</h3>
     <p>{SECTION_HEADINGS.textInputs.description}</p>
     <div role="group" aria-label="Ihre Daten">
@@ -184,7 +221,12 @@ const tariffHtml = await renderLitToString(html`
   <TrapCoverageAmount aria />
 
   <!-- DROPDOWN — DSD + Semantic + ARIA + Microdata -->
-  <section aria-label="Versicherungsauswahl" style="margin: 2rem 0;" itemscope itemtype="https://schema.org/ItemList">
+  <section
+    aria-label="Versicherungsauswahl"
+    style="margin: 2rem 0;"
+    itemscope
+    itemtype="https://schema.org/ItemList"
+  >
     <meta itemprop="name" content="Versicherungstyp" />
     <h3>{SECTION_HEADINGS.dropdown.heading}</h3>
     <p>{SECTION_HEADINGS.dropdown.description}</p>
@@ -192,7 +234,12 @@ const tariffHtml = await renderLitToString(html`
   </section>
 
   <!-- RADIO — DSD + Semantic + ARIA + Microdata -->
-  <section aria-label="Zahlungsoptionen" style="margin: 2rem 0;" itemscope itemtype="https://schema.org/ItemList">
+  <section
+    aria-label="Zahlungsoptionen"
+    style="margin: 2rem 0;"
+    itemscope
+    itemtype="https://schema.org/ItemList"
+  >
     <meta itemprop="name" content="Zahlungsweise" />
     <h3>{SECTION_HEADINGS.radio.heading}</h3>
     <p>{SECTION_HEADINGS.radio.description}</p>
@@ -202,7 +249,12 @@ const tariffHtml = await renderLitToString(html`
   <TrapBirthYear aria />
 
   <!-- ACCORDION / FAQ — DSD + Semantic + ARIA + Microdata -->
-  <section aria-labelledby="faq-heading" style="margin: 2rem 0;" itemscope itemtype="https://schema.org/FAQPage">
+  <section
+    aria-labelledby="faq-heading"
+    style="margin: 2rem 0;"
+    itemscope
+    itemtype="https://schema.org/FAQPage"
+  >
     <h3 id="faq-heading">{SECTION_HEADINGS.accordion.heading}</h3>
     <p>{SECTION_HEADINGS.accordion.description}</p>
     <Fragment set:html={accordionHtml} />
@@ -212,19 +264,35 @@ const tariffHtml = await renderLitToString(html`
   <section aria-labelledby="products-heading" style="margin: 2rem 0;">
     <h3 id="products-heading">{SECTION_HEADINGS.cards.heading}</h3>
     <p>{SECTION_HEADINGS.cards.description}</p>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
-      <article aria-label="Privathaftpflicht – ab 3,50 € monatlich" itemscope itemtype="https://schema.org/Product">
+    <div
+      style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;"
+    >
+      <article
+        aria-label="Privathaftpflicht – ab 3,50 € monatlich"
+        itemscope
+        itemtype="https://schema.org/Product"
+      >
         <meta itemprop="name" content="Privathaftpflicht" />
-        <meta itemprop="description" content="Umfassender Schutz für Ihren Alltag – ab 3,50 € im Monat." />
+        <meta
+          itemprop="description"
+          content="Umfassender Schutz für Ihren Alltag – ab 3,50 € im Monat."
+        />
         <div itemprop="offers" itemscope itemtype="https://schema.org/Offer">
           <meta itemprop="price" content="3.50" />
           <meta itemprop="priceCurrency" content="EUR" />
         </div>
         <Fragment set:html={cardHtml1} />
       </article>
-      <article aria-label="Hausratversicherung – Schutz für Hab und Gut" itemscope itemtype="https://schema.org/Product">
+      <article
+        aria-label="Hausratversicherung – Schutz für Hab und Gut"
+        itemscope
+        itemtype="https://schema.org/Product"
+      >
         <meta itemprop="name" content="Hausratversicherung" />
-        <meta itemprop="description" content="Schützen Sie Ihr Hab und Gut gegen Einbruch, Feuer und Wasserschäden." />
+        <meta
+          itemprop="description"
+          content="Schützen Sie Ihr Hab und Gut gegen Einbruch, Feuer und Wasserschäden."
+        />
         <div itemprop="offers" itemscope itemtype="https://schema.org/Offer">
           <meta itemprop="price" content="4.20" />
           <meta itemprop="priceCurrency" content="EUR" />
@@ -242,7 +310,12 @@ const tariffHtml = await renderLitToString(html`
   </section>
 
   <!-- TARIFF COMPARISON — DSD + Semantic + ARIA -->
-  <section aria-labelledby="tariff-heading" style="margin: 2rem 0;" itemscope itemtype="https://schema.org/WebPage">
+  <section
+    aria-labelledby="tariff-heading"
+    style="margin: 2rem 0;"
+    itemscope
+    itemtype="https://schema.org/WebPage"
+  >
     <meta itemprop="name" content="Haftpflichtversicherung – Tarifvergleich" />
     <h3 id="tariff-heading">{SECTION_HEADINGS.tariff.heading}</h3>
     <p>{SECTION_HEADINGS.tariff.description}</p>
@@ -254,7 +327,9 @@ const tariffHtml = await renderLitToString(html`
 
   <TrapCrossSell semantic />
 
-  <aside style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #4a5dc9;">
+  <aside
+    style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #4a5dc9;"
+  >
     <a href={FOOTER_LINK.href}>{FOOTER_LINK.text}</a>
   </aside>
 </BaseLayout>

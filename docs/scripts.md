@@ -110,10 +110,10 @@ npm run indexnow
 
 ### Required Environment
 
-| Variable | Purpose |
-| --- | --- |
-| `SITE_HOST` | Public host, e.g. `gaio-validation-lab.vercel.app` |
-| `INDEXNOW_KEY` | IndexNow key matching deployed key file name |
+| Variable       | Purpose                                            |
+| -------------- | -------------------------------------------------- |
+| `SITE_HOST`    | Public host, e.g. `gaio-validation-lab.vercel.app` |
+| `INDEXNOW_KEY` | IndexNow key matching deployed key file name       |
 
 The script builds `urlList` from `VARIANT_PATHS`, so every benchmark route is submitted consistently.
 
@@ -127,24 +127,24 @@ The script builds `urlList` from `VARIANT_PATHS`, so every benchmark route is su
 
 Detects 16 AI crawler groups by user-agent and logs visits to Supabase `bot_logs` with `variant_id`, path, latency, and status.
 
-| Group | User-agent tokens |
-| --- | --- |
-| ChatGPT | `GPTBot`, `ChatGPT-User`, `OAI-SearchBot`, `ChatGPT Agent` |
-| Claude | `ClaudeBot`, `Claude-Web`, `Claude-User`, `Claude-SearchBot`, `anthropic-ai` |
-| Gemini | `Google-Extended`, `Gemini-Deep-Research`, `Google-NotebookLM`, `NotebookLM`, `GoogleAgent-Mariner` |
-| Perplexity | `PerplexityBot`, `Perplexity-User` |
-| CommonCrawl | `CCBot` |
-| Applebot | `Applebot`, `Applebot-Extended` |
-| Meta | `meta-externalagent`, `Meta-ExternalAgent`, `meta-externalfetcher`, `meta-webindexer` |
-| DeepSeek | `DeepSeekBot` |
-| Mistral | `MistralAI-User` |
-| DuckDuckGo | `DuckAssistBot` |
-| Brave | `Bravebot` |
-| You | `YouBot` |
-| Cohere | `cohere-ai`, `cohere-training-data-crawler` |
-| ByteDance | `Bytespider`, `TikTokSpider` |
-| Manus | `Manus-User` |
-| Amazon | `Amazonbot`, `amazon-kendra`, `AmazonBuyForMe` |
+| Group       | User-agent tokens                                                                                   |
+| ----------- | --------------------------------------------------------------------------------------------------- |
+| ChatGPT     | `GPTBot`, `ChatGPT-User`, `OAI-SearchBot`, `ChatGPT Agent`                                          |
+| Claude      | `ClaudeBot`, `Claude-Web`, `Claude-User`, `Claude-SearchBot`, `anthropic-ai`                        |
+| Gemini      | `Google-Extended`, `Gemini-Deep-Research`, `Google-NotebookLM`, `NotebookLM`, `GoogleAgent-Mariner` |
+| Perplexity  | `PerplexityBot`, `Perplexity-User`                                                                  |
+| CommonCrawl | `CCBot`                                                                                             |
+| Applebot    | `Applebot`, `Applebot-Extended`                                                                     |
+| Meta        | `meta-externalagent`, `Meta-ExternalAgent`, `meta-externalfetcher`, `meta-webindexer`               |
+| DeepSeek    | `DeepSeekBot`                                                                                       |
+| Mistral     | `MistralAI-User`                                                                                    |
+| DuckDuckGo  | `DuckAssistBot`                                                                                     |
+| Brave       | `Bravebot`                                                                                          |
+| You         | `YouBot`                                                                                            |
+| Cohere      | `cohere-ai`, `cohere-training-data-crawler`                                                         |
+| ByteDance   | `Bytespider`, `TikTokSpider`                                                                        |
+| Manus       | `Manus-User`                                                                                        |
+| Amazon      | `Amazonbot`, `amazon-kendra`, `AmazonBuyForMe`                                                      |
 
 `SUPABASE_URL` and `SUPABASE_ANON_KEY` are optional. Detection headers still work when keys are absent; only persistence is skipped.
 

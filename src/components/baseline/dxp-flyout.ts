@@ -1,9 +1,9 @@
 /**
  * Simulated DXP Flyout Component
- * 
+ *
  * Mirrors the real dxp-flyout from the DXP design system.
  * Original: Lit-based, extends DxpHTMLElement, Shadow DOM encapsulated.
- * 
+ *
  * Features replicated:
  * - @customElement('dxp-flyout') registration
  * - open/close toggle behavior via content slot click
@@ -18,14 +18,13 @@
  *   so Declarative Shadow DOM is the sole data channel (slot="flyout" is then absent)
  * - Other flyout auto-close when new one opens
  */
-import { LitElement, html, css, nothing } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { LitElement, html, css, nothing } from "lit";
+import { customElement, property } from "lit/decorators.js";
 
-export type FlyoutPosition = 'left' | 'right' | 'center';
+export type FlyoutPosition = "left" | "right" | "center";
 
-@customElement('dxp-flyout')
+@customElement("dxp-flyout")
 export class DxpFlyout extends LitElement {
-
   static styles = css`
     :host {
       display: inline-block;
@@ -44,7 +43,7 @@ export class DxpFlyout extends LitElement {
     }
 
     :host(:not([hide-shadow])) .flyout-container {
-      box-shadow: var(--dxp-flyout-shadow, 0 4px 20px rgba(0,0,0,0.15));
+      box-shadow: var(--dxp-flyout-shadow, 0 4px 20px rgba(0, 0, 0, 0.15));
     }
 
     :host([transparent-background]) .flyout-container {
@@ -129,76 +128,80 @@ export class DxpFlyout extends LitElement {
   @property({ type: String, reflect: true })
   open: string | undefined;
 
-  @property({ type: String, attribute: 'flyout-position', reflect: true })
-  flyoutPosition: FlyoutPosition = 'center';
+  @property({ type: String, attribute: "flyout-position", reflect: true })
+  flyoutPosition: FlyoutPosition = "center";
 
-  @property({ type: String, attribute: 'flyout-full-width-below' })
+  @property({ type: String, attribute: "flyout-full-width-below" })
   flyoutFullWidthBelow?: string;
 
-  @property({ type: Boolean, attribute: 'thinner-navigation', reflect: true })
+  @property({ type: Boolean, attribute: "thinner-navigation", reflect: true })
   thinnerNavigation: boolean = false;
 
-  @property({ type: Boolean, attribute: 'hide-close-symbol', reflect: true })
+  @property({ type: Boolean, attribute: "hide-close-symbol", reflect: true })
   hideCloseSymbol: boolean = false;
 
-  @property({ type: Boolean, attribute: 'hide-shadow', reflect: true })
+  @property({ type: Boolean, attribute: "hide-shadow", reflect: true })
   hideShadow: boolean = false;
 
-  @property({ type: Boolean, attribute: 'hide-triangle', reflect: true })
+  @property({ type: Boolean, attribute: "hide-triangle", reflect: true })
   hideTriangle: boolean = false;
 
-  @property({ type: Boolean, attribute: 'transparent-background', reflect: true })
+  @property({
+    type: Boolean,
+    attribute: "transparent-background",
+    reflect: true,
+  })
   transparentBackground: boolean = false;
 
-  @property({ type: Boolean, attribute: 'open-upwards', reflect: true })
+  @property({ type: Boolean, attribute: "open-upwards", reflect: true })
   isOpenUpwards: boolean = false;
 
   // Data attributes: when set, contact info renders inside shadow DOM rather than via
   // the slot="flyout" light DOM child. This makes DSD the sole accessible channel —
   // both attributes are stripped by the evaluation pipeline before the LLM sees the
   // HTML, so only the DSD-rendered <template shadowrootmode="open"> content survives.
-  @property({ type: String, attribute: 'phone' })
-  phone: string = '';
+  @property({ type: String, attribute: "phone" })
+  phone: string = "";
 
-  @property({ type: String, attribute: 'hours' })
-  hours: string = '';
+  @property({ type: String, attribute: "hours" })
+  hours: string = "";
 
   connectedCallback() {
     super.connectedCallback();
     this._handleOutsideClick = this._handleOutsideClick.bind(this);
-    document.addEventListener('click', this._handleOutsideClick);
+    document.addEventListener("click", this._handleOutsideClick);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    document.removeEventListener('click', this._handleOutsideClick);
+    document.removeEventListener("click", this._handleOutsideClick);
   }
 
   firstUpdated() {
     const trigger = this.querySelector('[slot="content"]');
-    trigger?.addEventListener('click', (e) => {
+    trigger?.addEventListener("click", (e) => {
       e.stopPropagation();
       this._toggle();
     });
   }
 
   private _handleOutsideClick() {
-    if (this.hasAttribute('open')) {
+    if (this.hasAttribute("open")) {
       this._close();
     }
   }
 
   private _toggle() {
     // Close other flyouts
-    document.querySelectorAll('dxp-flyout[open]').forEach(el => {
-      if (el !== this) el.removeAttribute('open');
+    document.querySelectorAll("dxp-flyout[open]").forEach((el) => {
+      if (el !== this) el.removeAttribute("open");
     });
 
-    this.toggleAttribute('open');
+    this.toggleAttribute("open");
   }
 
   private _close() {
-    this.removeAttribute('open');
+    this.removeAttribute("open");
   }
 
   render() {
@@ -206,16 +209,28 @@ export class DxpFlyout extends LitElement {
       <slot name="content"></slot>
       <div class="triangle"></div>
       <div class="flyout-container" @click=${(e: Event) => e.stopPropagation()}>
-        ${!this.hideCloseSymbol ? html`
-          <button class="close-flyout-button" @click=${this._close}>✕</button>
-        ` : nothing}
-        ${this.phone || this.hours ? html`
-          <div style="padding: 0.5rem;">
-            <p style="margin: 0 0 0.5rem;"><strong>Kundenservice</strong></p>
-            ${this.phone ? html`<p style="margin: 0;">Telefon: ${this.phone}</p>` : nothing}
-            ${this.hours ? html`<p style="margin: 0;">${this.hours}</p>` : nothing}
-          </div>
-        ` : html`<slot name="flyout"></slot>`}
+        ${!this.hideCloseSymbol
+          ? html`
+              <button class="close-flyout-button" @click=${this._close}>
+                ✕
+              </button>
+            `
+          : nothing}
+        ${this.phone || this.hours
+          ? html`
+              <div style="padding: 0.5rem;">
+                <p style="margin: 0 0 0.5rem;">
+                  <strong>Kundenservice</strong>
+                </p>
+                ${this.phone
+                  ? html`<p style="margin: 0;">Telefon: ${this.phone}</p>`
+                  : nothing}
+                ${this.hours
+                  ? html`<p style="margin: 0;">${this.hours}</p>`
+                  : nothing}
+              </div>
+            `
+          : html`<slot name="flyout"></slot>`}
       </div>
     `;
   }
@@ -223,6 +238,6 @@ export class DxpFlyout extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dxp-flyout': DxpFlyout;
+    "dxp-flyout": DxpFlyout;
   }
 }

@@ -1,11 +1,11 @@
 ---
 /**
  * BaseLayout — Neutral page shell
- * 
+ *
  * Provides shared styling, <head> boilerplate, and navigation.
  * Traditional SEO signals (robots, canonical) are constants applied
  * to every page — they are NOT experimental variables.
- * 
+ *
  * Only JSON-LD is optional because it IS one of the GAIO variables
  * under test and must be absent from baseline/non-JSON-LD pages.
  */
@@ -16,13 +16,13 @@ interface Props {
   lang?: string;
 }
 
-const { title, description, schemaData, lang = 'de' } = Astro.props;
+const { title, description, schemaData, lang = "de" } = Astro.props;
 const schemaJson = schemaData
-  ? JSON.stringify(schemaData).replace(/</g, '\\u003c')
+  ? JSON.stringify(schemaData).replace(/</g, "\\u003c")
   : undefined;
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang={lang}>
   <head>
     <meta charset="UTF-8" />
@@ -31,17 +31,28 @@ const schemaJson = schemaData
     <meta name="description" content={description} />
 
     <!-- Constant SEO baseline — not an experimental variable -->
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
-    <meta name="google-site-verification" content="RcH4qStaWdH1zyAHbHCdAXJl6kFDnMjo2yZDCVXd53w" />
+    <meta
+      name="robots"
+      content="index, follow, max-snippet:-1, max-image-preview:large"
+    />
+    <meta
+      name="google-site-verification"
+      content="RcH4qStaWdH1zyAHbHCdAXJl6kFDnMjo2yZDCVXd53w"
+    />
     <link rel="canonical" href={Astro.url} />
 
-    {schemaJson && (
-      <script is:inline type="application/ld+json" set:html={schemaJson} />
-    )}
+    {
+      schemaJson && (
+        <script is:inline type="application/ld+json" set:html={schemaJson} />
+      )
+    }
 
     <style>
       body {
-        font-family: system-ui, -apple-system, sans-serif;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
         max-width: 800px;
         margin: 0 auto;
         padding: 2rem;
@@ -51,7 +62,7 @@ const schemaJson = schemaData
         background: white;
         padding: 2rem;
         border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
       h1 {
         color: #333;

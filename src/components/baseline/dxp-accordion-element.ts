@@ -1,9 +1,9 @@
 /**
  * Simulated DXP Accordion Element Component
- * 
+ *
  * Mirrors the real dxp-accordion-element from the DXP design system.
  * Original: Lit-based LitElement, Shadow DOM encapsulated.
- * 
+ *
  * Features replicated:
  * - @customElement('dxp-accordion-element') registration
  * - expanded property with reflect
@@ -17,13 +17,12 @@
  * - data-event-label tracking attribute
  * - categories attribute for filtering
  */
-import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-import { TOGGLE_ACCORDION_ELEMENT } from './dxp-accordion.js';
+import { LitElement, html, css } from "lit";
+import { customElement, property } from "lit/decorators.js";
+import { TOGGLE_ACCORDION_ELEMENT } from "./dxp-accordion.js";
 
-@customElement('dxp-accordion-element')
+@customElement("dxp-accordion-element")
 export class DxpAccordionElement extends LitElement {
-
   static styles = css`
     :host {
       display: block;
@@ -66,7 +65,9 @@ export class DxpAccordionElement extends LitElement {
     .accordion-body {
       max-height: 0;
       overflow: hidden;
-      transition: max-height 0.3s ease, padding 0.3s ease;
+      transition:
+        max-height 0.3s ease,
+        padding 0.3s ease;
       padding: 0 1rem;
     }
 
@@ -77,26 +78,26 @@ export class DxpAccordionElement extends LitElement {
   `;
 
   @property({ type: String, reflect: true })
-  id: string = '';
+  id: string = "";
 
-  @property({ type: Boolean, attribute: 'expanded', reflect: true })
+  @property({ type: Boolean, attribute: "expanded", reflect: true })
   expanded: boolean = false;
 
-  @property({ type: String, attribute: 'data-event-label' })
-  dataEventLabel: string = '';
+  @property({ type: String, attribute: "data-event-label" })
+  dataEventLabel: string = "";
 
-  @property({ type: String, attribute: 'categories', reflect: true })
-  categories: string = '';
+  @property({ type: String, attribute: "categories", reflect: true })
+  categories: string = "";
 
   // Data attributes: when set, content renders inside shadow DOM rather than via light DOM
   // slots. This makes DSD the sole accessible channel — both attributes are stripped by the
   // evaluation pipeline before the LLM sees the HTML, so only the DSD-rendered
   // <template shadowrootmode="open"> content survives to the model.
-  @property({ type: String, attribute: 'headline' })
-  headline: string = '';
+  @property({ type: String, attribute: "headline" })
+  headline: string = "";
 
-  @property({ type: String, attribute: 'body' })
-  bodyText: string = '';
+  @property({ type: String, attribute: "body" })
+  bodyText: string = "";
 
   toggle() {
     this.expanded = !this.expanded;
@@ -108,16 +109,16 @@ export class DxpAccordionElement extends LitElement {
   }
 
   handleKeydown(event: KeyboardEvent) {
-    if (event.key === 'Enter' || event.key === ' ') {
+    if (event.key === "Enter" || event.key === " ") {
       this.toggle();
       event.preventDefault();
     }
   }
 
   updated(changedProperties: Map<string, unknown>) {
-    if (changedProperties.has('expanded') && this.expanded) {
+    if (changedProperties.has("expanded") && this.expanded) {
       this.updateComplete.then(() => {
-        const content = this.shadowRoot?.getElementById('accordion-body');
+        const content = this.shadowRoot?.getElementById("accordion-body");
         content?.focus();
       });
     }
@@ -127,7 +128,7 @@ export class DxpAccordionElement extends LitElement {
     return html`
       <section class="accordion-item">
         <div
-          class="accordion-header${this.expanded ? ' open' : ''}"
+          class="accordion-header${this.expanded ? " open" : ""}"
           @click="${this.toggle}"
           @keydown="${this.handleKeydown}"
           tabindex="0"
@@ -138,12 +139,12 @@ export class DxpAccordionElement extends LitElement {
           id="accordion-header"
         >
           ${this.headline ? this.headline : html`<slot name="headline"></slot>`}
-          <span class="icon ${this.expanded ? 'toggle-icon' : ''}">▼</span>
+          <span class="icon ${this.expanded ? "toggle-icon" : ""}">▼</span>
         </div>
         <div
           id="accordion-body"
-          aria-hidden="${this.expanded ? 'false' : 'true'}"
-          class="accordion-body ${this.expanded ? 'show-content' : ''}"
+          aria-hidden="${this.expanded ? "false" : "true"}"
+          class="accordion-body ${this.expanded ? "show-content" : ""}"
           role="region"
           aria-labelledby="accordion-header"
           tabindex="-1"
@@ -157,6 +158,6 @@ export class DxpAccordionElement extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dxp-accordion-element': DxpAccordionElement;
+    "dxp-accordion-element": DxpAccordionElement;
   }
 }

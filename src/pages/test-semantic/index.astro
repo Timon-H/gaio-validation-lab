@@ -8,7 +8,7 @@
  * NO JSON-LD, NO ARIA on host elements, NO <noscript> fallbacks.
  * Isolates the effect of semantic wrappers on AI extractability.
  */
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import {
   TrapAriaHiddenBonus,
   TrapBirthYear,
@@ -17,19 +17,27 @@ import {
   TrapDeprecatedTariff,
   TrapHiddenFaq,
   TrapTestimonial,
-} from '../../components/traps/index.ts';
+} from "../../components/traps/index.ts";
 import {
-  PAGE_TITLE, PAGE_DESCRIPTION, INTRO, BUTTONS, TEXT_INPUTS,
-  DROPDOWN, RADIO, FAQS, CARDS, FLYOUT, TARIFF, FOOTER_LINK, SECTION_HEADINGS,
-} from '../../data/content';
+  PAGE_TITLE,
+  PAGE_DESCRIPTION,
+  INTRO,
+  BUTTONS,
+  TEXT_INPUTS,
+  DROPDOWN,
+  RADIO,
+  FAQS,
+  CARDS,
+  FLYOUT,
+  TARIFF,
+  FOOTER_LINK,
+  SECTION_HEADINGS,
+} from "../../data/content";
 ---
 
-<BaseLayout
-  title={PAGE_TITLE}
-  description={PAGE_DESCRIPTION}
->
+<BaseLayout title={PAGE_TITLE} description={PAGE_DESCRIPTION}>
   <script>
-    import '../../components/baseline/index.ts';
+    import "../../components/baseline/index.ts";
   </script>
 
   <section style="margin-top: 1.5rem;">
@@ -50,8 +58,20 @@ import {
   <section style="margin: 2rem 0;">
     <h3>{SECTION_HEADINGS.textInputs.heading}</h3>
     <p>{SECTION_HEADINGS.textInputs.description}</p>
-    <dxp-text-input label={TEXT_INPUTS.vorname.label} name={TEXT_INPUTS.vorname.name} placeholder={TEXT_INPUTS.vorname.placeholder} required required-error-text={TEXT_INPUTS.vorname.requiredErrorText}></dxp-text-input>
-    <dxp-text-input label={TEXT_INPUTS.email.label} name={TEXT_INPUTS.email.name} type={TEXT_INPUTS.email.type} placeholder={TEXT_INPUTS.email.placeholder} regex={TEXT_INPUTS.email.regex} regex-error-text={TEXT_INPUTS.email.regexErrorText}></dxp-text-input>
+    <dxp-text-input
+      label={TEXT_INPUTS.vorname.label}
+      name={TEXT_INPUTS.vorname.name}
+      placeholder={TEXT_INPUTS.vorname.placeholder}
+      required
+      required-error-text={TEXT_INPUTS.vorname.requiredErrorText}
+    ></dxp-text-input>
+    <dxp-text-input
+      label={TEXT_INPUTS.email.label}
+      name={TEXT_INPUTS.email.name}
+      type={TEXT_INPUTS.email.type}
+      placeholder={TEXT_INPUTS.email.placeholder}
+      regex={TEXT_INPUTS.email.regex}
+      regex-error-text={TEXT_INPUTS.email.regexErrorText}></dxp-text-input>
   </section>
 
   <TrapCoverageAmount />
@@ -60,14 +80,23 @@ import {
   <section style="margin: 2rem 0;">
     <h3>{SECTION_HEADINGS.dropdown.heading}</h3>
     <p>{SECTION_HEADINGS.dropdown.description}</p>
-    <dxp-dropdown-v1 label={DROPDOWN.label} name={DROPDOWN.name} placeholder={DROPDOWN.placeholder} options={DROPDOWN.options} required></dxp-dropdown-v1>
+    <dxp-dropdown-v1
+      label={DROPDOWN.label}
+      name={DROPDOWN.name}
+      placeholder={DROPDOWN.placeholder}
+      options={DROPDOWN.options}
+      required></dxp-dropdown-v1>
   </section>
 
   <!-- RADIO -->
   <section style="margin: 2rem 0;">
     <h3>{SECTION_HEADINGS.radio.heading}</h3>
     <p>{SECTION_HEADINGS.radio.description}</p>
-    <dxp-input-radio label={RADIO.label} name={RADIO.name} options={RADIO.options} default={RADIO.default}></dxp-input-radio>
+    <dxp-input-radio
+      label={RADIO.label}
+      name={RADIO.name}
+      options={RADIO.options}
+      default={RADIO.default}></dxp-input-radio>
   </section>
 
   <TrapBirthYear />
@@ -77,9 +106,15 @@ import {
     <h3>{SECTION_HEADINGS.accordion.heading}</h3>
     <p>{SECTION_HEADINGS.accordion.description}</p>
     <dxp-accordion>
-      {FAQS.map(faq => (
-        <dxp-accordion-element id={faq.id} headline={faq.headline} body={faq.body}></dxp-accordion-element>
-      ))}
+      {
+        FAQS.map((faq) => (
+          <dxp-accordion-element
+            id={faq.id}
+            headline={faq.headline}
+            body={faq.body}
+          />
+        ))
+      }
       <TrapHiddenFaq />
     </dxp-accordion>
   </section>
@@ -88,16 +123,28 @@ import {
   <section style="margin: 2rem 0;">
     <h3>{SECTION_HEADINGS.cards.heading}</h3>
     <p>{SECTION_HEADINGS.cards.description}</p>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+    <div
+      style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;"
+    >
       <article>
-        <dxp-card card-title={CARDS[0].title} card-description={CARDS[0].description}>
-          <span slot="badge" style="background: #e3f2fd; color: #0066cc;">{CARDS[0].badge}</span>
+        <dxp-card
+          card-title={CARDS[0].title}
+          card-description={CARDS[0].description}
+        >
+          <span slot="badge" style="background: #e3f2fd; color: #0066cc;"
+            >{CARDS[0].badge}</span
+          >
           <dxp-button slot="buttons">{CARDS[0].button}</dxp-button>
         </dxp-card>
       </article>
       <article>
-        <dxp-card card-title={CARDS[1].title} card-description={CARDS[1].description}>
-          <dxp-button slot="buttons" variant="secondary">{CARDS[1].button}</dxp-button>
+        <dxp-card
+          card-title={CARDS[1].title}
+          card-description={CARDS[1].description}
+        >
+          <dxp-button slot="buttons" variant="secondary"
+            >{CARDS[1].button}</dxp-button
+          >
         </dxp-card>
       </article>
     </div>
@@ -107,8 +154,13 @@ import {
   <section style="margin: 2rem 0;">
     <h3>{SECTION_HEADINGS.flyout.heading}</h3>
     <p>{SECTION_HEADINGS.flyout.description}</p>
-    <dxp-flyout flyout-position={FLYOUT.position} phone={FLYOUT.phone} hours={FLYOUT.hours}>
-      <dxp-button slot="content" variant="secondary">{FLYOUT.button}</dxp-button>
+    <dxp-flyout
+      flyout-position={FLYOUT.position}
+      phone={FLYOUT.phone}
+      hours={FLYOUT.hours}
+    >
+      <dxp-button slot="content" variant="secondary">{FLYOUT.button}</dxp-button
+      >
     </dxp-flyout>
   </section>
 
@@ -119,12 +171,17 @@ import {
     <TrapTestimonial semantic />
     <TrapDeprecatedTariff semantic />
     <TrapAriaHiddenBonus semantic />
-    <dxp-tariff-comparison headline={TARIFF.headline} sub-headline={TARIFF.subHeadline} tariffs={TARIFF.data}></dxp-tariff-comparison>
+    <dxp-tariff-comparison
+      headline={TARIFF.headline}
+      sub-headline={TARIFF.subHeadline}
+      tariffs={TARIFF.data}></dxp-tariff-comparison>
   </section>
 
   <TrapCrossSell semantic />
 
-  <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #4a5dc9;">
+  <p
+    style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #4a5dc9;"
+  >
     <a href={FOOTER_LINK.href}>{FOOTER_LINK.text}</a>
   </p>
 </BaseLayout>

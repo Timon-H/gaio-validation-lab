@@ -1,9 +1,9 @@
 /**
  * Simulated DXP Tariff Comparison Component
- * 
+ *
  * Mirrors the real dxp-tariff-comparison from the DXP design system.
  * Original: Lit-based LitElement, complex sub-components, responsive, sticky headers.
- * 
+ *
  * Features replicated:
  * - @customElement('dxp-tariff-comparison') registration
  * - tariffs attribute accepting JSON TariffData
@@ -18,12 +18,12 @@
  * - Responsive: mobile card layout, desktop table layout
  * - Module groups with expandable sections
  * - Tariff highlighting
- * 
+ *
  * Simplified: Renders tariff cards directly instead of sub-components
  * (dxp-tariff-header, dxp-tariff-price, dxp-tariff-table, etc.)
  */
-import { LitElement, html, css, nothing } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { LitElement, html, css, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
 
 export interface TariffButton {
   label: string;
@@ -61,7 +61,12 @@ export interface Tariff {
 export interface ModuleGroup {
   description?: string;
   expanded?: boolean;
-  modules?: Array<{ name?: string; moduleName?: string; uuid?: string; description?: string }>;
+  modules?: Array<{
+    name?: string;
+    moduleName?: string;
+    uuid?: string;
+    description?: string;
+  }>;
   name: string;
 }
 
@@ -75,16 +80,15 @@ export interface TariffData {
 }
 
 const PERIOD_LABELS: Record<string, string> = {
-  annual: 'pro Jahr',
-  monthly: 'pro Monat',
-  oneoff: 'einmalig',
-  quarterly: 'pro Quartal',
-  empty: '',
+  annual: "pro Jahr",
+  monthly: "pro Monat",
+  oneoff: "einmalig",
+  quarterly: "pro Quartal",
+  empty: "",
 };
 
-@customElement('dxp-tariff-comparison')
+@customElement("dxp-tariff-comparison")
 export class DxpTariffComparison extends LitElement {
-
   static styles = css`
     :host {
       display: block;
@@ -119,7 +123,9 @@ export class DxpTariffComparison extends LitElement {
       border-radius: 12px;
       overflow: hidden;
       background: var(--dxp-tariff-card-bg, #fff);
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
       display: flex;
       flex-direction: column;
     }
@@ -300,7 +306,9 @@ export class DxpTariffComparison extends LitElement {
     }
 
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .price-placeholder {
@@ -316,38 +324,38 @@ export class DxpTariffComparison extends LitElement {
     }
   `;
 
-  @property({ type: Boolean, attribute: 'button-full-width', reflect: true })
+  @property({ type: Boolean, attribute: "button-full-width", reflect: true })
   buttonFullWidth: boolean = false;
 
-  @property({ type: Boolean, attribute: 'card-view' })
+  @property({ type: Boolean, attribute: "card-view" })
   cardView: boolean = false;
 
-  @property({ type: String, attribute: 'headline' })
-  headline: string = '';
+  @property({ type: String, attribute: "headline" })
+  headline: string = "";
 
-  @property({ type: Boolean, attribute: 'is-dynamic' })
+  @property({ type: Boolean, attribute: "is-dynamic" })
   isDynamic: boolean = false;
 
-  @property({ type: Boolean, attribute: 'is-loading' })
+  @property({ type: Boolean, attribute: "is-loading" })
   isLoading: boolean = false;
 
-  @property({ type: Boolean, attribute: 'price-placeholder' })
+  @property({ type: Boolean, attribute: "price-placeholder" })
   pricePlaceholder: boolean = false;
 
-  @property({ type: Boolean, attribute: 'hide-price' })
+  @property({ type: Boolean, attribute: "hide-price" })
   hidePriceContainer: boolean = false;
 
-  @property({ type: String, attribute: 'sub-headline' })
-  subHeadline: string = '';
+  @property({ type: String, attribute: "sub-headline" })
+  subHeadline: string = "";
 
-  @property({ attribute: 'tariffs' })
+  @property({ attribute: "tariffs" })
   tariffs: TariffData | string | null = null;
 
-  @state() private _activeTariffId: string = '';
+  @state() private _activeTariffId: string = "";
 
   private _getTariffData(): TariffData | null {
     if (!this.tariffs) return null;
-    if (typeof this.tariffs === 'string') {
+    if (typeof this.tariffs === "string") {
       try {
         return JSON.parse(this.tariffs);
       } catch {
@@ -359,76 +367,117 @@ export class DxpTariffComparison extends LitElement {
 
   private _selectTariff(tariff: Tariff) {
     this._activeTariffId = tariff.id;
-    this.dispatchEvent(new CustomEvent('@TariffComparison/select', {
-      detail: { tariffId: tariff.id, tariffName: tariff.name },
-      bubbles: true,
-      composed: true,
-    }));
+    this.dispatchEvent(
+      new CustomEvent("@TariffComparison/select", {
+        detail: { tariffId: tariff.id, tariffName: tariff.name },
+        bubbles: true,
+        composed: true,
+      }),
+    );
   }
 
   private _renderTariffCard(tariff: Tariff, data: TariffData) {
     if (tariff.visible === false) return nothing;
 
     return html`
-      <div class="tariff-card ${tariff.highlighted ? 'highlighted' : ''} ${this._activeTariffId === tariff.id ? 'active' : ''}">
+      <div
+        class="tariff-card ${tariff.highlighted ? "highlighted" : ""} ${this
+          ._activeTariffId === tariff.id
+          ? "active"
+          : ""}"
+      >
         <div class="tariff-card-header">
-          ${tariff.overline ? html`<div class="tariff-overline">${tariff.overline}</div>` : nothing}
+          ${tariff.overline
+            ? html`<div class="tariff-overline">${tariff.overline}</div>`
+            : nothing}
           <div class="tariff-name">${tariff.name}</div>
-          ${tariff.description ? html`<div class="tariff-description">${tariff.description}</div>` : nothing}
+          ${tariff.description
+            ? html`<div class="tariff-description">${tariff.description}</div>`
+            : nothing}
         </div>
 
-        ${!this.hidePriceContainer && !data.hidePriceContainer ? html`
-          <div class="tariff-price-section">
-            ${tariff.anchoring ? html`
-              <div class="tariff-anchoring">${tariff.anchoring}</div>
-              ${tariff.anchoringSubline ? html`<div class="tariff-anchoring-subline">${tariff.anchoringSubline}</div>` : nothing}
-            ` : nothing}
-            <div class="tariff-price">
-              <span class="prefix">${data.prefix}</span>
-              <span class="premium">${this.pricePlaceholder ? '--,--' : tariff.premium}</span>
-              <span class="suffix">${data.suffix}</span>
-            </div>
-            <div class="tariff-period">${PERIOD_LABELS[tariff.period] || ''}</div>
-            ${tariff.subline ? html`<div class="tariff-subline">${tariff.subline}</div>` : nothing}
-          </div>
-        ` : nothing}
-
-        ${data.moduleGroups && data.moduleGroups.length > 0 ? html`
-          <div class="tariff-modules">
-            ${data.moduleGroups.map(group => html`
-              <div class="module-group">
-                <div class="module-group-name">${group.name}</div>
-                ${group.modules?.map(mod => {
-                  const config = tariff.moduleConfigs?.find(
-                    c => c.moduleReference === mod.moduleName || c.moduleReferenceUuid === mod.uuid
-                  );
-                  return html`
-                    <div class="module-item">
-                      <span>${mod.name || mod.moduleName || ''}</span>
-                      ${config ? html`
-                        <span class="module-value">
-                          ${config.mark ? html`<span class="module-mark">${config.mark}</span>` : nothing}
-                          ${config.value?.selectedText || ''}
-                        </span>
-                      ` : html`<span class="module-value">—</span>`}
-                    </div>
-                  `;
-                })}
+        ${!this.hidePriceContainer && !data.hidePriceContainer
+          ? html`
+              <div class="tariff-price-section">
+                ${tariff.anchoring
+                  ? html`
+                      <div class="tariff-anchoring">${tariff.anchoring}</div>
+                      ${tariff.anchoringSubline
+                        ? html`<div class="tariff-anchoring-subline">
+                            ${tariff.anchoringSubline}
+                          </div>`
+                        : nothing}
+                    `
+                  : nothing}
+                <div class="tariff-price">
+                  <span class="prefix">${data.prefix}</span>
+                  <span class="premium"
+                    >${this.pricePlaceholder ? "--,--" : tariff.premium}</span
+                  >
+                  <span class="suffix">${data.suffix}</span>
+                </div>
+                <div class="tariff-period">
+                  ${PERIOD_LABELS[tariff.period] || ""}
+                </div>
+                ${tariff.subline
+                  ? html`<div class="tariff-subline">${tariff.subline}</div>`
+                  : nothing}
               </div>
-            `)}
-          </div>
-        ` : nothing}
-
-        ${tariff.buttons && tariff.buttons.length > 0 ? html`
-          <div class="tariff-buttons">
-            ${tariff.buttons.map(btn => html`
-              <button
-                class="tariff-button"
-                @click=${() => this._selectTariff(tariff)}
-              >${btn.label}</button>
-            `)}
-          </div>
-        ` : nothing}
+            `
+          : nothing}
+        ${data.moduleGroups && data.moduleGroups.length > 0
+          ? html`
+              <div class="tariff-modules">
+                ${data.moduleGroups.map(
+                  (group) => html`
+                    <div class="module-group">
+                      <div class="module-group-name">${group.name}</div>
+                      ${group.modules?.map((mod) => {
+                        const config = tariff.moduleConfigs?.find(
+                          (c) =>
+                            c.moduleReference === mod.moduleName ||
+                            c.moduleReferenceUuid === mod.uuid,
+                        );
+                        return html`
+                          <div class="module-item">
+                            <span>${mod.name || mod.moduleName || ""}</span>
+                            ${config
+                              ? html`
+                                  <span class="module-value">
+                                    ${config.mark
+                                      ? html`<span class="module-mark"
+                                          >${config.mark}</span
+                                        >`
+                                      : nothing}
+                                    ${config.value?.selectedText || ""}
+                                  </span>
+                                `
+                              : html`<span class="module-value">—</span>`}
+                          </div>
+                        `;
+                      })}
+                    </div>
+                  `,
+                )}
+              </div>
+            `
+          : nothing}
+        ${tariff.buttons && tariff.buttons.length > 0
+          ? html`
+              <div class="tariff-buttons">
+                ${tariff.buttons.map(
+                  (btn) => html`
+                    <button
+                      class="tariff-button"
+                      @click=${() => this._selectTariff(tariff)}
+                    >
+                      ${btn.label}
+                    </button>
+                  `,
+                )}
+              </div>
+            `
+          : nothing}
       </div>
     `;
   }
@@ -448,18 +497,20 @@ export class DxpTariffComparison extends LitElement {
       return html`<div class="loading-overlay">Keine Tarife verfügbar.</div>`;
     }
 
-    const visibleTariffs = data.tariffData.filter(t => t.visible !== false);
+    const visibleTariffs = data.tariffData.filter((t) => t.visible !== false);
 
     return html`
-      ${this.headline || this.subHeadline ? html`
-        <div class="header">
-          ${this.headline ? html`<h2>${this.headline}</h2>` : nothing}
-          ${this.subHeadline ? html`<p>${this.subHeadline}</p>` : nothing}
-        </div>
-      ` : nothing}
+      ${this.headline || this.subHeadline
+        ? html`
+            <div class="header">
+              ${this.headline ? html`<h2>${this.headline}</h2>` : nothing}
+              ${this.subHeadline ? html`<p>${this.subHeadline}</p>` : nothing}
+            </div>
+          `
+        : nothing}
 
       <div class="tariff-grid">
-        ${visibleTariffs.map(tariff => this._renderTariffCard(tariff, data))}
+        ${visibleTariffs.map((tariff) => this._renderTariffCard(tariff, data))}
       </div>
     `;
   }
@@ -467,6 +518,6 @@ export class DxpTariffComparison extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dxp-tariff-comparison': DxpTariffComparison;
+    "dxp-tariff-comparison": DxpTariffComparison;
   }
 }
