@@ -156,8 +156,11 @@ To run a different model tier, pass `--tier`:
 # Run the validation tier (higher-capability models)
 npm run evaluate:all -- --tier validation --repetitions 5
 
-# Run the exploratory tier (GPT-5-mini reasoning model)
+# Run the exploratory tier (default: GPT-5-mini)
 npm run evaluate:openai -- --tier exploratory --repetitions 5
+
+# Run the exploratory tier with full GPT-5
+npm run evaluate:openai -- --tier exploratory --model gpt-5 --repetitions 5
 ```
 
 ### Available Flags
@@ -170,6 +173,7 @@ npm run evaluate:openai -- --tier exploratory --repetitions 5
 | `--repetitions <n>` | `1`                     | Number of extraction runs per variant                                                                              |
 | `--variant <id>`    | all                     | Run a single variant only (e.g. `--variant control`)                                                               |
 | `--tier <tier>`     | `primary`               | Model tier: `primary`, `validation`, or `exploratory`. See [`docs/evaluation.md`](evaluation.md) for tier details. |
+| `--model <id>`      | tier default            | Optional model override where supported. For OpenAI exploratory: `gpt-5-mini` (default) or `gpt-5`.                |
 
 ---
 

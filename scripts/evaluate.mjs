@@ -10,7 +10,8 @@
  *   node evaluate.mjs --provider openai       # OpenAI only (primary tier)
  *   node evaluate.mjs --provider all          # All three providers sequentially
  *   node evaluate.mjs --provider all --tier validation   # Higher-capability models
- *   node evaluate.mjs --provider openai --tier exploratory  # GPT-5-mini reasoning model
+ *   node evaluate.mjs --provider openai --tier exploratory  # GPT-5-mini reasoning model (default)
+ *   node evaluate.mjs --provider openai --tier exploratory --model gpt-5  # GPT-5 reasoning model
  *
  * Required environment variables (per provider):
  *   openai  → OPENAI_API_KEY
@@ -44,6 +45,8 @@ const VARIANT_FILTER =
   variantFlagIndex !== -1 ? args[variantFlagIndex + 1] : null;
 const tierFlagIndex = args.indexOf("--tier");
 const TIER = tierFlagIndex !== -1 ? args[tierFlagIndex + 1] : "primary";
+const modelFlagIndex = args.indexOf("--model");
+const MODEL_OVERRIDE = modelFlagIndex !== -1 ? args[modelFlagIndex + 1] : null;
 
 const SUPPORTED_PROVIDERS = ["openai", "claude", "gemini", "all"];
 const SUPPORTED_TIERS = ["primary", "validation", "exploratory"];
@@ -69,7 +72,9 @@ Options:
   --tier <tier>           Model tier to use (default: primary).
                           primary      → cost-effective models (gpt-4.1-mini, claude-haiku-4-5, gemini-2.5-flash)
                           validation   → higher-capability models (gpt-4.1, claude-sonnet-4-5, gemini-2.5-pro)
-                          exploratory  → reasoning model probe (gpt-5-mini only, openai provider)
+                          exploratory  → reasoning model probe (gpt-5-mini default, gpt-5 via --model; openai provider)
+  --model <model-id>      Optional model override for the selected provider+tier.
+                          Exploratory OpenAI values: gpt-5-mini (default), gpt-5
 
 Npm shortcuts (pass flags after --):
   npm run evaluate:openai -- --persist
@@ -78,6 +83,7 @@ Npm shortcuts (pass flags after --):
   npm run evaluate:all   -- --persist --repetitions 5
   npm run evaluate:all   -- --persist --tier validation --repetitions 5
   npm run evaluate:openai -- --tier exploratory --repetitions 5
+  npm run evaluate:openai -- --tier exploratory --model gpt-5 --repetitions 5
 `);
   process.exit(0);
 }
@@ -96,6 +102,13 @@ if (!SUPPORTED_TIERS.includes(TIER)) {
   process.exit(1);
 }
 
+if (MODEL_OVERRIDE && PROVIDER === "all") {
+  console.error(
+    "❌ --model cannot be combined with --provider all. Choose a single provider.",
+  );
+  process.exit(1);
+}
+
 // ---------------------------------------------------------------------------
 // Provider configuration — organised by tier
 // ---------------------------------------------------------------------------
@@ -106,7 +119,7 @@ if (!SUPPORTED_TIERS.includes(TIER)) {
 //                same API surface and determinism controls, used with
 //                fewer repetitions to confirm that results generalise
 //                across model capability levels.
-// exploratory  — OpenAI-only GPT-5-mini reasoning model probe.
+// exploratory  — OpenAI-only GPT-5 reasoning model probe.
 //                Uses the Responses API with reasoning.effort: 'low'.
 //                No temperature/seed support — non-deterministic by design.
 //                Included as a forward-looking supplementary analysis.
@@ -144,6 +157,7 @@ const TIER_CONFIGS = {
     openai: {
       envVar: "OPENAI_API_KEY",
       model: "gpt-5-mini",
+      availableModels: ["gpt-5-mini", "gpt-5"],
       reasoning: true, // flag: use Responses API with reasoning.effort
     },
   },
@@ -157,10 +171,34 @@ const TIER_CONFIGS = {
  */
 function getProviderConfig(provider) {
   const tierConfig = TIER_CONFIGS[TIER];
-  if (!tierConfig[provider]) {
+  const providerConfig = tierConfig[provider];
+
+  if (!providerConfig) {
     return null; // provider not available in this tier
   }
-  return tierConfig[provider];
+
+  if (!MODEL_OVERRIDE) {
+    return providerConfig;
+  }
+
+  if (!Array.isArray(providerConfig.availableModels)) {
+    console.error(
+      `❌ --model is not supported for provider "${provider}" in tier "${TIER}".`,
+    );
+    process.exit(1);
+  }
+
+  if (!providerConfig.availableModels.includes(MODEL_OVERRIDE)) {
+    console.error(
+      `❌ Unknown model "${MODEL_OVERRIDE}" for provider "${provider}" in tier "${TIER}". Choose from: ${providerConfig.availableModels.join(", ")}`,
+    );
+    process.exit(1);
+  }
+
+  return {
+    ...providerConfig,
+    model: MODEL_OVERRIDE,
+  };
 }
 
 // ---------------------------------------------------------------------------
