@@ -20,24 +20,17 @@ interface Props {
 }
 
 const { semantic = false } = Astro.props;
+const WrapperTag = semantic ? 'aside' : 'div';
+const wrapperStyle = 'margin: 2rem 0; padding: 1rem; background: #f9f9f9; border: 1px dashed #bbb; border-radius: 4px;';
 ---
 
-{semantic ? (
-  <aside style="margin: 2rem 0; padding: 1rem; background: #f9f9f9; border: 1px dashed #bbb; border-radius: 4px;">
+<WrapperTag style={wrapperStyle}>
+  <Fragment>
     <p style="margin: 0 0 0.5rem; font-weight: 600; font-size: 0.875rem; color: #555;">Das könnte Sie auch interessieren</p>
     <p style="margin: 0 0 0.5rem;">Kombinieren Sie Ihren Schutz – <strong>KFZ-Haftpflicht</strong> bereits ab <strong>39,00 €</strong> monatlich verfügbar.</p>
     <ul style="margin: 0.25rem 0 0; padding-left: 1.5rem; font-size: 0.875rem;">
       <li>KFZ Basis – 39,00 € / Monat · Selbstbeteiligung: 500 €</li>
       <li>KFZ Komfort – 59,00 € / Monat · Selbstbeteiligung: 0 €</li>
     </ul>
-  </aside>
-) : (
-  <div style="margin: 2rem 0; padding: 1rem; background: #f9f9f9; border: 1px dashed #bbb; border-radius: 4px;">
-    <p style="margin: 0 0 0.5rem; font-weight: 600; font-size: 0.875rem; color: #555;">Das könnte Sie auch interessieren</p>
-    <p style="margin: 0 0 0.5rem;">Kombinieren Sie Ihren Schutz – <strong>KFZ-Haftpflicht</strong> bereits ab <strong>39,00 €</strong> monatlich verfügbar.</p>
-    <ul style="margin: 0.25rem 0 0; padding-left: 1.5rem; font-size: 0.875rem;">
-      <li>KFZ Basis – 39,00 € / Monat · Selbstbeteiligung: 500 €</li>
-      <li>KFZ Komfort – 59,00 € / Monat · Selbstbeteiligung: 0 €</li>
-    </ul>
-  </div>
-)}
+  </Fragment>
+</WrapperTag>

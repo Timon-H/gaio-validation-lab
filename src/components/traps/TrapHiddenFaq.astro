@@ -35,28 +35,24 @@ interface Props {
 }
 
 const { aria = false, noscript: includeNoscript = false } = Astro.props;
+const faqId = 'faq-4';
+const faqHeadline = 'Wie lange ist mein Versicherungsschutz aktiv?';
+const faqBody = 'Ihr Versicherungsschutz beginnt ab dem in Ihrer Police genannten Datum und läuft bis zur gewählten Vertragslaufzeit. Eine Verlängerung erfolgt automatisch, sofern Sie nicht fristgerecht kündigen.';
+const faqAriaHidden = aria ? 'true' : undefined;
 ---
 
-{aria ? (
-  <dxp-accordion-element
-    id="faq-4"
-    aria-hidden="true"
-    headline="Wie lange ist mein Versicherungsschutz aktiv?"
-    body="Ihr Versicherungsschutz beginnt ab dem in Ihrer Police genannten Datum und läuft bis zur gewählten Vertragslaufzeit. Eine Verlängerung erfolgt automatisch, sofern Sie nicht fristgerecht kündigen."
-  ></dxp-accordion-element>
-) : (
-  <dxp-accordion-element
-    id="faq-4"
-    headline="Wie lange ist mein Versicherungsschutz aktiv?"
-    body="Ihr Versicherungsschutz beginnt ab dem in Ihrer Police genannten Datum und läuft bis zur gewählten Vertragslaufzeit. Eine Verlängerung erfolgt automatisch, sofern Sie nicht fristgerecht kündigen."
-  ></dxp-accordion-element>
-)}
+<dxp-accordion-element
+  id={faqId}
+  aria-hidden={faqAriaHidden}
+  headline={faqHeadline}
+  body={faqBody}
+></dxp-accordion-element>
 
 {includeNoscript && (
   <noscript>
     <div style="padding: 0.5rem 0; border-top: 1px solid #eee; margin-top: 0.5rem;">
-      <strong>Wie lange ist mein Versicherungsschutz aktiv?</strong>
-      <p>Ihr Versicherungsschutz beginnt ab dem in Ihrer Police genannten Datum und läuft bis zur gewählten Vertragslaufzeit. Eine Verlängerung erfolgt automatisch, sofern Sie nicht fristgerecht kündigen.</p>
+      <strong>{faqHeadline}</strong>
+      <p>{faqBody}</p>
     </div>
   </noscript>
 )}

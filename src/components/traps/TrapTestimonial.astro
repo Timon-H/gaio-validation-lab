@@ -29,20 +29,24 @@ interface Props {
 }
 
 const { semantic = false } = Astro.props;
+const quotePrefix = 'Bei meiner Police zahle ich nur ';
+const quotePrice = '12 € pro Monat';
+const quoteSuffix = ' – das ist top!';
+const authorText = '– Kundin Lisa M., München';
 ---
 
 {semantic ? (
   <figure style="margin: 0.5rem 0; padding: 0.5rem 0.75rem; border-left: 3px solid #ddd;">
     <blockquote>
       <p style="font-size: 0.875rem; color: #555; margin: 0;">
-        <em>&#x201E;Bei meiner Police zahle ich nur <strong>12 &#x20AC; pro Monat</strong> &#x2013; das ist top!&#x201C;</em>
+        <em>&#x201E;{quotePrefix}<strong>{quotePrice}</strong>{quoteSuffix}&#x201C;</em>
       </p>
     </blockquote>
-    <figcaption style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">&#x2013; Kundin Lisa M., M&#xFC;nchen</figcaption>
+    <figcaption style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">{authorText}</figcaption>
   </figure>
 ) : (
   <p style="font-size: 0.875rem; color: #555; border-left: 3px solid #ddd; padding: 0.5rem 0.75rem; margin: 0.5rem 0;">
-    <em>&#x201E;Bei meiner Police zahle ich nur <strong>12 &#x20AC; pro Monat</strong> &#x2013; das ist top!&#x201C;</em><br>
-    <small>&#x2013; Kundin Lisa M., M&#xFC;nchen</small>
+    <em>&#x201E;{quotePrefix}<strong>{quotePrice}</strong>{quoteSuffix}&#x201C;</em><br>
+    <small>{authorText}</small>
   </p>
 )}
