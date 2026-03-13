@@ -1,9 +1,9 @@
 /**
  * Simulated DXP Button Component
- * 
+ *
  * Mirrors the real dxp-button from the DXP design system.
  * Original: Lit-based, extends Action base class, Shadow DOM encapsulated.
- * 
+ *
  * Features replicated:
  * - @customElement('dxp-button') registration
  * - disabled property
@@ -12,13 +12,12 @@
  * - Event tracking attributes (data-event-label, data-event-type, etc.)
  * - Click handler delegation
  */
-import { LitElement, html, css, nothing } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-import { ifDefined } from 'lit/directives/if-defined.js';
+import { LitElement, html, css, nothing } from "lit";
+import { customElement, property } from "lit/decorators.js";
+import { ifDefined } from "lit/directives/if-defined.js";
 
-@customElement('dxp-button')
+@customElement("dxp-button")
 export class DxpButton extends LitElement {
-
   static styles = css`
     :host {
       display: inline-block;
@@ -36,7 +35,9 @@ export class DxpButton extends LitElement {
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      transition: background-color 0.2s, border-color 0.2s;
+      transition:
+        background-color 0.2s,
+        border-color 0.2s;
     }
 
     button:hover:not(:disabled) {
@@ -55,7 +56,7 @@ export class DxpButton extends LitElement {
     }
 
     :host([variant="secondary"]) button:hover:not(:disabled) {
-      background: var(--dxp-button-bg-hover, rgba(0,102,204,0.1));
+      background: var(--dxp-button-bg-hover, rgba(0, 102, 204, 0.1));
     }
 
     :host([variant="link"]) button {
@@ -91,31 +92,31 @@ export class DxpButton extends LitElement {
   @property({ type: Boolean, reflect: true })
   disabled: boolean = false;
 
-  @property({ type: String, attribute: 'variant', reflect: true })
-  variant: 'primary' | 'secondary' | 'link' = 'primary';
+  @property({ type: String, attribute: "variant", reflect: true })
+  variant: "primary" | "secondary" | "link" = "primary";
 
-  @property({ type: String, attribute: 'icon' })
+  @property({ type: String, attribute: "icon" })
   icon?: string;
 
-  @property({ type: String, attribute: 'action-aria-label' })
+  @property({ type: String, attribute: "action-aria-label" })
   actionAriaLabel?: string;
 
-  @property({ type: String, attribute: 'button-aria-expanded' })
+  @property({ type: String, attribute: "button-aria-expanded" })
   buttonAriaExpanded?: string;
 
-  @property({ type: String, attribute: 'button-aria-controls' })
+  @property({ type: String, attribute: "button-aria-controls" })
   buttonAriaControls?: string;
 
-  @property({ type: String, attribute: 'data-event-label' })
+  @property({ type: String, attribute: "data-event-label" })
   dataEventLabel?: string;
 
-  @property({ type: String, attribute: 'data-event-type' })
+  @property({ type: String, attribute: "data-event-type" })
   dataEventType?: string;
 
-  @property({ type: String, attribute: 'data-event-variant' })
+  @property({ type: String, attribute: "data-event-variant" })
   dataEventVariant?: string;
 
-  @property({ type: String, attribute: 'data-event-color' })
+  @property({ type: String, attribute: "data-event-color" })
   dataEventColor?: string;
 
   render() {
@@ -148,6 +149,6 @@ export class DxpButton extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dxp-button': DxpButton;
+    "dxp-button": DxpButton;
   }
 }

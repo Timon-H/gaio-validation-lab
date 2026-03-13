@@ -41,18 +41,18 @@ There is no unit test framework — `test:*` scripts are integration/simulation 
 
 Each of the 8 routes under `src/pages/` is an isolated single-variable experiment:
 
-| Route | GAIO Measure |
-|-------|-------------|
-| `/control` | None (baseline) |
-| `/test-jsonld` | JSON-LD structured data in `<head>` |
-| `/test-semantic` | Semantic HTML landmarks |
-| `/test-aria` | ARIA attributes |
-| `/test-noscript` | `<noscript>` Light DOM fallbacks |
-| `/test-dsd` | Declarative Shadow DOM (SSR-rendered) |
-| `/test-microdata` | Microdata `itemscope`/`itemprop` |
-| `/combined` | All measures combined |
+| Route             | GAIO Measure                          |
+| ----------------- | ------------------------------------- |
+| `/control`        | None (baseline)                       |
+| `/test-jsonld`    | JSON-LD structured data in `<head>`   |
+| `/test-semantic`  | Semantic HTML landmarks               |
+| `/test-aria`      | ARIA attributes                       |
+| `/test-noscript`  | `<noscript>` Light DOM fallbacks      |
+| `/test-dsd`       | Declarative Shadow DOM (SSR-rendered) |
+| `/test-microdata` | Microdata `itemscope`/`itemprop`      |
+| `/combined`       | All measures combined                 |
 
-All pages share the same hardcoded insurance product content (Haftpflicht, Hausrat, Kasko tariffs). Content is never fetched or generated dynamically — the *markup* differs, not the content.
+All pages share the same hardcoded insurance product content (Haftpflicht, Hausrat, Kasko tariffs). Content is never fetched or generated dynamically — the _markup_ differs, not the content.
 
 ### Lit Web Components (`src/components/baseline/`)
 
@@ -69,6 +69,7 @@ All pages share the same hardcoded insurance product content (Haftpflicht, Hausr
 ### Middleware (`src/middleware.ts`)
 
 Runs on every request:
+
 1. Detects AI bot User-Agent strings (GPTBot, ClaudeBot, Google-Extended, etc.)
 2. Logs the visit to Supabase `bot_logs` with `bot_name`, `test_group`, `latency_ms`
 3. Sets response headers: `X-AI-Bot-Detected`, `X-Test-Group`, `X-Response-Time`
@@ -80,6 +81,7 @@ Seven deliberately structured HTML elements embedded across pages to disambiguat
 ### Supabase Schema (`supabase/schema.sql`)
 
 Three tables:
+
 - `bot_logs` — real AI crawler visits (populated by middleware)
 - `extraction_results` — simulated extraction runs (populated by `test:extract` scripts)
 - `llm_evaluation_results` — LLM benchmark results (populated by `evaluate:*` scripts with `--persist`)

@@ -15,70 +15,74 @@
  *   node ./scripts/test-bots.mjs https://gaio-validation-lab.vercel.app
  */
 
-import { VARIANTS } from '../src/data/variants.mjs';
+import { VARIANTS } from "../src/data/variants.mjs";
 
-const baseUrl = process.argv[2] ?? 'http://localhost:4321';
+const baseUrl = process.argv[2] ?? "http://localhost:4321";
 
-const variants = VARIANTS.map(v => ({
+const variants = VARIANTS.map((v) => ({
   id: v.id,
-  slug: v.path.replace(/^\//, ''),
+  slug: v.path.replace(/^\//, ""),
 }));
 
 const FETCH_TIMEOUT_MS = 4000;
 
 const bots = [
-  { userAgent: 'GPTBot', expected: 'ChatGPT' },
-  { userAgent: 'ChatGPT-User', expected: 'ChatGPT' },
-  { userAgent: 'OAI-SearchBot', expected: 'ChatGPT' },
-  { userAgent: 'ChatGPT Agent', expected: 'ChatGPT' },
-  { userAgent: 'ClaudeBot', expected: 'Claude' },
-  { userAgent: 'Claude-Web', expected: 'Claude' },
-  { userAgent: 'Claude-User', expected: 'Claude' },
-  { userAgent: 'Claude-SearchBot', expected: 'Claude' },
-  { userAgent: 'anthropic-ai', expected: 'Claude' },
-  { userAgent: 'Google-Extended', expected: 'Gemini' },
-  { userAgent: 'Gemini-Deep-Research', expected: 'Gemini' },
-  { userAgent: 'Google-NotebookLM', expected: 'Gemini' },
-  { userAgent: 'NotebookLM', expected: 'Gemini' },
-  { userAgent: 'GoogleAgent-Mariner', expected: 'Gemini' },
-  { userAgent: 'PerplexityBot', expected: 'Perplexity' },
-  { userAgent: 'Perplexity-User', expected: 'Perplexity' },
-  { userAgent: 'CCBot', expected: 'CommonCrawl' },
-  { userAgent: 'Applebot', expected: 'Applebot' },
-  { userAgent: 'Applebot-Extended', expected: 'Applebot' },
-  { userAgent: 'meta-externalagent', expected: 'Meta' },
-  { userAgent: 'Meta-ExternalAgent', expected: 'Meta' },
-  { userAgent: 'meta-externalfetcher', expected: 'Meta' },
-  { userAgent: 'meta-webindexer', expected: 'Meta' },
-  { userAgent: 'DeepSeekBot', expected: 'DeepSeek' },
-  { userAgent: 'MistralAI-User', expected: 'Mistral' },
-  { userAgent: 'DuckAssistBot', expected: 'DuckDuckGo' },
-  { userAgent: 'Bravebot', expected: 'Brave' },
-  { userAgent: 'YouBot', expected: 'You' },
-  { userAgent: 'cohere-ai', expected: 'Cohere' },
-  { userAgent: 'Bytespider', expected: 'ByteDance' },
-  { userAgent: 'TikTokSpider', expected: 'ByteDance' },
-  { userAgent: 'Manus-User', expected: 'Manus' },
-  { userAgent: 'Amazonbot', expected: 'Amazon' },
-  { userAgent: 'Mozilla/5.0 (Chrome)', expected: 'false' },
+  { userAgent: "GPTBot", expected: "ChatGPT" },
+  { userAgent: "ChatGPT-User", expected: "ChatGPT" },
+  { userAgent: "OAI-SearchBot", expected: "ChatGPT" },
+  { userAgent: "ChatGPT Agent", expected: "ChatGPT" },
+  { userAgent: "ClaudeBot", expected: "Claude" },
+  { userAgent: "Claude-Web", expected: "Claude" },
+  { userAgent: "Claude-User", expected: "Claude" },
+  { userAgent: "Claude-SearchBot", expected: "Claude" },
+  { userAgent: "anthropic-ai", expected: "Claude" },
+  { userAgent: "Google-Extended", expected: "Gemini" },
+  { userAgent: "Gemini-Deep-Research", expected: "Gemini" },
+  { userAgent: "Google-NotebookLM", expected: "Gemini" },
+  { userAgent: "NotebookLM", expected: "Gemini" },
+  { userAgent: "GoogleAgent-Mariner", expected: "Gemini" },
+  { userAgent: "PerplexityBot", expected: "Perplexity" },
+  { userAgent: "Perplexity-User", expected: "Perplexity" },
+  { userAgent: "CCBot", expected: "CommonCrawl" },
+  { userAgent: "Applebot", expected: "Applebot" },
+  { userAgent: "Applebot-Extended", expected: "Applebot" },
+  { userAgent: "meta-externalagent", expected: "Meta" },
+  { userAgent: "Meta-ExternalAgent", expected: "Meta" },
+  { userAgent: "meta-externalfetcher", expected: "Meta" },
+  { userAgent: "meta-webindexer", expected: "Meta" },
+  { userAgent: "DeepSeekBot", expected: "DeepSeek" },
+  { userAgent: "MistralAI-User", expected: "Mistral" },
+  { userAgent: "DuckAssistBot", expected: "DuckDuckGo" },
+  { userAgent: "Bravebot", expected: "Brave" },
+  { userAgent: "YouBot", expected: "You" },
+  { userAgent: "cohere-ai", expected: "Cohere" },
+  { userAgent: "Bytespider", expected: "ByteDance" },
+  { userAgent: "TikTokSpider", expected: "ByteDance" },
+  { userAgent: "Manus-User", expected: "Manus" },
+  { userAgent: "Amazonbot", expected: "Amazon" },
+  { userAgent: "Mozilla/5.0 (Chrome)", expected: "false" },
 ];
 
 const colors = {
-  green: '\x1b[0;32m',
-  red: '\x1b[0;31m',
-  yellow: '\x1b[0;33m',
-  reset: '\x1b[0m',
+  green: "\x1b[0;32m",
+  red: "\x1b[0;31m",
+  yellow: "\x1b[0;33m",
+  reset: "\x1b[0m",
 };
 
 let pass = 0;
 let fail = 0;
 
-console.log(`${colors.green}============================================${colors.reset}`);
-console.log('GAIO Middleware & Header Validation');
+console.log(
+  `${colors.green}============================================${colors.reset}`,
+);
+console.log("GAIO Middleware & Header Validation");
 console.log(`Base URL: ${baseUrl}`);
 console.log(`Variants: ${variants.length}  |  Bot UAs: ${bots.length}`);
-console.log(`${colors.green}============================================${colors.reset}`);
-console.log('');
+console.log(
+  `${colors.green}============================================${colors.reset}`,
+);
+console.log("");
 
 for (const variant of variants) {
   const url = `${baseUrl}/${variant.slug}`;
@@ -92,10 +96,10 @@ for (const variant of variants) {
       const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
       try {
         response = await fetch(url, {
-          method: 'HEAD',
+          method: "HEAD",
           signal: controller.signal,
           headers: {
-            'User-Agent': userAgent,
+            "User-Agent": userAgent,
           },
         });
       } finally {
@@ -107,9 +111,9 @@ for (const variant of variants) {
       continue;
     }
 
-    const actualBot = response.headers.get('x-ai-bot-detected') ?? '';
-    const actualGroup = response.headers.get('x-test-group') ?? '(none)';
-    const actualVariantId = response.headers.get('x-variant-id') ?? '(none)';
+    const actualBot = response.headers.get("x-ai-bot-detected") ?? "";
+    const actualGroup = response.headers.get("x-test-group") ?? "(none)";
+    const actualVariantId = response.headers.get("x-variant-id") ?? "(none)";
     const httpStatus = response.status;
 
     const botOk = actualBot.includes(expected);
@@ -126,26 +130,36 @@ for (const variant of variants) {
     }
 
     const reasons = [
-      !botOk ? `Bot expected=${expected} got=${actualBot || '(none)'}` : '',
-      !groupOk ? `X-Test-Group expected=${variant.slug} got=${actualGroup}` : '',
-      !variantIdOk ? `X-Variant-Id expected=${variant.id} got=${actualVariantId}` : '',
-      !statusOk ? `HTTP expected 2xx/3xx got=${httpStatus}` : '',
-    ].filter(Boolean).join('; ');
+      !botOk ? `Bot expected=${expected} got=${actualBot || "(none)"}` : "",
+      !groupOk
+        ? `X-Test-Group expected=${variant.slug} got=${actualGroup}`
+        : "",
+      !variantIdOk
+        ? `X-Variant-Id expected=${variant.id} got=${actualVariantId}`
+        : "",
+      !statusOk ? `HTTP expected 2xx/3xx got=${httpStatus}` : "",
+    ]
+      .filter(Boolean)
+      .join("; ");
 
-    console.log(`  ${userAgent} → ${colors.red}[FAIL]${colors.reset} ${reasons}`);
+    console.log(
+      `  ${userAgent} → ${colors.red}[FAIL]${colors.reset} ${reasons}`,
+    );
     fail += 1;
   }
 
-  console.log('');
+  console.log("");
 }
 
 const total = pass + fail;
-console.log('============================================');
+console.log("============================================");
 console.log(
   `Results: ${colors.green}${pass} passed${colors.reset} / ${colors.red}${fail} failed${colors.reset} / ${total} total`,
 );
-console.log('');
-console.log('Next steps:');
-console.log('  1. Check the Astro dev server terminal for GAIO_LOG_SUCCESS entries');
-console.log('  2. If SUPABASE_URL is set, check bot_logs table in Supabase');
-console.log('============================================');
+console.log("");
+console.log("Next steps:");
+console.log(
+  "  1. Check the Astro dev server terminal for GAIO_LOG_SUCCESS entries",
+);
+console.log("  2. If SUPABASE_URL is set, check bot_logs table in Supabase");
+console.log("============================================");

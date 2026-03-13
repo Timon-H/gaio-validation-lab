@@ -18,31 +18,35 @@
  *   gemini  → GEMINI_API_KEY
  */
 
-import fs from 'fs';
-import { OpenAI } from 'openai';
-import Anthropic from '@anthropic-ai/sdk';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { VARIANTS as ALL_VARIANTS_SOURCE } from '../src/data/variants.mjs';
-import { supabaseInsert } from '../src/lib/supabase.mjs';
+import fs from "fs";
+import { OpenAI } from "openai";
+import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { VARIANTS as ALL_VARIANTS_SOURCE } from "../src/data/variants.mjs";
+import { supabaseInsert } from "../src/lib/supabase.mjs";
 
 // ---------------------------------------------------------------------------
 // CLI argument parsing
 // ---------------------------------------------------------------------------
 const args = process.argv.slice(2);
-const providerFlagIndex = args.indexOf('--provider');
+const providerFlagIndex = args.indexOf("--provider");
 const PROVIDER = providerFlagIndex !== -1 ? args[providerFlagIndex + 1] : null;
-const PERSIST = args.includes('--persist');
-const urlFlagIndex = args.indexOf('--url');
+const PERSIST = args.includes("--persist");
+const urlFlagIndex = args.indexOf("--url");
 const URL_OVERRIDE = urlFlagIndex !== -1 ? args[urlFlagIndex + 1] : null;
-const repetitionsFlagIndex = args.indexOf('--repetitions');
-const REPETITIONS_ARG = repetitionsFlagIndex !== -1 ? parseInt(args[repetitionsFlagIndex + 1], 10) : NaN;
-const variantFlagIndex = args.indexOf('--variant');
-const VARIANT_FILTER = variantFlagIndex !== -1 ? args[variantFlagIndex + 1] : null;
-const tierFlagIndex = args.indexOf('--tier');
-const TIER = tierFlagIndex !== -1 ? args[tierFlagIndex + 1] : 'primary';
+const repetitionsFlagIndex = args.indexOf("--repetitions");
+const REPETITIONS_ARG =
+  repetitionsFlagIndex !== -1
+    ? parseInt(args[repetitionsFlagIndex + 1], 10)
+    : NaN;
+const variantFlagIndex = args.indexOf("--variant");
+const VARIANT_FILTER =
+  variantFlagIndex !== -1 ? args[variantFlagIndex + 1] : null;
+const tierFlagIndex = args.indexOf("--tier");
+const TIER = tierFlagIndex !== -1 ? args[tierFlagIndex + 1] : "primary";
 
-const SUPPORTED_PROVIDERS = ['openai', 'claude', 'gemini', 'all'];
-const SUPPORTED_TIERS = ['primary', 'validation', 'exploratory'];
+const SUPPORTED_PROVIDERS = ["openai", "claude", "gemini", "all"];
+const SUPPORTED_TIERS = ["primary", "validation", "exploratory"];
 
 if (!PROVIDER) {
   console.log(`
@@ -79,12 +83,16 @@ Npm shortcuts (pass flags after --):
 }
 
 if (!SUPPORTED_PROVIDERS.includes(PROVIDER)) {
-  console.error(`❌ Unknown provider "${PROVIDER}". Choose from: ${SUPPORTED_PROVIDERS.join(', ')}`);
+  console.error(
+    `❌ Unknown provider "${PROVIDER}". Choose from: ${SUPPORTED_PROVIDERS.join(", ")}`,
+  );
   process.exit(1);
 }
 
 if (!SUPPORTED_TIERS.includes(TIER)) {
-  console.error(`❌ Unknown tier "${TIER}". Choose from: ${SUPPORTED_TIERS.join(', ')}`);
+  console.error(
+    `❌ Unknown tier "${TIER}". Choose from: ${SUPPORTED_TIERS.join(", ")}`,
+  );
   process.exit(1);
 }
 
@@ -106,37 +114,37 @@ if (!SUPPORTED_TIERS.includes(TIER)) {
 const TIER_CONFIGS = {
   primary: {
     openai: {
-      envVar: 'OPENAI_API_KEY',
-      model: 'gpt-4.1-mini',
+      envVar: "OPENAI_API_KEY",
+      model: "gpt-4.1-mini",
     },
     claude: {
-      envVar: 'ANTHROPIC_API_KEY',
-      model: 'claude-haiku-4-5',
+      envVar: "ANTHROPIC_API_KEY",
+      model: "claude-haiku-4-5",
     },
     gemini: {
-      envVar: 'GEMINI_API_KEY',
-      model: 'gemini-3-flash-preview',
+      envVar: "GEMINI_API_KEY",
+      model: "gemini-3-flash-preview",
     },
   },
   validation: {
     openai: {
-      envVar: 'OPENAI_API_KEY',
-      model: 'gpt-4.1',
+      envVar: "OPENAI_API_KEY",
+      model: "gpt-4.1",
     },
     claude: {
-      envVar: 'ANTHROPIC_API_KEY',
-      model: 'claude-sonnet-4-6',
+      envVar: "ANTHROPIC_API_KEY",
+      model: "claude-sonnet-4-6",
     },
     gemini: {
-      envVar: 'GEMINI_API_KEY',
-      model: 'gemini-3.1-pro-preview',
+      envVar: "GEMINI_API_KEY",
+      model: "gemini-3.1-pro-preview",
     },
   },
   exploratory: {
     openai: {
-      envVar: 'OPENAI_API_KEY',
-      model: 'gpt-5-nano',
-      reasoning: true,  // flag: use Responses API with reasoning.effort
+      envVar: "OPENAI_API_KEY",
+      model: "gpt-5-nano",
+      reasoning: true, // flag: use Responses API with reasoning.effort
     },
   },
 };
@@ -158,25 +166,30 @@ function getProviderConfig(provider) {
 // ---------------------------------------------------------------------------
 // General configuration
 // ---------------------------------------------------------------------------
-const BASE_URL = URL_OVERRIDE ?? 'http://localhost:4321';
+const BASE_URL = URL_OVERRIDE ?? "http://localhost:4321";
 const OPENAI_SEED = 42;
 const MAX_TOKENS = 2048;
 const RETRY_BUFFER_MS = 2000;
 const BACKOFF_INTERVAL_MS = 15_000;
 const INTER_REQUEST_DELAY_MS = 1000;
-const REPETITIONS = Number.isFinite(REPETITIONS_ARG) && REPETITIONS_ARG > 0 ? REPETITIONS_ARG : 1;
+const REPETITIONS =
+  Number.isFinite(REPETITIONS_ARG) && REPETITIONS_ARG > 0 ? REPETITIONS_ARG : 1;
 
 const ALL_VARIANTS = ALL_VARIANTS_SOURCE;
 
-if (VARIANT_FILTER && !ALL_VARIANTS.some(v => v.id === VARIANT_FILTER)) {
-  console.error(`❌ Unknown variant "${VARIANT_FILTER}". Choose from: ${ALL_VARIANTS.map(v => v.id).join(', ')}`);
+if (VARIANT_FILTER && !ALL_VARIANTS.some((v) => v.id === VARIANT_FILTER)) {
+  console.error(
+    `❌ Unknown variant "${VARIANT_FILTER}". Choose from: ${ALL_VARIANTS.map((v) => v.id).join(", ")}`,
+  );
   process.exit(1);
 }
 
-const VARIANTS = VARIANT_FILTER ? ALL_VARIANTS.filter(v => v.id === VARIANT_FILTER) : ALL_VARIANTS;
+const VARIANTS = VARIANT_FILTER
+  ? ALL_VARIANTS.filter((v) => v.id === VARIANT_FILTER)
+  : ALL_VARIANTS;
 
 // Ensure results directory exists
-fs.mkdirSync('./results', { recursive: true });
+fs.mkdirSync("./results", { recursive: true });
 
 // ---------------------------------------------------------------------------
 // System prompt – shared across providers
@@ -266,12 +279,12 @@ async function callOpenAI(htmlContent, model, apiKey) {
   const client = new OpenAI({ apiKey });
   const completion = await client.chat.completions.create({
     model,
-    temperature: 0.0,  // Deterministic output for consistent evaluation
-    seed: OPENAI_SEED,          // Fixed seed for reproducibility (if supported by the model)
-    response_format: { type: 'json_object' },
+    temperature: 0.0, // Deterministic output for consistent evaluation
+    seed: OPENAI_SEED, // Fixed seed for reproducibility (if supported by the model)
+    response_format: { type: "json_object" },
     messages: [
-      { role: 'system', content: SYSTEM_PROMPT },
-      { role: 'user',   content: htmlContent },
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "user", content: htmlContent },
     ],
   });
   return completion.choices[0].message.content;
@@ -290,8 +303,8 @@ async function callOpenAIReasoning(htmlContent, model, apiKey) {
   const client = new OpenAI({ apiKey });
   const response = await client.responses.create({
     model,
-    reasoning: { effort: 'low' },
-    text: { format: { type: 'json_object' } },
+    reasoning: { effort: "low" },
+    text: { format: { type: "json_object" } },
     instructions: SYSTEM_PROMPT,
     input: htmlContent,
   });
@@ -314,17 +327,17 @@ async function callClaude(htmlContent, model, apiKey) {
     temperature: 0.0,
     system: SYSTEM_PROMPT,
     messages: [
-      { role: 'user',      content: htmlContent },
+      { role: "user", content: htmlContent },
       // Prefilling: seeding the assistant turn with '{' forces Claude to continue
       // writing valid JSON rather than adding conversational text before the object.
       // The opening brace must be prepended to the response when parsing.
-      { role: 'assistant', content: '{' },
+      { role: "assistant", content: "{" },
     ],
   });
   // Claude returns an array of content blocks; grab the first text block
-  const textBlock = message.content.find(b => b.type === 'text');
+  const textBlock = message.content.find((b) => b.type === "text");
   // Re-attach the prefilled '{' that Claude was forced to continue from
-  return '{' + (textBlock ? textBlock.text : '}');
+  return "{" + (textBlock ? textBlock.text : "}");
 }
 
 /**
@@ -341,7 +354,7 @@ async function callGemini(htmlContent, modelName, apiKey) {
     model: modelName,
     generationConfig: {
       temperature: 0.0,
-      responseMimeType: 'application/json',
+      responseMimeType: "application/json",
     },
     systemInstruction: SYSTEM_PROMPT,
   });
@@ -360,13 +373,16 @@ async function callGemini(htmlContent, modelName, apiKey) {
  */
 async function callLLM(provider, htmlContent, config, apiKey) {
   switch (provider) {
-    case 'openai':
+    case "openai":
       return config.reasoning
         ? callOpenAIReasoning(htmlContent, config.model, apiKey)
         : callOpenAI(htmlContent, config.model, apiKey);
-    case 'claude': return callClaude(htmlContent, config.model, apiKey);
-    case 'gemini': return callGemini(htmlContent, config.model, apiKey);
-    default: throw new Error(`Unsupported provider: ${provider}`);
+    case "claude":
+      return callClaude(htmlContent, config.model, apiKey);
+    case "gemini":
+      return callGemini(htmlContent, config.model, apiKey);
+    default:
+      throw new Error(`Unsupported provider: ${provider}`);
   }
 }
 
@@ -406,16 +422,21 @@ async function callLLMWithRetry(provider, htmlContent, config, apiKey) {
       return await callLLM(provider, htmlContent, config, apiKey);
     } catch (err) {
       lastError = err;
-      const msg = err.message ?? '';
-      const is429 = msg.includes('429') || msg.includes('Too Many Requests') || msg.includes('quota');
+      const msg = err.message ?? "";
+      const is429 =
+        msg.includes("429") ||
+        msg.includes("Too Many Requests") ||
+        msg.includes("quota");
 
       if (!is429 || attempt === MAX_RETRIES) throw err;
 
       const suggestedMs = parseRetryDelayMs(msg);
-      const waitMs = suggestedMs ?? (attempt * BACKOFF_INTERVAL_MS); // fallback: 15s, 30s, 45s
+      const waitMs = suggestedMs ?? attempt * BACKOFF_INTERVAL_MS; // fallback: 15s, 30s, 45s
       const waitSec = Math.round(waitMs / 1000);
-      console.warn(`  ⏸  Rate limited (attempt ${attempt}/${MAX_RETRIES}). Waiting ${waitSec}s before retry...`);
-      await new Promise(r => setTimeout(r, waitMs));
+      console.warn(
+        `  ⏸  Rate limited (attempt ${attempt}/${MAX_RETRIES}). Waiting ${waitSec}s before retry...`,
+      );
+      await new Promise((r) => setTimeout(r, waitMs));
     }
   }
   throw lastError;
@@ -431,9 +452,9 @@ async function callLLMWithRetry(provider, htmlContent, config, apiKey) {
  * @returns {Promise<boolean>} `true` if the insert succeeded, `false` otherwise.
  */
 async function persistEvalResult(payload) {
-  const result = await supabaseInsert('llm_evaluation_results', payload);
+  const result = await supabaseInsert("llm_evaluation_results", payload);
   if (!result.ok) {
-    console.error('Persist failed:', result.status, result.error);
+    console.error("Persist failed:", result.status, result.error);
   }
   return result.ok;
 }
@@ -465,16 +486,16 @@ async function fetchHtml(url) {
   if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
   const raw = await response.text();
   return raw
-    .replace(/<!--[\s\S]*?-->/g, '')
-    .replace(/<nav[\s\S]*?<\/nav>/gi, '')
-    .replace(/\s+tariffs=(?:'[^']*'|"[^"]*")/g, '')
-    .replace(/\s+headline=(?:'[^']*'|"[^"]*")/g, '')
-    .replace(/\s+body=(?:'[^']*'|"[^"]*")/g, '')
-    .replace(/\s+card-title=(?:'[^']*'|"[^"]*")/g, '')
-    .replace(/\s+card-description=(?:'[^']*'|"[^"]*")/g, '')
-    .replace(/\s+phone=(?:'[^']*'|"[^"]*")/g, '')
-    .replace(/\s+hours=(?:'[^']*'|"[^"]*")/g, '')
-    .replace(/\s+options=(?:'[^']*'|"[^"]*")/g, '');
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/<nav[\s\S]*?<\/nav>/gi, "")
+    .replace(/\s+tariffs=(?:'[^']*'|"[^"]*")/g, "")
+    .replace(/\s+headline=(?:'[^']*'|"[^"]*")/g, "")
+    .replace(/\s+body=(?:'[^']*'|"[^"]*")/g, "")
+    .replace(/\s+card-title=(?:'[^']*'|"[^"]*")/g, "")
+    .replace(/\s+card-description=(?:'[^']*'|"[^"]*")/g, "")
+    .replace(/\s+phone=(?:'[^']*'|"[^"]*")/g, "")
+    .replace(/\s+hours=(?:'[^']*'|"[^"]*")/g, "")
+    .replace(/\s+options=(?:'[^']*'|"[^"]*")/g, "");
 }
 
 /**
@@ -489,41 +510,51 @@ async function fetchHtml(url) {
  */
 async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
   const url = `${BASE_URL}${variant.path}`;
-  console.log(`⏳ [${provider}] Testing variant "${variant.id}" (Run ${runIndex}/${REPETITIONS})...`);
+  console.log(
+    `⏳ [${provider}] Testing variant "${variant.id}" (Run ${runIndex}/${REPETITIONS})...`,
+  );
 
   try {
     const htmlContent = await fetchHtml(url);
-    const resultJson = await callLLMWithRetry(provider, htmlContent, config, apiKey);
+    const resultJson = await callLLMWithRetry(
+      provider,
+      htmlContent,
+      config,
+      apiKey,
+    );
     const parsedData = JSON.parse(resultJson);
 
     // Count extracted items per dimension for quick comparison across variants
     const counts = {
-      tarife:        parsedData.tarife?.length ?? 0,
-      faq:           parsedData.faq?.length ?? 0,
+      tarife: parsedData.tarife?.length ?? 0,
+      faq: parsedData.faq?.length ?? 0,
       produktkarten: parsedData.produktkarten?.length ?? 0,
-      formFelder:    parsedData.formFelder?.length ?? 0,
-      hatKontakt:    (parsedData.kontakt?.telefon || parsedData.kontakt?.oeffnungszeiten) ? 1 : 0,
-      hatAnbieter:   parsedData.anbieter ? 1 : 0,
+      formFelder: parsedData.formFelder?.length ?? 0,
+      hatKontakt:
+        parsedData.kontakt?.telefon || parsedData.kontakt?.oeffnungszeiten
+          ? 1
+          : 0,
+      hatAnbieter: parsedData.anbieter ? 1 : 0,
     };
 
-    let dbStatus = '-';
+    let dbStatus = "-";
     if (PERSIST) {
       const ok = await persistEvalResult({
         provider,
-        model:               config.model,
-        tier:                TIER,
-        variant_id:          variant.id,
-        run:                 runIndex,
-        base_url:            BASE_URL,
-        tarife_count:        counts.tarife,
-        faq_count:           counts.faq,
+        model: config.model,
+        tier: TIER,
+        variant_id: variant.id,
+        run: runIndex,
+        base_url: BASE_URL,
+        tarife_count: counts.tarife,
+        faq_count: counts.faq,
         produktkarten_count: counts.produktkarten,
-        form_felder_count:   counts.formFelder,
-        hat_kontakt:         counts.hatKontakt === 1,
-        hat_anbieter:        counts.hatAnbieter === 1,
-        raw_output:          parsedData,
+        form_felder_count: counts.formFelder,
+        hat_kontakt: counts.hatKontakt === 1,
+        hat_anbieter: counts.hatAnbieter === 1,
+        raw_output: parsedData,
       });
-      dbStatus = ok ? 'OK' : 'ERR';
+      dbStatus = ok ? "OK" : "ERR";
     }
 
     return {
@@ -545,13 +576,13 @@ async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
       provider,
       variantId: variant.id,
       run: runIndex,
-      extractedTariffs: 'ERROR',
-      extractedFaq: 'ERROR',
-      extractedKarten: 'ERROR',
-      extractedFormFelder: 'ERROR',
-      hatKontakt: 'ERROR',
-      hatAnbieter: 'ERROR',
-      dbStatus: 'ERROR',
+      extractedTariffs: "ERROR",
+      extractedFaq: "ERROR",
+      extractedKarten: "ERROR",
+      extractedFormFelder: "ERROR",
+      hatKontakt: "ERROR",
+      hatAnbieter: "ERROR",
+      dbStatus: "ERROR",
       rawOutput: error.message.replace(/"/g, '""'),
     };
   }
@@ -565,8 +596,10 @@ async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
  * @returns {Promise<void>}
  */
 async function runProviderEvaluation(provider, config, apiKey) {
-  const outputFile = `./results/gaio_evaluation_${provider}_${new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '')}.csv`;
-  console.log(`🚀 Starting GAIO evaluation pipeline  [provider: ${provider}, model: ${config.model}, tier: ${TIER}]`);
+  const outputFile = `./results/gaio_evaluation_${provider}_${new Date().toISOString().replace(/:/g, "-").replace(/\..+/, "")}.csv`;
+  console.log(
+    `🚀 Starting GAIO evaluation pipeline  [provider: ${provider}, model: ${config.model}, tier: ${TIER}]`,
+  );
   const results = [];
 
   // Sequential testing to avoid overwhelming the server and to respect rate limits
@@ -575,23 +608,25 @@ async function runProviderEvaluation(provider, config, apiKey) {
       const res = await evaluateVariant(provider, config, apiKey, variant, i);
       results.push(res);
       // Pause between requests to avoid rate limits and give the server time to recover
-      await new Promise(r => setTimeout(r, INTER_REQUEST_DELAY_MS));
+      await new Promise((r) => setTimeout(r, INTER_REQUEST_DELAY_MS));
     }
   }
 
-  const csvHeader = 'Provider,Variant_ID,Run,Tarife,FAQ,Produktkarten,FormFelder,Hat_Kontakt,Hat_Anbieter,DB,Raw_JSON_Output\n';
+  const csvHeader =
+    "Provider,Variant_ID,Run,Tarife,FAQ,Produktkarten,FormFelder,Hat_Kontakt,Hat_Anbieter,DB,Raw_JSON_Output\n";
   const csvRows = results
-    .map(r =>
-      `${r.provider},${r.variantId},${r.run},${r.extractedTariffs},${r.extractedFaq},${r.extractedKarten},${r.extractedFormFelder},${r.hatKontakt},${r.hatAnbieter},${r.dbStatus},"${r.rawOutput}"`
+    .map(
+      (r) =>
+        `${r.provider},${r.variantId},${r.run},${r.extractedTariffs},${r.extractedFaq},${r.extractedKarten},${r.extractedFormFelder},${r.hatKontakt},${r.hatAnbieter},${r.dbStatus},"${r.rawOutput}"`,
     )
-    .join('\n');
+    .join("\n");
 
   fs.writeFileSync(outputFile, csvHeader + csvRows);
   console.log(`✅ Results saved to: ${outputFile}`);
 
   if (PERSIST) {
-    const persisted = results.filter(r => r.dbStatus === 'OK').length;
-    const failed    = results.filter(r => r.dbStatus === 'ERR').length;
+    const persisted = results.filter((r) => r.dbStatus === "OK").length;
+    const failed = results.filter((r) => r.dbStatus === "ERR").length;
     console.log(`💾 Database: ${persisted} persisted / ${failed} failed`);
   }
 }
@@ -604,19 +639,26 @@ async function runProviderEvaluation(provider, config, apiKey) {
 async function runEvaluation() {
   if (PERSIST) {
     if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
-      console.error('❌ Error: --persist requires SUPABASE_URL and SUPABASE_ANON_KEY to be set.');
+      console.error(
+        "❌ Error: --persist requires SUPABASE_URL and SUPABASE_ANON_KEY to be set.",
+      );
       process.exit(1);
     }
-    console.log(`💾 Persist mode: results will be written to Supabase (${process.env.SUPABASE_URL})`);
+    console.log(
+      `💾 Persist mode: results will be written to Supabase (${process.env.SUPABASE_URL})`,
+    );
   }
 
-  const providersToRun = PROVIDER === 'all' ? ['openai', 'claude', 'gemini'] : [PROVIDER];
+  const providersToRun =
+    PROVIDER === "all" ? ["openai", "claude", "gemini"] : [PROVIDER];
 
   for (const provider of providersToRun) {
     const config = getProviderConfig(provider);
 
     if (!config) {
-      console.warn(`⚠️  Provider "${provider}" is not available in the "${TIER}" tier. Skipping.`);
+      console.warn(
+        `⚠️  Provider "${provider}" is not available in the "${TIER}" tier. Skipping.`,
+      );
       continue;
     }
 
@@ -627,23 +669,25 @@ async function runEvaluation() {
       process.exit(1);
     }
 
-    if (PROVIDER === 'all') {
-      console.log(`\n${'='.repeat(60)}`);
+    if (PROVIDER === "all") {
+      console.log(`\n${"=".repeat(60)}`);
       console.log(`  Provider: ${provider.toUpperCase()}  |  Tier: ${TIER}`);
-      console.log(`${'='.repeat(60)}`);
+      console.log(`${"=".repeat(60)}`);
     }
 
     await runProviderEvaluation(provider, config, apiKey);
   }
 
-  if (PROVIDER === 'all') {
-    console.log(`\n${'='.repeat(60)}`);
-    console.log('  All-providers run complete');
-    console.log(`${'='.repeat(60)}`);
+  if (PROVIDER === "all") {
+    console.log(`\n${"=".repeat(60)}`);
+    console.log("  All-providers run complete");
+    console.log(`${"=".repeat(60)}`);
   }
 
   if (PERSIST) {
-    console.log(`\n   Query: SELECT * FROM llm_evaluation_results ORDER BY created_at DESC;`);
+    console.log(
+      `\n   Query: SELECT * FROM llm_evaluation_results ORDER BY created_at DESC;`,
+    );
   }
 }
 

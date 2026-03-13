@@ -30,20 +30,21 @@ interface Props {
 const { aria = false, noscript: includeNoscript = false } = Astro.props;
 ---
 
-{!aria && (
-  <style>
-    .field-birth-year::before {
-      content: "Pflichtfeld";
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 0.25rem;
-    }
-  </style>
-)}
+<style>
+  .field-birth-year::before {
+    content: "Pflichtfeld";
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+  }
+</style>
 
-<div class:list={[{ 'field-birth-year': !aria }]} style="margin: 0.5rem 0 2rem;">
+<div
+  class:list={[{ "field-birth-year": !aria }]}
+  style="margin: 0.5rem 0 2rem;"
+>
   <input
     type="text"
     name="f_birth"
@@ -52,11 +53,18 @@ const { aria = false, noscript: includeNoscript = false } = Astro.props;
     maxlength="4"
     aria-label={aria ? "Geburtsjahr eingeben" : undefined}
     style="border: 1px solid #ccc; padding: 0.4rem 0.6rem; border-radius: 4px; width: 120px;"
-  >
-  {includeNoscript && (
-    <noscript>
-      <label for="fallback-geburtsjahr">Geburtsjahr</label>
-      <input id="fallback-geburtsjahr" type="text" name="f_birth" maxlength="4">
-    </noscript>
-  )}
+  />
+  {
+    includeNoscript && (
+      <noscript>
+        <label for="fallback-geburtsjahr">Geburtsjahr</label>
+        <input
+          id="fallback-geburtsjahr"
+          type="text"
+          name="f_birth"
+          maxlength="4"
+        />
+      </noscript>
+    )
+  }
 </div>

@@ -37,12 +37,12 @@ Results are always written to `results/gaio_evaluation_<provider>_<timestamp>.cs
 
 Running the evaluation requires an LLM provider API key. Running with `--persist` additionally requires `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
 
-| Variable | Required for |
-|---|---|
-| `OPENAI_API_KEY` | OpenAI provider |
-| `ANTHROPIC_API_KEY` | Claude provider |
-| `GEMINI_API_KEY` | Gemini provider |
-| `SUPABASE_URL` | `--persist` flag |
+| Variable            | Required for     |
+| ------------------- | ---------------- |
+| `OPENAI_API_KEY`    | OpenAI provider  |
+| `ANTHROPIC_API_KEY` | Claude provider  |
+| `GEMINI_API_KEY`    | Gemini provider  |
+| `SUPABASE_URL`      | `--persist` flag |
 | `SUPABASE_ANON_KEY` | `--persist` flag |
 
 Add the relevant keys to your `.env` file. The npm scripts load them automatically via Node's native `--env-file` flag.
@@ -55,39 +55,39 @@ The evaluation uses a tiered model strategy. Use `--tier <tier>` to select (defa
 
 Cost-effective models with full determinism controls (`temperature: 0.0`, `seed: 42` where supported). Used for the main analysis with 10+ repetitions.
 
-| Provider | Model | Input/MTok | Output/MTok |
-|---|---|---|---|
-| OpenAI | `gpt-4.1-mini` | $0.40 | $1.60 |
-| Claude | `claude-haiku-4-5` | $1.00 | $5.00 |
-| Gemini | `gemini-3-flash-preview` | $0.50 | $3.00 |
+| Provider | Model                    | Input/MTok | Output/MTok |
+| -------- | ------------------------ | ---------- | ----------- |
+| OpenAI   | `gpt-4.1-mini`           | $0.40      | $1.60       |
+| Claude   | `claude-haiku-4-5`       | $1.00      | $5.00       |
+| Gemini   | `gemini-3-flash-preview` | $0.50      | $3.00       |
 
 ### Validation Tier — `--tier validation`
 
 Higher-capability models from each provider, same API surface and determinism controls. Used with fewer repetitions (e.g., 5) to confirm that GAIO measure effects generalise across model capability levels.
 
-| Provider | Model | Input/MTok | Output/MTok |
-|---|---|---|---|
-| OpenAI | `gpt-4.1` | $2.00 | $8.00 |
-| Claude | `claude-sonnet-4-6` | $3.00 | $15.00 |
-| Gemini | `gemini-3.1-pro-preview` | $2.00 | $12.00 |
+| Provider | Model                    | Input/MTok | Output/MTok |
+| -------- | ------------------------ | ---------- | ----------- |
+| OpenAI   | `gpt-4.1`                | $2.00      | $8.00       |
+| Claude   | `claude-sonnet-4-6`      | $3.00      | $15.00      |
+| Gemini   | `gemini-3.1-pro-preview` | $2.00      | $12.00      |
 
 ### Exploratory Tier — `--tier exploratory`
 
 OpenAI-only GPT-5-nano reasoning model probe. Uses the Responses API with `reasoning.effort: 'low'` to minimise non-deterministic thinking tokens. Included as a forward-looking supplementary analysis.
 
-| Provider | Model | Input/MTok | Output/MTok | Determinism |
-|---|---|---|---|---|
-| OpenAI | `gpt-5-nano` | $0.05 | $0.40 | No temp/seed — reasoning model |
+| Provider | Model        | Input/MTok | Output/MTok | Determinism                    |
+| -------- | ------------ | ---------- | ----------- | ------------------------------ |
+| OpenAI   | `gpt-5-nano` | $0.05      | $0.40       | No temp/seed — reasoning model |
 
 Reasoning models (GPT-5 family, o3, o4-mini) do not support `temperature` or `seed` parameters. They use a separate code path (`callOpenAIReasoning`) that calls the OpenAI Responses API instead of Chat Completions. Claude and Gemini are not available in this tier.
 
 ### Recommended Runs for Thesis
 
-| Tier | Command | Repetitions | Purpose | Est. Cost |
-|---|---|---|---|---|
-| Primary | `npm run evaluate:all -- --persist --repetitions 10` | 10 | Main analysis | ~$5 |
-| Validation | `npm run evaluate:all -- --persist --tier validation --repetitions 5` | 5 | Cross-tier robustness | ~$7 |
-| Exploratory | `npm run evaluate:openai -- --persist --tier exploratory --repetitions 5` | 5 | Reasoning model probe | ~$0.50 |
+| Tier        | Command                                                                   | Repetitions | Purpose               | Est. Cost |
+| ----------- | ------------------------------------------------------------------------- | ----------- | --------------------- | --------- |
+| Primary     | `npm run evaluate:all -- --persist --repetitions 10`                      | 10          | Main analysis         | ~$5       |
+| Validation  | `npm run evaluate:all -- --persist --tier validation --repetitions 5`     | 5           | Cross-tier robustness | ~$7       |
+| Exploratory | `npm run evaluate:openai -- --persist --tier exploratory --repetitions 5` | 5           | Reasoning model probe | ~$0.50    |
 
 ## Default Models
 
@@ -97,11 +97,11 @@ See "Model Tiers" above. Models are configured in the `TIER_CONFIGS` table in `e
 
 Each provider uses a different mechanism to guarantee JSON output:
 
-| Provider | Mechanism |
-|---|---|
-| OpenAI | `response_format: { type: 'json_object' }` |
-| Claude | Assistant prefilling — message array starts with `{ role: 'assistant', content: '{' }` |
-| Gemini | `responseMimeType: 'application/json'` in generation config |
+| Provider | Mechanism                                                                              |
+| -------- | -------------------------------------------------------------------------------------- |
+| OpenAI   | `response_format: { type: 'json_object' }`                                             |
+| Claude   | Assistant prefilling — message array starts with `{ role: 'assistant', content: '{' }` |
+| Gemini   | `responseMimeType: 'application/json'` in generation config                            |
 
 All providers use `temperature: 0.0` and, where supported, `seed: 42` for reproducibility.
 

@@ -1,9 +1,9 @@
 /**
  * Simulated DXP Accordion Component
- * 
+ *
  * Mirrors the real dxp-accordion from the DXP design system.
  * Original: Lit-based LitElement, Shadow DOM encapsulated.
- * 
+ *
  * Features replicated:
  * - @customElement('dxp-accordion') registration
  * - multi mode (allow multiple panels open)
@@ -13,14 +13,13 @@
  * - Hash-based auto-opening
  * - Slot-based content projection
  */
-import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { LitElement, html, css } from "lit";
+import { customElement, property } from "lit/decorators.js";
 
-export const TOGGLE_ACCORDION_ELEMENT = '@dxp-accordion-element/toggle';
+export const TOGGLE_ACCORDION_ELEMENT = "@dxp-accordion-element/toggle";
 
-@customElement('dxp-accordion')
+@customElement("dxp-accordion")
 export class DxpAccordion extends LitElement {
-
   static styles = css`
     :host {
       display: block;
@@ -36,21 +35,24 @@ export class DxpAccordion extends LitElement {
     }
   `;
 
-  @property({ type: Boolean, attribute: 'multi' })
+  @property({ type: Boolean, attribute: "multi" })
   multi: boolean = false;
 
-  @property({ type: Boolean, attribute: 'no-scroll' })
+  @property({ type: Boolean, attribute: "no-scroll" })
   noScroll: boolean = false;
 
-  @property({ type: Number, attribute: 'sticky-elements-height' })
+  @property({ type: Number, attribute: "sticky-elements-height" })
   stickyElementsHeight: number = 0;
 
   connectedCallback() {
     super.connectedCallback();
-    this.addEventListener(TOGGLE_ACCORDION_ELEMENT, this._handleToggleEvent as EventListener);
+    this.addEventListener(
+      TOGGLE_ACCORDION_ELEMENT,
+      this._handleToggleEvent as EventListener,
+    );
 
     // Hash-based auto-opening
-    const hash = window.location.hash.replace('#', '');
+    const hash = window.location.hash.replace("#", "");
     if (hash && hash.length > 0) {
       this._openById(hash);
     }
@@ -58,14 +60,17 @@ export class DxpAccordion extends LitElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.removeEventListener(TOGGLE_ACCORDION_ELEMENT, this._handleToggleEvent as EventListener);
+    this.removeEventListener(
+      TOGGLE_ACCORDION_ELEMENT,
+      this._handleToggleEvent as EventListener,
+    );
   }
 
   private _openById(id: string) {
     const children = Array.from(this.children) as HTMLElement[];
     children.forEach((el) => {
       if (el.id === id) {
-        el.setAttribute('expanded', '');
+        el.setAttribute("expanded", "");
       }
     });
   }
@@ -77,7 +82,7 @@ export class DxpAccordion extends LitElement {
       const children = Array.from(this.children) as HTMLElement[];
       children.forEach((el) => {
         if (el !== element) {
-          el.removeAttribute('expanded');
+          el.removeAttribute("expanded");
           (el as any).expanded = false;
         }
       });
@@ -91,8 +96,11 @@ export class DxpAccordion extends LitElement {
   private _scrollToElement(target: Element) {
     setTimeout(() => {
       window.scrollTo({
-        top: target.getBoundingClientRect().top + window.scrollY - this.stickyElementsHeight,
-        behavior: 'smooth',
+        top:
+          target.getBoundingClientRect().top +
+          window.scrollY -
+          this.stickyElementsHeight,
+        behavior: "smooth",
       });
     }, 2);
   }
@@ -104,6 +112,6 @@ export class DxpAccordion extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dxp-accordion': DxpAccordion;
+    "dxp-accordion": DxpAccordion;
   }
 }

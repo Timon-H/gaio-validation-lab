@@ -14,20 +14,22 @@ export async function supabaseInsert(table, payload, { timeout } = {}) {
   const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
-    return { ok: false, error: 'SUPABASE_URL or SUPABASE_ANON_KEY not set' };
+    return { ok: false, error: "SUPABASE_URL or SUPABASE_ANON_KEY not set" };
   }
 
   const controller = timeout ? new AbortController() : undefined;
-  const timeoutId = controller ? setTimeout(() => controller.abort(), timeout) : undefined;
+  const timeoutId = controller
+    ? setTimeout(() => controller.abort(), timeout)
+    : undefined;
 
   try {
     const response = await fetch(`${supabaseUrl}/rest/v1/${table}`, {
-      method: 'POST',
+      method: "POST",
       headers: {
         apikey: supabaseKey,
         Authorization: `Bearer ${supabaseKey}`,
-        'Content-Type': 'application/json',
-        Prefer: 'return=minimal',
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
       },
       body: JSON.stringify(payload),
       signal: controller?.signal,
@@ -37,11 +39,11 @@ export async function supabaseInsert(table, payload, { timeout } = {}) {
       return { ok: true, status: response.status };
     }
 
-    const body = await response.text().catch(() => '(no body)');
+    const body = await response.text().catch(() => "(no body)");
     return { ok: false, status: response.status, error: body };
   } catch (err) {
-    const isTimeout = err instanceof Error && err.name === 'AbortError';
-    return { ok: false, error: isTimeout ? 'Timeout reached' : String(err) };
+    const isTimeout = err instanceof Error && err.name === "AbortError";
+    return { ok: false, error: isTimeout ? "Timeout reached" : String(err) };
   } finally {
     if (timeoutId) clearTimeout(timeoutId);
   }

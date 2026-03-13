@@ -8,7 +8,7 @@
  * Isolates the effect of ARIA on AI extractability — can crawlers/LLMs use
  * ARIA attributes on custom elements to understand their purpose?
  */
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import {
   TrapAriaHiddenBonus,
   TrapBirthYear,
@@ -17,17 +17,27 @@ import {
   TrapDeprecatedTariff,
   TrapHiddenFaq,
   TrapTestimonial,
-} from '../../components/traps/index.ts';
+} from "../../components/traps/index.ts";
 import {
-  PAGE_TITLE, PAGE_DESCRIPTION, INTRO, BUTTONS, TEXT_INPUTS,
-  DROPDOWN, RADIO, FAQS, CARDS, FLYOUT, TARIFF, FOOTER_LINK,
+  PAGE_TITLE,
+  PAGE_DESCRIPTION,
+  INTRO,
+  BUTTONS,
+  TEXT_INPUTS,
+  DROPDOWN,
+  RADIO,
+  FAQS,
+  CARDS,
+  FLYOUT,
+  TARIFF,
+  FOOTER_LINK,
   ARIA_LABELS,
-} from '../../data/content';
+} from "../../data/content";
 ---
 
 <BaseLayout title={PAGE_TITLE} description={PAGE_DESCRIPTION}>
   <script>
-    import '../../components/baseline/index.ts';
+    import "../../components/baseline/index.ts";
   </script>
 
   <div style="margin-top: 1.5rem;">
@@ -37,9 +47,15 @@ import {
 
   <!-- BUTTON -->
   <div style="margin: 2rem 0;">
-    <dxp-button aria-label={ARIA_LABELS.buttonPrimary}>{BUTTONS.primary}</dxp-button>
-    <dxp-button variant="secondary" aria-label={ARIA_LABELS.buttonSecondary}>{BUTTONS.secondary}</dxp-button>
-    <dxp-button disabled aria-label={ARIA_LABELS.buttonDisabled}>{BUTTONS.disabled}</dxp-button>
+    <dxp-button aria-label={ARIA_LABELS.buttonPrimary}
+      >{BUTTONS.primary}</dxp-button
+    >
+    <dxp-button variant="secondary" aria-label={ARIA_LABELS.buttonSecondary}
+      >{BUTTONS.secondary}</dxp-button
+    >
+    <dxp-button disabled aria-label={ARIA_LABELS.buttonDisabled}
+      >{BUTTONS.disabled}</dxp-button
+    >
   </div>
 
   <!-- TEXT INPUT -->
@@ -51,20 +67,18 @@ import {
         placeholder={TEXT_INPUTS.vorname.placeholder}
         required
         required-error-text={TEXT_INPUTS.vorname.requiredErrorText}
-        aria-required="true"
-      ></dxp-text-input>
+        aria-required="true"></dxp-text-input>
       <dxp-text-input
         label={TEXT_INPUTS.email.label}
         name={TEXT_INPUTS.email.name}
         type={TEXT_INPUTS.email.type}
         placeholder={TEXT_INPUTS.email.placeholder}
         regex={TEXT_INPUTS.email.regex}
-        regex-error-text={TEXT_INPUTS.email.regexErrorText}
-      ></dxp-text-input>
+        regex-error-text={TEXT_INPUTS.email.regexErrorText}></dxp-text-input>
     </div>
   </div>
 
-   <TrapCoverageAmount aria />
+  <TrapCoverageAmount aria />
 
   <!-- DROPDOWN -->
   <div style="margin: 2rem 0;">
@@ -74,8 +88,7 @@ import {
       placeholder={DROPDOWN.placeholder}
       options={DROPDOWN.options}
       required
-      aria-label={ARIA_LABELS.dropdown}
-    ></dxp-dropdown-v1>
+      aria-label={ARIA_LABELS.dropdown}></dxp-dropdown-v1>
   </div>
 
   <!-- RADIO -->
@@ -85,44 +98,65 @@ import {
       name={RADIO.name}
       options={RADIO.options}
       default={RADIO.default}
-      aria-label={ARIA_LABELS.radio}
-    ></dxp-input-radio>
+      aria-label={ARIA_LABELS.radio}></dxp-input-radio>
   </div>
 
-   <TrapBirthYear aria />
+  <TrapBirthYear aria />
 
   <!-- ACCORDION -->
   <div style="margin: 2rem 0;">
     <dxp-accordion aria-label={ARIA_LABELS.accordion}>
-      {FAQS.map(faq => (
-        <dxp-accordion-element
-          id={faq.id}
-          aria-label={faq.headline}
-          headline={faq.headline}
-          body={faq.body}
-        ></dxp-accordion-element>
-      ))}
+      {
+        FAQS.map((faq) => (
+          <dxp-accordion-element
+            id={faq.id}
+            aria-label={faq.headline}
+            headline={faq.headline}
+            body={faq.body}
+          />
+        ))
+      }
       <TrapHiddenFaq aria />
     </dxp-accordion>
   </div>
 
   <!-- CARD -->
   <div style="margin: 2rem 0;">
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
-      <dxp-card aria-label={ARIA_LABELS.card1} card-title={CARDS[0].title} card-description={CARDS[0].description}>
-        <span slot="badge" style="background: #e3f2fd; color: #0066cc;">{CARDS[0].badge}</span>
+    <div
+      style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;"
+    >
+      <dxp-card
+        aria-label={ARIA_LABELS.card1}
+        card-title={CARDS[0].title}
+        card-description={CARDS[0].description}
+      >
+        <span slot="badge" style="background: #e3f2fd; color: #0066cc;"
+          >{CARDS[0].badge}</span
+        >
         <dxp-button slot="buttons">{CARDS[0].button}</dxp-button>
       </dxp-card>
-      <dxp-card aria-label={ARIA_LABELS.card2} card-title={CARDS[1].title} card-description={CARDS[1].description}>
-        <dxp-button slot="buttons" variant="secondary">{CARDS[1].button}</dxp-button>
+      <dxp-card
+        aria-label={ARIA_LABELS.card2}
+        card-title={CARDS[1].title}
+        card-description={CARDS[1].description}
+      >
+        <dxp-button slot="buttons" variant="secondary"
+          >{CARDS[1].button}</dxp-button
+        >
       </dxp-card>
     </div>
   </div>
 
   <!-- FLYOUT -->
   <div style="margin: 2rem 0;">
-    <dxp-flyout flyout-position={FLYOUT.position} aria-label={ARIA_LABELS.flyout} phone={FLYOUT.phone} hours={FLYOUT.hours}>
-      <dxp-button slot="content" variant="secondary">{FLYOUT.button}</dxp-button>
+    <dxp-flyout
+      flyout-position={FLYOUT.position}
+      aria-label={ARIA_LABELS.flyout}
+      phone={FLYOUT.phone}
+      hours={FLYOUT.hours}
+    >
+      <dxp-button slot="content" variant="secondary">{FLYOUT.button}</dxp-button
+      >
     </dxp-flyout>
   </div>
 
@@ -135,13 +169,14 @@ import {
       headline={TARIFF.headline}
       sub-headline={TARIFF.subHeadline}
       aria-label={ARIA_LABELS.tariff}
-      tariffs={TARIFF.data}
-    ></dxp-tariff-comparison>
+      tariffs={TARIFF.data}></dxp-tariff-comparison>
   </div>
 
   <TrapCrossSell />
 
-  <p style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #4a5dc9;">
+  <p
+    style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #4a5dc9;"
+  >
     <a href={FOOTER_LINK.href}>{FOOTER_LINK.text}</a>
   </p>
 </BaseLayout>

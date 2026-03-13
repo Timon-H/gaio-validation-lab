@@ -2,13 +2,13 @@
 
 ## Prerequisites
 
-| Requirement | Version | Notes |
-|---|---|---|
-| Node.js | ≥ 20.10 | Check with `node --version` |
-| npm | ≥ 10 | Bundled with Node.js |
-| Git | any | For cloning the repository |
-| LLM API key | — | At least one of: OpenAI, Anthropic, or Google AI |
-| Supabase project | optional | Only required for `--persist` runs |
+| Requirement      | Version  | Notes                                            |
+| ---------------- | -------- | ------------------------------------------------ |
+| Node.js          | ≥ 20.10  | Check with `node --version`                      |
+| npm              | ≥ 10     | Bundled with Node.js                             |
+| Git              | any      | For cloning the repository                       |
+| LLM API key      | —        | At least one of: OpenAI, Anthropic, or Google AI |
+| Supabase project | optional | Only required for `--persist` runs               |
 
 ---
 
@@ -19,6 +19,8 @@ git clone https://github.com/Timon-H/gaio-validation-lab.git
 cd gaio-validation-lab
 npm install
 ```
+
+`npm install` also runs `prepare`, which installs the pre-commit hook (`npm run lint:staged`).
 
 ---
 
@@ -61,16 +63,33 @@ npm run dev         # Local server at http://localhost:4321
 
 The eight variant pages are available at:
 
-| Path | Variant |
-|---|---|
-| `/control` | Bare Shadow DOM — no GAIO measures |
-| `/combined` | All GAIO measures combined |
-| `/test-jsonld` | JSON-LD only |
-| `/test-semantic` | Semantic HTML only |
-| `/test-aria` | ARIA only |
-| `/test-noscript` | `<noscript>` fallbacks only |
-| `/test-dsd` | Declarative Shadow DOM only |
-| `/test-microdata` | Microdata only |
+| Path              | Variant                            |
+| ----------------- | ---------------------------------- |
+| `/control`        | Bare Shadow DOM — no GAIO measures |
+| `/combined`       | All GAIO measures combined         |
+| `/test-jsonld`    | JSON-LD only                       |
+| `/test-semantic`  | Semantic HTML only                 |
+| `/test-aria`      | ARIA only                          |
+| `/test-noscript`  | `<noscript>` fallbacks only        |
+| `/test-dsd`       | Declarative Shadow DOM only        |
+| `/test-microdata` | Microdata only                     |
+
+---
+
+## 3a. Quality Gate (Recommended Before Experiments)
+
+Run the local quality gate before extraction/evaluation campaigns:
+
+```bash
+# Lint + build
+npm run lint
+npm run build
+
+# Server-backed experiment checks
+npm run test:ci
+```
+
+`test:ci` starts the local app and executes bot-header validation, extraction smoke checks, and the variant integrity check.
 
 ---
 
@@ -143,14 +162,14 @@ npm run evaluate:openai -- --tier exploratory --repetitions 5
 
 ### Available Flags
 
-| Flag | Default | Description |
-|---|---|---|
-| `--provider <id>` | — | Provider to use: `openai`, `claude`, `gemini`, or `all` |
-| `--url <base-url>` | `http://localhost:4321` | Base URL for all variant fetches |
-| `--persist` | off | Write results to Supabase in addition to CSV |
-| `--repetitions <n>` | `1` | Number of extraction runs per variant |
-| `--variant <id>` | all | Run a single variant only (e.g. `--variant control`) |
-| `--tier <tier>` | `primary` | Model tier: `primary`, `validation`, or `exploratory`. See [`docs/evaluation.md`](evaluation.md) for tier details. |
+| Flag                | Default                 | Description                                                                                                        |
+| ------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `--provider <id>`   | —                       | Provider to use: `openai`, `claude`, `gemini`, or `all`                                                            |
+| `--url <base-url>`  | `http://localhost:4321` | Base URL for all variant fetches                                                                                   |
+| `--persist`         | off                     | Write results to Supabase in addition to CSV                                                                       |
+| `--repetitions <n>` | `1`                     | Number of extraction runs per variant                                                                              |
+| `--variant <id>`    | all                     | Run a single variant only (e.g. `--variant control`)                                                               |
+| `--tier <tier>`     | `primary`               | Model tier: `primary`, `validation`, or `exploratory`. See [`docs/evaluation.md`](evaluation.md) for tier details. |
 
 ---
 

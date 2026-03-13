@@ -1,9 +1,9 @@
 /**
  * Simulated DXP Text Input Component
- * 
+ *
  * Mirrors the real dxp-text-input from the DXP design system.
  * Original: Lit-based, extends FormAssociated, Shadow DOM encapsulated.
- * 
+ *
  * Features replicated:
  * - @customElement('dxp-text-input') registration
  * - Form-associated custom element pattern
@@ -16,121 +16,122 @@
  * - Default value support
  * - Error display
  */
-import { html, css, nothing } from 'lit';
-import { customElement, property, query } from 'lit/decorators.js';
-import { DxpFormBase, formBaseStyles } from './dxp-form-base';
+import { html, css, nothing } from "lit";
+import { customElement, property, query } from "lit/decorators.js";
+import { DxpFormBase, formBaseStyles } from "./dxp-form-base";
 
 let textInputIdCounter = 0;
 
-@customElement('dxp-text-input')
+@customElement("dxp-text-input")
 export class DxpTextInput extends DxpFormBase {
-
   static styles = [
     formBaseStyles,
     css`
+      .DXP-Input-Wrapper {
+        position: relative;
+      }
 
-    .DXP-Input-Wrapper {
-      position: relative;
-    }
+      input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0.625rem 0.75rem;
+        font-size: 1rem;
+        font-family: inherit;
+        border: 1px solid var(--dxp-input-border, #ccc);
+        border-radius: var(--dxp-input-radius, 4px);
+        background: var(--dxp-input-bg, #fff);
+        color: var(--dxp-input-color, #333);
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
 
-    input {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 0.625rem 0.75rem;
-      font-size: 1rem;
-      font-family: inherit;
-      border: 1px solid var(--dxp-input-border, #ccc);
-      border-radius: var(--dxp-input-radius, 4px);
-      background: var(--dxp-input-bg, #fff);
-      color: var(--dxp-input-color, #333);
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
+      input:focus {
+        outline: none;
+        border-color: var(--dxp-input-focus-border, #0066cc);
+        box-shadow: 0 0 0 2px
+          var(--dxp-input-focus-shadow, rgba(0, 102, 204, 0.2));
+      }
 
-    input:focus {
-      outline: none;
-      border-color: var(--dxp-input-focus-border, #0066cc);
-      box-shadow: 0 0 0 2px var(--dxp-input-focus-shadow, rgba(0,102,204,0.2));
-    }
+      input:disabled {
+        background: #f5f5f5;
+        color: #999;
+        cursor: not-allowed;
+      }
 
-    input:disabled {
-      background: #f5f5f5;
-      color: #999;
-      cursor: not-allowed;
-    }
+      input[invalid] {
+        border-color: var(--dxp-input-error-border, #d32f2f);
+      }
 
-    input[invalid] {
-      border-color: var(--dxp-input-error-border, #d32f2f);
-    }
+      input::placeholder {
+        color: #aaa;
+      }
 
-    input::placeholder {
-      color: #aaa;
-    }
+      .DXP-Input-Inline-Label {
+        position: absolute;
+        right: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+        font-size: 0.875rem;
+        pointer-events: none;
+      }
 
-    .DXP-Input-Inline-Label {
-      position: absolute;
-      right: 0.75rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #666;
-      font-size: 0.875rem;
-      pointer-events: none;
-    }
+      .DXP-Input-Inline-Label:empty {
+        display: none;
+      }
 
-    .DXP-Input-Inline-Label:empty {
-      display: none;
-    }
+      .DXP-Input-Error {
+        display: none;
+        font-size: 0.75rem;
+        color: var(--dxp-input-error-color, #d32f2f);
+        margin-top: 0.25rem;
+      }
 
-    .DXP-Input-Error {
-      display: none;
-      font-size: 0.75rem;
-      color: var(--dxp-input-error-color, #d32f2f);
-      margin-top: 0.25rem;
-    }
-
-    :host([invalid]) .DXP-Input-Error {
-      display: block;
-    }
+      :host([invalid]) .DXP-Input-Error {
+        display: block;
+      }
     `,
   ];
 
-  @property({ type: String, attribute: 'autocomplete' })
-  autocomplete: string = 'off';
+  @property({ type: String, attribute: "autocomplete" })
+  autocomplete: string = "off";
 
-  @property({ type: String, attribute: 'custom-error-text' })
-  customError: string = '';
+  @property({ type: String, attribute: "custom-error-text" })
+  customError: string = "";
 
-  @property({ type: Boolean, attribute: 'disabled', reflect: true })
+  @property({ type: Boolean, attribute: "disabled", reflect: true })
   disabled: boolean = false;
 
-  @property({ type: String, attribute: 'inline-label' })
-  inlineLabel: string = '';
+  @property({ type: String, attribute: "inline-label" })
+  inlineLabel: string = "";
 
-  @property({ type: String, attribute: 'placeholder', reflect: true })
-  placeholder: string = '';
+  @property({ type: String, attribute: "placeholder", reflect: true })
+  placeholder: string = "";
 
-  @property({ type: String, attribute: 'ref-id', reflect: true })
-  refId: string = '';
+  @property({ type: String, attribute: "ref-id", reflect: true })
+  refId: string = "";
 
-  @property({ type: String, attribute: 'regex' })
-  regex: string = '';
+  @property({ type: String, attribute: "regex" })
+  regex: string = "";
 
-  @property({ type: String, attribute: 'regex-error-text' })
-  regexErrorText: string = '';
+  @property({ type: String, attribute: "regex-error-text" })
+  regexErrorText: string = "";
 
-  @property({ type: String, attribute: 'tooltip-text' })
-  tooltipText: string = '';
+  @property({ type: String, attribute: "tooltip-text" })
+  tooltipText: string = "";
 
-  @property({ type: String, attribute: 'type' })
-  type: string = 'text';
+  @property({ type: String, attribute: "type" })
+  type: string = "text";
 
-  @property({ type: Boolean, attribute: 'invalid', reflect: true })
+  @property({ type: Boolean, attribute: "invalid", reflect: true })
   private _invalid: boolean = false;
 
-  @query('input') 
+  @query("input")
   private _input!: HTMLInputElement;
 
   get value(): string {
-    return this._input?.value ?? '';
+    return this._input?.value ?? "";
   }
 
   set value(val: string) {
@@ -142,16 +143,20 @@ export class DxpTextInput extends DxpFormBase {
   private get _errorMessage(): string {
     if (this._invalid) {
       if (this.required && !this.value) {
-        return this.requiredErrorText || 'Pflichtfeld';
+        return this.requiredErrorText || "Pflichtfeld";
       }
-      if (this.regex && this.value && !new RegExp(this.regex).test(this.value)) {
-        return this.regexErrorText || 'Ungültiges Format';
+      if (
+        this.regex &&
+        this.value &&
+        !new RegExp(this.regex).test(this.value)
+      ) {
+        return this.regexErrorText || "Ungültiges Format";
       }
       if (this.customError) {
         return this.customError;
       }
     }
-    return 'Ungültige Eingabe';
+    return "Ungültige Eingabe";
   }
 
   connectedCallback() {
@@ -178,20 +183,20 @@ export class DxpTextInput extends DxpFormBase {
 
   private _handleInput(event: Event) {
     this._invalid = false;
-    this._dispatchEvent('@TextInput/input', {
+    this._dispatchEvent("@TextInput/input", {
       value: (event.target as HTMLInputElement).value,
     });
   }
 
   private _handleChange(event: Event) {
-    this._dispatchEvent('@TextInput/change', {
+    this._dispatchEvent("@TextInput/change", {
       value: (event.target as HTMLInputElement).value,
     });
   }
 
   private _handleBlur(_event: Event) {
     this._validate();
-    this._dispatchEvent('@TextInput/blur', {
+    this._dispatchEvent("@TextInput/blur", {
       value: this.value,
       valid: !this._invalid,
     });
@@ -207,7 +212,7 @@ export class DxpTextInput extends DxpFormBase {
           name=${this.name}
           pattern=${this.regex || nothing}
           type=${this.type}
-          .placeholder=${this.placeholder || ''}
+          .placeholder=${this.placeholder || ""}
           ?disabled=${this.disabled}
           ?required=${this.required}
           ?invalid=${this._invalid}
@@ -224,6 +229,6 @@ export class DxpTextInput extends DxpFormBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dxp-text-input': DxpTextInput;
+    "dxp-text-input": DxpTextInput;
   }
 }

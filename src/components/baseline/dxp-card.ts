@@ -1,9 +1,9 @@
 /**
  * Simulated DXP Card Component
- * 
+ *
  * Mirrors the real dxp-card from the DXP design system.
  * Original: Lit-based LitElement, Shadow DOM, adaptive responsive styles.
- * 
+ *
  * Features replicated:
  * - @customElement('dxp-card') registration
  * - variant: vertical | horizontal | horizontal-reverse
@@ -15,14 +15,13 @@
  *   shadow DOM so Declarative Shadow DOM is the sole data channel (slots are then absent)
  * - Section visibility based on slotted content
  */
-import { LitElement, html, css, nothing } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { LitElement, html, css, nothing } from "lit";
+import { customElement, property } from "lit/decorators.js";
 
-export type CardVariant = 'vertical' | 'horizontal' | 'horizontal-reverse';
+export type CardVariant = "vertical" | "horizontal" | "horizontal-reverse";
 
-@customElement('dxp-card')
+@customElement("dxp-card")
 export class DxpCard extends LitElement {
-
   static styles = css`
     :host {
       display: block;
@@ -33,18 +32,18 @@ export class DxpCard extends LitElement {
       flex-direction: column;
       background: var(--dxp-card-bg, #ffffff);
       border-radius: var(--dxp-card-radius, 8px);
-      box-shadow: var(--dxp-card-shadow, 0 2px 8px rgba(0,0,0,0.1));
+      box-shadow: var(--dxp-card-shadow, 0 2px 8px rgba(0, 0, 0, 0.1));
       overflow: hidden;
       height: 100%;
       transition: box-shadow 0.2s;
     }
 
     :host([lowered]) .card {
-      box-shadow: var(--dxp-card-shadow-lowered, 0 1px 3px rgba(0,0,0,0.08));
+      box-shadow: var(--dxp-card-shadow-lowered, 0 1px 3px rgba(0, 0, 0, 0.08));
     }
 
     .card:hover {
-      box-shadow: var(--dxp-card-shadow-hover, 0 4px 16px rgba(0,0,0,0.15));
+      box-shadow: var(--dxp-card-shadow-hover, 0 4px 16px rgba(0, 0, 0, 0.15));
     }
 
     :host([variant="horizontal"]) .card,
@@ -146,32 +145,34 @@ export class DxpCard extends LitElement {
   `;
 
   @property({ type: String, reflect: true })
-  variant: CardVariant = 'vertical';
+  variant: CardVariant = "vertical";
 
-  @property({ type: String, attribute: 'background-color' })
-  backgroundColor: string = '';
+  @property({ type: String, attribute: "background-color" })
+  backgroundColor: string = "";
 
   @property({ type: Boolean, reflect: true })
   lowered: boolean = false;
 
-  @property({ type: Boolean, attribute: 'centered-list' })
+  @property({ type: Boolean, attribute: "centered-list" })
   centeredList: boolean = false;
 
   // Data attributes: when set, title and description render inside shadow DOM rather than
   // via light DOM slots. This makes DSD the sole accessible channel — both attributes are
   // stripped by the evaluation pipeline before the LLM sees the HTML, so only the
   // DSD-rendered <template shadowrootmode="open"> content survives.
-  @property({ type: String, attribute: 'card-title' })
-  cardTitle: string = '';
+  @property({ type: String, attribute: "card-title" })
+  cardTitle: string = "";
 
-  @property({ type: String, attribute: 'card-description' })
-  cardDescription: string = '';
+  @property({ type: String, attribute: "card-description" })
+  cardDescription: string = "";
 
   render() {
     return html`
       <div
         class="card"
-        style=${this.backgroundColor ? `background-color: ${this.backgroundColor}` : nothing}
+        style=${this.backgroundColor
+          ? `background-color: ${this.backgroundColor}`
+          : nothing}
       >
         <div class="media-section">
           <slot name="media"></slot>
@@ -181,9 +182,13 @@ export class DxpCard extends LitElement {
           <div class="badge-container">
             <slot name="badge"></slot>
           </div>
-          ${this.cardTitle ? html`<div class="card-title-text">${this.cardTitle}</div>` : html`<slot name="header-title"></slot>`}
+          ${this.cardTitle
+            ? html`<div class="card-title-text">${this.cardTitle}</div>`
+            : html`<slot name="header-title"></slot>`}
           <slot name="subtitle"></slot>
-          ${this.cardDescription ? html`<p class="card-description-text">${this.cardDescription}</p>` : html`<slot name="teaser-text"></slot>`}
+          ${this.cardDescription
+            ? html`<p class="card-description-text">${this.cardDescription}</p>`
+            : html`<slot name="teaser-text"></slot>`}
         </div>
 
         <div class="content" id="content">
@@ -208,6 +213,6 @@ export class DxpCard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dxp-card': DxpCard;
+    "dxp-card": DxpCard;
   }
 }
