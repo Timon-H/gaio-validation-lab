@@ -20,23 +20,24 @@ results/gaio_evaluation_<provider>_<model>_<timestamp>.csv
 
 ### Column Reference
 
-| Column            | Type        | Description                                                                                      |
-| ----------------- | ----------- | ------------------------------------------------------------------------------------------------ |
-| `Provider`        | string      | LLM provider: `openai`, `claude`, or `gemini`                                                    |
-| `Model`           | string      | Concrete model used for the run (for example `gpt-4.1-mini`, `claude-sonnet-4-5`)                |
-| `Tier`            | string      | Tier selected via CLI: `primary`, `validation`, `exploratory`                                    |
-| `Variant_ID`      | string      | Variant key: `control`, `jsonld`, `semantic`, `aria`, `noscript`, `dsd`, `microdata`, `combined` |
-| `Run`             | integer     | Repetition index within one execution (1..n)                                                     |
-| `Tarife`          | integer     | Number of tariffs extracted                                                                      |
-| `FAQ`             | integer     | Number of FAQ entries extracted                                                                  |
-| `Produktkarten`   | integer     | Number of product cards extracted                                                                |
-| `FormFelder`      | integer     | Number of form fields extracted                                                                  |
-| `Hat_Kontakt`     | 0 or 1      | Whether contact details were extracted (1 = yes)                                                 |
-| `Hat_Anbieter`    | 0 or 1      | Whether provider name was extracted (1 = yes)                                                    |
-| `DB`              | string      | Persistence status: `-`, `OK`, `ERR`, or `ERROR`                                                 |
-| `Raw_JSON_Output` | JSON string | Full structured output returned by the model                                                     |
+| Column              | Type        | Description                                                                                      |
+| ------------------- | ----------- | ------------------------------------------------------------------------------------------------ |
+| `Provider`          | string      | LLM provider: `openai`, `claude`, or `gemini`                                                    |
+| `Model`             | string      | Concrete model used for the run (for example `gpt-4.1-mini`, `claude-sonnet-4-5`)                |
+| `Tier`              | string      | Tier selected via CLI: `primary`, `validation`, `exploratory`                                    |
+| `Thinking_Controls` | string      | Serialized control metadata including profile and provider-specific control settings             |
+| `Variant_ID`        | string      | Variant key: `control`, `jsonld`, `semantic`, `aria`, `noscript`, `dsd`, `microdata`, `combined` |
+| `Run`               | integer     | Repetition index within one execution (1..n)                                                     |
+| `Tarife`            | integer     | Number of tariffs extracted                                                                      |
+| `FAQ`               | integer     | Number of FAQ entries extracted                                                                  |
+| `Produktkarten`     | integer     | Number of product cards extracted                                                                |
+| `FormFelder`        | integer     | Number of form fields extracted                                                                  |
+| `Hat_Kontakt`       | 0 or 1      | Whether contact details were extracted (1 = yes)                                                 |
+| `Hat_Anbieter`      | 0 or 1      | Whether provider name was extracted (1 = yes)                                                    |
+| `DB`                | string      | Persistence status: `-`, `OK`, `ERR`, or `ERROR`                                                 |
+| `Raw_JSON_Output`   | JSON string | Full structured output returned by the model                                                     |
 
-Note: older CSV files generated before this change may not include `Model` and `Tier` columns.
+Note: older CSV files generated before model-tier rollout may not include `Model` and `Tier` columns.
 
 ---
 
@@ -115,6 +116,8 @@ SELECT
   variant_id,
   provider,
   model,
+  tier,
+  thinking_profile,
   runs,
   avg_tarife,
   avg_faq,
@@ -145,7 +148,7 @@ With a single run, `std` will be `NaN`. That is expected.
 
 When runs are persisted with `--persist`, use:
 
-- `llm_eval_comparison` for model extraction aggregates by variant/provider/model/tier
+- `llm_eval_comparison` for model extraction aggregates by variant/provider/model/tier/thinking profile
 - `extraction_comparison` for structural marker extraction aggregates
 - `gaio_comparison` for crawler telemetry aggregates
 

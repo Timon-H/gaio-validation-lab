@@ -538,6 +538,40 @@ function describeControlProfile(provider, config) {
   return "provider controls unavailable";
 }
 
+/**
+ * Builds stable, machine-readable control metadata for CSV output.
+ * The value intentionally uses semicolons instead of commas to keep CSV simple.
+ * @param {'openai'|'claude'|'gemini'} provider - Provider key.
+ * @param {{ model: string, reasoning?: boolean, reasoningEffort?: string, seed?: number, thinkingBudget?: number }} config - Provider model config.
+ * @returns {string}
+ */
+function buildThinkingControlsMetadata(provider, config) {
+  const profilePart = `profile=${THINKING_PROFILE}`;
+
+  if (provider === "openai") {
+    if (config.reasoning) {
+      return `${profilePart};api=responses;reasoning.effort=${config.reasoningEffort ?? OPENAI_REASONING_EFFORT_DEFAULT};text.format=json_object;temperature=unsupported;seed=unsupported`;
+    }
+    return `${profilePart};api=chat.completions;temperature=0.0;seed=${OPENAI_SEED};response_format=json_object`;
+  }
+
+  if (provider === "claude") {
+    return `${profilePart};api=messages;temperature=0.0;extended_thinking=not_enabled(omitted)`;
+  }
+
+  if (provider === "gemini") {
+    const seed = Number.isInteger(config.seed)
+      ? config.seed
+      : "provider-default";
+    const thinkingBudget = Number.isInteger(config.thinkingBudget)
+      ? config.thinkingBudget
+      : "provider-default";
+    return `${profilePart};api=generateContent;temperature=0.0;seed=${seed};thinkingBudget=${thinkingBudget};responseMimeType=application/json`;
+  }
+
+  return `${profilePart};provider=unknown`;
+}
+
 // ---------------------------------------------------------------------------
 // Retry wrapper — handles 429 rate-limit responses from any provider.
 // Parses the retryDelay the API suggests (e.g. Gemini's "retryDelay":"52s")
@@ -656,11 +690,19 @@ async function fetchHtml(url) {
  * @param {'openai'|'claude'|'gemini'} provider - Provider key.
  * @param {{ model: string, reasoning?: boolean }} config - Provider model config.
  * @param {string} apiKey - Provider API key.
+ * @param {string} thinkingControls - Serialised controls metadata for CSV output.
  * @param {{ id: string, path: string }} variant - Variant descriptor.
  * @param {number} runIndex - 1-based repetition index.
  * @returns {Promise<object>} Result row ready for CSV serialisation.
  */
-async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
+async function evaluateVariant(
+  provider,
+  config,
+  apiKey,
+  thinkingControls,
+  variant,
+  runIndex,
+) {
   const url = `${BASE_URL}${variant.path}`;
   console.log(
     `⏳ [${provider}] Testing variant "${variant.id}" (Run ${runIndex}/${REPETITIONS})...`,
@@ -695,6 +737,7 @@ async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
         provider,
         model: config.model,
         tier: TIER,
+        thinking_controls: thinkingControls,
         variant_id: variant.id,
         run: runIndex,
         base_url: BASE_URL,
@@ -722,6 +765,7 @@ async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
       hatKontakt: counts.hatKontakt,
       hatAnbieter: counts.hatAnbieter,
       dbStatus,
+      thinkingControls,
       rawOutput: JSON.stringify(parsedData).replace(/"/g, '""'),
     };
   } catch (error) {
@@ -739,6 +783,7 @@ async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
       hatKontakt: "ERROR",
       hatAnbieter: "ERROR",
       dbStatus: "ERROR",
+      thinkingControls,
       rawOutput: error.message.replace(/"/g, '""'),
     };
   }
@@ -754,6 +799,7 @@ async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
 async function runProviderEvaluation(provider, config, apiKey) {
   const modelSlug = config.model.replace(/[^a-zA-Z0-9._-]+/g, "-");
   const outputFile = `./results/gaio_evaluation_${provider}_${modelSlug}_${new Date().toISOString().replace(/:/g, "-").replace(/\..+/, "")}.csv`;
+  const thinkingControls = buildThinkingControlsMetadata(provider, config);
   console.log(
     `🚀 Starting GAIO evaluation pipeline  [provider: ${provider}, model: ${config.model}, tier: ${TIER}, thinking-profile: ${THINKING_PROFILE}]`,
   );
@@ -765,7 +811,14 @@ async function runProviderEvaluation(provider, config, apiKey) {
   // Sequential testing to avoid overwhelming the server and to respect rate limits
   for (const variant of VARIANTS) {
     for (let i = 1; i <= REPETITIONS; i++) {
-      const res = await evaluateVariant(provider, config, apiKey, variant, i);
+      const res = await evaluateVariant(
+        provider,
+        config,
+        apiKey,
+        thinkingControls,
+        variant,
+        i,
+      );
       results.push(res);
       // Pause between requests to avoid rate limits and give the server time to recover
       await new Promise((r) => setTimeout(r, INTER_REQUEST_DELAY_MS));
@@ -773,11 +826,11 @@ async function runProviderEvaluation(provider, config, apiKey) {
   }
 
   const csvHeader =
-    "Provider,Model,Tier,Variant_ID,Run,Tarife,FAQ,Produktkarten,FormFelder,Hat_Kontakt,Hat_Anbieter,DB,Raw_JSON_Output\n";
+    "Provider,Model,Tier,Thinking_Controls,Variant_ID,Run,Tarife,FAQ,Produktkarten,FormFelder,Hat_Kontakt,Hat_Anbieter,DB,Raw_JSON_Output\n";
   const csvRows = results
     .map(
       (r) =>
-        `${r.provider},${r.model},${r.tier},${r.variantId},${r.run},${r.extractedTariffs},${r.extractedFaq},${r.extractedKarten},${r.extractedFormFelder},${r.hatKontakt},${r.hatAnbieter},${r.dbStatus},"${r.rawOutput}"`,
+        `${r.provider},${r.model},${r.tier},"${String(r.thinkingControls).replace(/"/g, '""')}",${r.variantId},${r.run},${r.extractedTariffs},${r.extractedFaq},${r.extractedKarten},${r.extractedFormFelder},${r.hatKontakt},${r.hatAnbieter},${r.dbStatus},"${r.rawOutput}"`,
     )
     .join("\n");
 

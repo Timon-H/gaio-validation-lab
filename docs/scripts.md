@@ -46,6 +46,8 @@ npm run evaluate:all -- --persist --repetitions 5
 - `--persist`
 
 Output is always written to `results/gaio_evaluation_<provider>_<model>_<timestamp>.csv`.
+CSV rows use metadata-first ordering (`Provider, Model, Tier, Thinking_Controls, Variant_ID, Run, ...`) so settings/context are separated from extraction outcomes.
+Persisted rows include `thinking_controls` in `llm_evaluation_results`.
 
 ## Bot Simulation (`test-bots.mjs`)
 
@@ -214,6 +216,6 @@ Schema v2 provides three analytics views:
 
 - `gaio_comparison` -> bot visit aggregates per variant
 - `extraction_comparison` -> structural extraction aggregates per variant and extractor
-- `llm_eval_comparison` -> LLM extraction aggregates per variant/provider/model/tier
+- `llm_eval_comparison` -> LLM extraction aggregates per variant/provider/model/tier/thinking profile
 
 See [docs/database.md](database.md) for SQL examples.

@@ -40,9 +40,10 @@ npm run evaluate:gemini -- --persist
 ```
 
 Results are always written to `results/gaio_evaluation_<provider>_<model>_<timestamp>.csv`.
-CSV rows include `Provider`, `Model`, and `Tier` so local files can be compared across model tiers without relying on the database.
+CSV columns are metadata-first to separate setup from outcomes:
+`Provider, Model, Tier, Thinking_Controls, Variant_ID, Run, ...metrics..., DB, Raw_JSON_Output`.
 For exploratory OpenAI runs, use `--model gpt-5-mini` (default) or `--model gpt-5` to run each model independently.
-With `--persist`, each run is also inserted into the `llm_evaluation_results` Supabase table (including `tier`, `variant_id`, and `base_url`), enabling cross-provider and cross-run comparisons via the `llm_eval_comparison` SQL view.
+With `--persist`, each run is also inserted into the `llm_evaluation_results` Supabase table (including `tier`, `thinking_controls`, `variant_id`, and `base_url`), enabling cross-provider and cross-run comparisons via the `llm_eval_comparison` SQL view.
 
 ## Environment Variables
 
@@ -154,12 +155,12 @@ The script includes `callLLMWithRetry()` which handles 429 responses by parsing 
 
 ## Supabase Schema
 
-The `llm_evaluation_results` table stores one row per variant x provider run. The `llm_eval_comparison` view aggregates averages across runs and keeps model tier in the grouping:
+The `llm_evaluation_results` table stores one row per variant x provider run and includes `thinking_controls` metadata for each persisted row. The `llm_eval_comparison` view aggregates averages across runs and keeps both model tier and derived thinking profile in the grouping:
 
 ```sql
 SELECT *
 FROM llm_eval_comparison
-ORDER BY variant_id, provider, model, tier;
+ORDER BY variant_id, provider, model, tier, thinking_profile;
 ```
 
 See [`supabase/schema.sql`](../supabase/schema.sql) for the full DDL and [`docs/database.md`](database.md) for operational usage.

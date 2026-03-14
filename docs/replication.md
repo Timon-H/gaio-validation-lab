@@ -52,6 +52,10 @@ Initialize Supabase schema before any `--persist` run:
 1. Open Supabase SQL Editor.
 2. Execute [`supabase/schema.sql`](../supabase/schema.sql).
 
+If your Supabase project already has historical `llm_evaluation_results` rows and you want to keep existing data, run the incremental migration afterwards:
+
+3. Execute [`supabase/migrations/2026-03-14_llm-thinking-controls.sql`](../supabase/migrations/2026-03-14_llm-thinking-controls.sql).
+
 ---
 
 ## 3. Build and Run Locally
@@ -149,6 +153,7 @@ npm run evaluate:openai -- --url https://gaio-validation-lab.vercel.app --persis
 ```
 
 This requires `SUPABASE_URL` and `SUPABASE_ANON_KEY` in `.env`.
+Persisted rows include `tier` plus `thinking_controls` metadata for reproducibility.
 
 To run a different model tier, pass `--tier`:
 
@@ -196,7 +201,7 @@ If results were persisted, query the `llm_eval_comparison` view:
 ```sql
 SELECT *
 FROM llm_eval_comparison
-ORDER BY variant_id, provider, model, tier;
+ORDER BY variant_id, provider, model, tier, thinking_profile;
 ```
 
 You can also inspect structural extraction aggregates:
