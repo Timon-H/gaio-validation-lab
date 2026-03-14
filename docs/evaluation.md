@@ -11,6 +11,8 @@
 
 Results are returned as structured JSON. Because most of these fields live inside Shadow DOM, extraction counts vary across variants — this variance is the primary measurement target.
 
+Across providers, this setup is **variance-controlled** rather than strictly deterministic: each provider exposes different control surfaces for seed, temperature, and internal thinking depth.
+
 ## Commands
 
 ```bash
@@ -22,11 +24,14 @@ npm run evaluate:gemini
 # Run all providers with the validation tier
 npm run evaluate:all -- --tier validation --repetitions 5
 
-# Run OpenAI exploratory tier (default: GPT-5-mini reasoning model)
+# Run OpenAI exploratory tier (default: GPT-5-mini reasoning probe)
 npm run evaluate:openai -- --tier exploratory --repetitions 5
 
 # Run OpenAI exploratory tier with full GPT-5
 npm run evaluate:openai -- --tier exploratory --model gpt-5 --repetitions 5
+
+# Sensitivity run with provider-default thinking behavior
+npm run evaluate:all -- --tier validation --thinking-profile provider-default --repetitions 5
 
 # Persist results to Supabase (requires SUPABASE_URL + SUPABASE_ANON_KEY)
 npm run evaluate:openai -- --persist
@@ -64,7 +69,7 @@ Use `--model <model-id>` only where multiple models are available for that provi
 
 ### Primary Tier — `--tier primary`
 
-Cost-effective models with full determinism controls (`temperature: 0.0`, `seed: 42` where supported). Used for the main analysis with 10+ repetitions.
+Cost-effective models with strongest available variance controls (`temperature: 0.0`, `seed` where supported, provider-specific thinking controls). Used for the main analysis with 10+ repetitions.
 
 | Provider | Model              | Input/MTok | Output/MTok |
 | -------- | ------------------ | ---------- | ----------- |
@@ -74,7 +79,7 @@ Cost-effective models with full determinism controls (`temperature: 0.0`, `seed:
 
 ### Validation Tier — `--tier validation`
 
-Higher-capability models from each provider, same API surface and determinism controls. Used with fewer repetitions (e.g., 5) to confirm that GAIO measure effects generalise across model capability levels.
+Higher-capability models from each provider, same API surface and variance controls. Used with fewer repetitions (e.g., 5) to confirm that GAIO measure effects generalise across model capability levels.
 
 | Provider | Model               | Input/MTok | Output/MTok |
 | -------- | ------------------- | ---------- | ----------- |
@@ -84,7 +89,7 @@ Higher-capability models from each provider, same API surface and determinism co
 
 ### Exploratory Tier — `--tier exploratory`
 
-OpenAI-only GPT-5 reasoning runs. Default model is `gpt-5-mini`; use `--model gpt-5` for the full model. Uses the Responses API with `reasoning.effort: 'low'`.
+OpenAI-only GPT-5 reasoning probe. Default model is `gpt-5-mini`; use `--model gpt-5` for the full model. Uses the Responses API and is intentionally kept separate from cross-provider baseline runs because reasoning controls are not symmetric across providers.
 
 | Provider | Model        | Input/MTok | Output/MTok |
 | -------- | ------------ | ---------- | ----------- |
@@ -93,6 +98,22 @@ OpenAI-only GPT-5 reasoning runs. Default model is `gpt-5-mini`; use `--model gp
 
 Reasoning models (GPT-5 family, o3, o4-mini) do not support `temperature` or `seed` parameters. They use a separate code path (`callOpenAIReasoning`) that calls the OpenAI Responses API instead of Chat Completions. Claude and Gemini are not available in this tier.
 
+## Thinking Profile Controls
+
+Use `--thinking-profile <profile>` to control how aggressively the script minimizes internal reasoning.
+
+- `minimized` (default)
+  - OpenAI exploratory (GPT-5): `reasoning.effort = minimal`
+  - Gemini `2.5-flash`: `thinkingBudget = 0` (thinking disabled)
+  - Gemini `2.5-pro`: `thinkingBudget = 128` (minimum allowed; cannot disable)
+  - Claude: extended thinking remains off because no `thinking` object is sent (extended thinking is opt-in)
+- `provider-default`
+  - Leaves provider thinking depth at default behavior
+  - OpenAI exploratory uses `reasoning.effort = low`
+  - Gemini runs without explicit thinking budgets
+
+Gemini runs always set `seed = 42` for additional run-to-run stability.
+
 ### Recommended Runs for Thesis
 
 | Tier                 | Command                                                                                                                         | Repetitions | Purpose               | Est. Cost |
@@ -100,6 +121,7 @@ Reasoning models (GPT-5 family, o3, o4-mini) do not support `temperature` or `se
 | Primary              | `npm run evaluate:all -- --persist --repetitions 10`                                                                            | 10          | Main analysis         | ~$5       |
 | Validation           | `npm run evaluate:all -- --persist --tier validation --repetitions 5`                                                           | 5           | Cross-tier robustness | ~$7       |
 | Exploratory (OpenAI) | `npm run evaluate:openai -- --persist --tier exploratory --model gpt-5-mini --repetitions 5` or `--model gpt-5 --repetitions 5` | 5           | Reasoning model probe | ~$2       |
+| Sensitivity          | `npm run evaluate:all -- --persist --tier validation --thinking-profile provider-default --repetitions 5`                       | 5           | Control-surface check | ~$7       |
 
 Exploratory estimates assume similar token volumes across both model runs; `gpt-5` is priced at 5x `gpt-5-mini` for input and output.
 
@@ -119,7 +141,12 @@ Each provider uses a different mechanism to guarantee JSON output:
 
 Note: Assistant prefilling is currently compatible with `claude-sonnet-4-5` and `claude-haiku-4-5`. It is not supported on Claude 4.6 models.
 
-All providers use `temperature: 0.0` and, where supported, `seed: 42` for reproducibility.
+Generation controls are provider-specific:
+
+- OpenAI Chat Completions (`gpt-4.1*`): `temperature: 0.0`, `seed: 42`
+- OpenAI Responses reasoning (`gpt-5*` exploratory): no temperature/seed; effort set via `reasoning.effort`
+- Claude: `temperature: 0.0`; no seed exposed in this script path; extended thinking remains off unless explicitly enabled
+- Gemini: `temperature: 0.0`, `seed: 42`, plus optional `thinkingBudget` depending on thinking profile/model
 
 ## Rate Limiting
 

@@ -80,16 +80,17 @@ Measure how different GAIO measures affect crawler/LLM extraction from the **ini
 ### Measurement Approach
 
 - Use the extraction script to capture text content, structural markers, and schema presence per variant.
-- The LLM evaluation script runs each variant × provider combination **n times** with `temperature: 0.0` and `seed: 42` where supported for reproducibility. Results are reported as mean ± standard deviation.
+- The LLM evaluation script runs each variant × provider combination **n times** with strongest available per-provider variance controls (`temperature`, `seed`, and thinking-depth controls where exposed). Results are reported as mean ± standard deviation.
 - Compare variant outputs against the control baseline to quantify the independent contribution of each GAIO measure.
 
 ### Threats to Validity
 
-- **LLM non-determinism:** fixed `temperature: 0.0` and `seed: 42` (where supported) hold output stable; n repetitions per run allow variance measurement.
+- **LLM non-determinism:** control surfaces are provider-specific. The benchmark applies strongest available controls, but strict determinism is not achievable across providers. Repeated runs are used to estimate variance.
 - **Hydration artifacts:** client-side rendering changes the DOM post-load and can confound results. SSR-only variants (`/combined`, `/test-dsd`) are fully deterministic. For JS-hydrated variants, the evaluation fetches the initial server-rendered HTML before hydration.
 - **Content–language mismatch:** the system prompt is written in German to match the page content, reducing extraction bias from language mismatch.
 - **Single-site deployment:** all variants share the same domain and server; results reflect this controlled environment and may not generalise to other hosting configurations.
 - **Provider-specific behaviour:** different LLM providers (OpenAI, Claude, Gemini) may respond differently to identical markup signals. Cross-provider comparison is included to surface model-level confounds.
+- **Asymmetric thinking controls:** Gemini `2.5-flash` can disable thinking (`thinkingBudget=0`), Gemini `2.5-pro` cannot fully disable thinking (minimum `thinkingBudget=128`), and Claude extended thinking is opt-in. This asymmetry is handled via explicit control profiles and reported as a methodological limitation.
 - **Navigation context leakage:** `BaseLayout` includes a `<nav>` listing all eight variant names (e.g. "JSON-LD", "Semantic", "ARIA"). To prevent this from revealing the experimental design to the LLM evaluator, the evaluation script strips `<nav>` blocks from the HTML before submission.
 - **`aria-hidden` and Web Component light DOM:** `aria-hidden="true"` on a custom element host does not suppress slotted light DOM content in raw HTML. LLMs parsing raw HTML may therefore not respect it as a suppression signal (Trap 7). The trap tests _whether_ LLMs honour `aria-hidden` on WC hosts — null results are themselves a valid finding.
 - **Host element attribute visibility:** the `tariffs` JSON attribute on `<dxp-tariff-comparison>` is visible in all variants, including the control — host attributes are public in Shadow DOM. Tariff count discrimination therefore relies on scope and accuracy signals (traps 1, 4, 5) rather than raw data visibility.
