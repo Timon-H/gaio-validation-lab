@@ -2,13 +2,13 @@
 
 ## Prerequisites
 
-| Requirement      | Version  | Notes                                            |
-| ---------------- | -------- | ------------------------------------------------ |
-| Node.js          | ≥ 20.10  | Check with `node --version`                      |
-| npm              | ≥ 10     | Bundled with Node.js                             |
-| Git              | any      | For cloning the repository                       |
-| LLM API key      | —        | At least one of: OpenAI, Anthropic, or Google AI |
-| Supabase project | optional | Only required for `--persist` runs               |
+| Requirement      | Version  | Notes                                                         |
+| ---------------- | -------- | ------------------------------------------------------------- |
+| Node.js          | ≥ 20.10  | Check with `node --version`                                   |
+| npm              | ≥ 10     | Bundled with Node.js                                          |
+| Git              | any      | For cloning the repository                                    |
+| LLM API key      | —        | At least one of: OpenAI, Anthropic, or Google AI              |
+| Supabase project | optional | Only required for `--persist` or `--persist-exploratory` runs |
 
 ---
 
@@ -40,14 +40,14 @@ OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
 GEMINI_API_KEY=AIza...
 
-# Required only for --persist runs
+# Required only for --persist or --persist-exploratory runs
 SUPABASE_URL=https://your-project-id.supabase.co
 SUPABASE_ANON_KEY=eyJhbGci...
 ```
 
 The `INDEXNOW_KEY` and `SITE_HOST` variables are only needed when you run `npm run indexnow`. They are required for that script and have no effect on local extraction/evaluation runs.
 
-Initialize Supabase schema before any `--persist` run:
+Initialize Supabase schema before any persistence run (`--persist` or `--persist-exploratory`):
 
 1. Open Supabase SQL Editor.
 2. Execute [`supabase/schema.sql`](../supabase/schema.sql).
@@ -158,6 +158,12 @@ npm run evaluate:openai -- --url https://gaio-validation-lab.vercel.app --persis
 This requires `SUPABASE_URL` and `SUPABASE_ANON_KEY` in `.env`.
 Persisted rows include `tier` plus `thinking_controls` metadata for reproducibility.
 
+To persist exploratory visibility-axis runs to a separate table (`llm_evaluation_results_exploratory`):
+
+```bash
+npm run evaluate:all -- --variant-set combined-visibility --persist-exploratory --tier validation --repetitions 5
+```
+
 To run a different model tier, pass `--tier`:
 
 ```bash
@@ -185,7 +191,8 @@ By default, `evaluate.mjs` uses `--thinking-profile minimized` to apply the stro
 | ------------------------ | ----------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `--provider <id>`        | —                       | Provider to use: `openai`, `claude`, `gemini`, or `all`                                                            |
 | `--url <base-url>`       | `http://localhost:4321` | Base URL for all variant fetches                                                                                   |
-| `--persist`              | off                     | Write results to Supabase in addition to CSV                                                                       |
+| `--persist`              | off                     | Persist canonical variant runs to `llm_evaluation_results`                                                         |
+| `--persist-exploratory`  | off                     | Persist exploratory visibility runs to `llm_evaluation_results_exploratory`                                        |
 | `--repetitions <n>`      | `1`                     | Number of extraction runs per variant                                                                              |
 | `--variant <id>`         | all                     | Run a single variant only (e.g. `--variant control`)                                                               |
 | `--variant-set <set>`    | `main`                  | Variant set when `--variant` is not provided: `main` (canonical 8) or `combined-visibility` (exploratory pair)     |
@@ -193,7 +200,7 @@ By default, `evaluate.mjs` uses `--thinking-profile minimized` to apply the stro
 | `--model <id>`           | tier default            | Optional model override where supported. For OpenAI exploratory: `gpt-5-mini` (default) or `gpt-5`.                |
 | `--thinking-profile <p>` | `minimized`             | Thinking-depth control strategy: `minimized` (recommended) or `provider-default` (sensitivity check).              |
 
-Note: `--persist` is supported only for canonical variant IDs in the current Supabase enum. Exploratory visibility-set runs are CSV-only unless the database enum is extended.
+Note: `--persist` only accepts canonical variants; `--persist-exploratory` only accepts exploratory visibility variants.
 
 ---
 
@@ -210,6 +217,14 @@ If results were persisted, query the `llm_eval_comparison` view:
 ```sql
 SELECT *
 FROM llm_eval_comparison
+ORDER BY variant_id, provider, model, tier, thinking_profile;
+```
+
+For exploratory visibility runs, query:
+
+```sql
+SELECT *
+FROM llm_eval_comparison_exploratory
 ORDER BY variant_id, provider, model, tier, thinking_profile;
 ```
 

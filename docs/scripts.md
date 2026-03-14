@@ -32,8 +32,11 @@ npm run evaluate:all -- --tier validation --repetitions 5
 # Sensitivity run with provider-default thinking
 npm run evaluate:all -- --tier validation --thinking-profile provider-default --repetitions 5
 
-# Exploratory visibility-axis pair (CSV-only unless DB enum is extended)
+# Exploratory visibility-axis pair (CSV-only by default)
 npm run evaluate:all -- --variant-set combined-visibility --tier validation --repetitions 5
+
+# Optional exploratory persistence to a separate Supabase table
+npm run evaluate:all -- --variant-set combined-visibility --persist-exploratory --tier validation --repetitions 5
 
 # Optional persistence to Supabase
 npm run evaluate:all -- --persist --repetitions 5
@@ -50,11 +53,13 @@ npm run evaluate:all -- --persist --repetitions 5
 - `--variant-set <main|combined-visibility>`
 - `--url <base-url>`
 - `--persist`
+- `--persist-exploratory`
 
 Output is always written to `results/gaio_evaluation_<provider>_<model>_<timestamp>.csv`.
 CSV rows use metadata-first ordering (`Provider, Model, Tier, Thinking_Controls, Variant_ID, Run, ...`) so settings/context are separated from extraction outcomes.
 Persisted rows include `thinking_controls` in `llm_evaluation_results`.
-`--persist` is limited to canonical variant IDs; the exploratory visibility-set is CSV-only by default.
+`--persist` is limited to canonical variant IDs and writes to `llm_evaluation_results`.
+`--persist-exploratory` is limited to exploratory visibility routes and writes to `llm_evaluation_results_exploratory`.
 
 ## Bot Simulation (`test-bots.mjs`)
 

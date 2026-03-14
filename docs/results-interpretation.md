@@ -142,9 +142,10 @@ With a single run, `std` will be `NaN`. That is expected.
 
 ## Supabase Views
 
-When runs are persisted with `--persist`, use:
+When runs are persisted, use:
 
-- `llm_eval_comparison` for model extraction aggregates by variant/provider/model/tier/thinking profile
+- `llm_eval_comparison` for canonical model extraction aggregates (`--persist`)
+- `llm_eval_comparison_exploratory` for exploratory visibility aggregates (`--persist-exploratory`)
 - `extraction_comparison` for structural marker extraction aggregates
 - `gaio_comparison` for crawler telemetry aggregates
 

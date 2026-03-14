@@ -39,6 +39,8 @@ const args = process.argv.slice(2);
 const providerFlagIndex = args.indexOf("--provider");
 const PROVIDER = providerFlagIndex !== -1 ? args[providerFlagIndex + 1] : null;
 const PERSIST = args.includes("--persist");
+const PERSIST_EXPLORATORY = args.includes("--persist-exploratory");
+const PERSIST_ANY = PERSIST || PERSIST_EXPLORATORY;
 const urlFlagIndex = args.indexOf("--url");
 const URL_OVERRIDE = urlFlagIndex !== -1 ? args[urlFlagIndex + 1] : null;
 const repetitionsFlagIndex = args.indexOf("--repetitions");
@@ -78,8 +80,13 @@ Providers:
   all      → runs openai, claude, gemini sequentially; all three API keys required
 
 Options:
-  --persist               Write results to Supabase in addition to CSV output.
+  --persist               Write canonical results to Supabase table llm_evaluation_results.
                           Requires SUPABASE_URL and SUPABASE_ANON_KEY.
+                          Only valid for canonical variants (main set).
+  --persist-exploratory   Write exploratory visibility results to Supabase table
+                          llm_evaluation_results_exploratory.
+                          Requires SUPABASE_URL and SUPABASE_ANON_KEY.
+                          Only valid for exploratory variants (combined-dsd, combined-noscript).
   --url <base-url>        Override the target base URL (default: http://localhost:4321).
                           Example: --url https://gaio-validation-lab.vercel.app
   --repetitions <n>       Number of runs per variant (default: 1).
@@ -111,6 +118,7 @@ Npm shortcuts (pass flags after --):
   npm run evaluate:all   -- --persist --tier validation --repetitions 5
   npm run evaluate:openai -- --tier exploratory --repetitions 5
   npm run evaluate:openai -- --tier exploratory --model gpt-5 --repetitions 5
+  npm run evaluate:all   -- --variant-set combined-visibility --persist-exploratory --tier validation --repetitions 5
   npm run evaluate:all   -- --variant-set combined-visibility --tier validation --repetitions 5
 `);
   process.exit(0);
@@ -662,12 +670,13 @@ async function callLLMWithRetry(provider, htmlContent, config, apiKey) {
 // ---------------------------------------------------------------------------
 
 /**
- * Persists a single evaluation result row to the Supabase `llm_evaluation_results` table.
+ * Persists a single evaluation result row to a Supabase evaluation table.
+ * @param {string} table - Target table name.
  * @param {object} payload - Row data matching the table schema.
  * @returns {Promise<boolean>} `true` if the insert succeeded, `false` otherwise.
  */
-async function persistEvalResult(payload) {
-  const result = await supabaseInsert("llm_evaluation_results", payload);
+async function persistEvalResult(table, payload) {
+  const result = await supabaseInsert(table, payload);
   if (!result.ok) {
     console.error("Persist failed:", result.status, result.error);
   }
@@ -761,8 +770,11 @@ async function evaluateVariant(
     };
 
     let dbStatus = "-";
-    if (PERSIST) {
-      const ok = await persistEvalResult({
+    if (PERSIST_ANY) {
+      const targetTable = PERSIST
+        ? "llm_evaluation_results"
+        : "llm_evaluation_results_exploratory";
+      const ok = await persistEvalResult(targetTable, {
         provider,
         model: config.model,
         tier: TIER,
@@ -867,7 +879,7 @@ async function runProviderEvaluation(provider, config, apiKey) {
   fs.writeFileSync(outputFile, csvHeader + csvRows);
   console.log(`✅ Results saved to: ${outputFile}`);
 
-  if (PERSIST) {
+  if (PERSIST_ANY) {
     const persisted = results.filter((r) => r.dbStatus === "OK").length;
     const failed = results.filter((r) => r.dbStatus === "ERR").length;
     console.log(`💾 Database: ${persisted} persisted / ${failed} failed`);
@@ -880,27 +892,55 @@ async function runProviderEvaluation(provider, config, apiKey) {
  * @returns {Promise<void>}
  */
 async function runEvaluation() {
+  const canonicalVariantIds = new Set(MAIN_VARIANTS.map((v) => v.id));
+  const exploratoryVariantIds = new Set(EXPLORATORY_VARIANTS.map((v) => v.id));
+
+  if (PERSIST && PERSIST_EXPLORATORY) {
+    console.error(
+      "❌ Error: Use either --persist or --persist-exploratory, not both.",
+    );
+    process.exit(1);
+  }
+
   if (PERSIST) {
-    const canonicalVariantIds = new Set(MAIN_VARIANTS.map((v) => v.id));
-    const hasExploratoryVariant = VARIANTS.some(
+    const hasNonCanonicalVariant = VARIANTS.some(
       (v) => !canonicalVariantIds.has(v.id),
     );
 
-    if (hasExploratoryVariant) {
+    if (hasNonCanonicalVariant) {
       console.error(
-        "❌ Error: --persist is only supported for canonical variants in Supabase enum gaio_variant. Remove --persist or run with --variant-set main.",
+        "❌ Error: --persist is only supported for canonical variants. Use --persist-exploratory for combined-dsd/combined-noscript.",
+      );
+      process.exit(1);
+    }
+  }
+
+  if (PERSIST_EXPLORATORY) {
+    const hasNonExploratoryVariant = VARIANTS.some(
+      (v) => !exploratoryVariantIds.has(v.id),
+    );
+
+    if (hasNonExploratoryVariant) {
+      console.error(
+        "❌ Error: --persist-exploratory only supports exploratory variants (combined-dsd, combined-noscript). Use --variant-set combined-visibility or --variant with an exploratory id.",
+      );
+      process.exit(1);
+    }
+  }
+
+  if (PERSIST_ANY) {
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+      console.error(
+        "❌ Error: persistence requires SUPABASE_URL and SUPABASE_ANON_KEY to be set.",
       );
       process.exit(1);
     }
 
-    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
-      console.error(
-        "❌ Error: --persist requires SUPABASE_URL and SUPABASE_ANON_KEY to be set.",
-      );
-      process.exit(1);
-    }
+    const targetTable = PERSIST
+      ? "llm_evaluation_results"
+      : "llm_evaluation_results_exploratory";
     console.log(
-      `💾 Persist mode: results will be written to Supabase (${process.env.SUPABASE_URL})`,
+      `💾 Persist mode: results will be written to Supabase table ${targetTable} (${process.env.SUPABASE_URL})`,
     );
   }
 
@@ -941,9 +981,12 @@ async function runEvaluation() {
     console.log(`${"=".repeat(60)}`);
   }
 
-  if (PERSIST) {
+  if (PERSIST_ANY) {
+    const targetTable = PERSIST
+      ? "llm_evaluation_results"
+      : "llm_evaluation_results_exploratory";
     console.log(
-      `\n   Query: SELECT * FROM llm_evaluation_results ORDER BY created_at DESC;`,
+      `\n   Query: SELECT * FROM ${targetTable} ORDER BY created_at DESC;`,
     );
   }
 }

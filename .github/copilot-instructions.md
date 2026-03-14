@@ -32,9 +32,9 @@ npm run evaluate:openai            # Run OpenAI extraction benchmark, output CSV
 npm run evaluate:claude            # Run Claude extraction benchmark
 npm run evaluate:gemini            # Run Gemini extraction benchmark
 npm run evaluate:all               # Run all three providers in sequence
-# Flags (pass after --): --persist, --url <url>, --repetitions <n>, --variant <id>, --variant-set <set>, --tier <tier>, --thinking-profile <profile>
+# Flags (pass after --): --persist, --persist-exploratory, --url <url>, --repetitions <n>, --variant <id>, --variant-set <set>, --tier <tier>, --thinking-profile <profile>
 # Example: npm run evaluate:all -- --persist --repetitions 3
-# Exploratory example: npm run evaluate:all -- --variant-set combined-visibility --tier validation --repetitions 5
+# Exploratory example: npm run evaluate:all -- --variant-set combined-visibility --persist-exploratory --tier validation --repetitions 5
 
 # Testing
 npm run test:extract               # Simulate bot content extraction (curl/UA variants)
@@ -109,20 +109,22 @@ Seven deliberately structured HTML elements embedded across pages to disambiguat
 
 ### Supabase Schema (`supabase/schema.sql`)
 
-Three tables:
+Four tables:
 
 - `bot_logs` — real AI crawler visits (populated by middleware)
 - `extraction_results` — simulated extraction runs (populated by `test:extract` scripts)
-- `llm_evaluation_results` — LLM benchmark results (populated by `evaluate:*` scripts with `--persist`)
+- `llm_evaluation_results` — canonical LLM benchmark results (populated by `evaluate:*` scripts with `--persist`)
+- `llm_evaluation_results_exploratory` — exploratory visibility-axis LLM results (populated by `evaluate:*` scripts with `--persist-exploratory`)
 
 RLS is enabled but intentionally permissive (anon insert/read) for the lab environment.
 
-`gaio_variant` enum currently contains canonical IDs only, so exploratory evaluator routes are CSV-only unless the enum is extended.
+`gaio_variant` enum intentionally contains canonical IDs only. Exploratory evaluator routes persist to the separate `llm_evaluation_results_exploratory` table.
 
 ## Key Conventions
 
 - **`--persist` flag**: Evaluation/extraction scripts write to Supabase only when `--persist` is passed. Without it, results go to stdout/CSV only.
-- **Persist scope**: `evaluate.mjs --persist` supports canonical variant IDs only; exploratory visibility-set runs are CSV-only by default.
+- **`--persist-exploratory` flag**: `evaluate.mjs` writes exploratory visibility-set runs to `llm_evaluation_results_exploratory`.
+- **Persist scope**: `--persist` is canonical-only; `--persist-exploratory` is exploratory-only.
 - **`--url` flag**: Evaluation scripts default to `http://localhost:4321`; pass `--url` to target production.
 - **`--variant-set` flag**: `main` (canonical 8-arm matrix) or `combined-visibility` (exploratory pair).
 - **Canonical variant IDs** used across scripts and DB enum: `control`, `combined`, `jsonld`, `semantic`, `aria`, `noscript`, `dsd`, `microdata`.

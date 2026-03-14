@@ -36,19 +36,24 @@ npm run evaluate:all -- --tier validation --thinking-profile provider-default --
 # Exploratory visibility-axis pair (combined-dsd vs combined-noscript)
 npm run evaluate:all -- --variant-set combined-visibility --tier validation --repetitions 5
 
-# Persist results to Supabase (requires SUPABASE_URL + SUPABASE_ANON_KEY)
+# Persist canonical results to Supabase (requires SUPABASE_URL + SUPABASE_ANON_KEY)
 npm run evaluate:openai -- --persist
 npm run evaluate:claude -- --persist
 npm run evaluate:gemini -- --persist
+
+# Persist exploratory visibility-axis results to a separate table
+npm run evaluate:all -- --variant-set combined-visibility --persist-exploratory --tier validation --repetitions 5
 ```
 
 Results are always written to `results/gaio_evaluation_<provider>_<model>_<timestamp>.csv`.
 CSV columns are metadata-first to separate setup from outcomes:
 `Provider, Model, Tier, Thinking_Controls, Variant_ID, Run, ...metrics..., DB, Raw_JSON_Output`.
 For exploratory OpenAI runs, use `--model gpt-5-mini` (default) or `--model gpt-5` to run each model independently.
-With `--persist`, each run is also inserted into the `llm_evaluation_results` Supabase table (including `tier`, `thinking_controls`, `variant_id`, and `base_url`), enabling cross-provider and cross-run comparisons via the `llm_eval_comparison` SQL view.
+With `--persist`, each canonical run is inserted into `llm_evaluation_results` (including `tier`, `thinking_controls`, `variant_id`, and `base_url`), enabling cross-provider and cross-run comparisons via `llm_eval_comparison`.
 
-`--persist` is restricted to canonical variant IDs only. Exploratory routes (`combined-dsd`, `combined-noscript`) are CSV-only unless the Supabase enum `gaio_variant` is explicitly extended.
+With `--persist-exploratory`, exploratory visibility-axis runs (`combined-dsd`, `combined-noscript`) are inserted into `llm_evaluation_results_exploratory`, with analytics exposed via `llm_eval_comparison_exploratory`.
+
+By default (without either persist flag), exploratory visibility-axis runs remain CSV-only.
 
 ## Variant Selection
 
@@ -61,15 +66,15 @@ Variant IDs come from [src/data/variants.mjs](../src/data/variants.mjs):
 
 ## Environment Variables
 
-Running the evaluation requires an LLM provider API key. Running with `--persist` additionally requires `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
+Running the evaluation requires an LLM provider API key. Running with `--persist` or `--persist-exploratory` additionally requires `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
 
-| Variable            | Required for     |
-| ------------------- | ---------------- |
-| `OPENAI_API_KEY`    | OpenAI provider  |
-| `ANTHROPIC_API_KEY` | Claude provider  |
-| `GEMINI_API_KEY`    | Gemini provider  |
-| `SUPABASE_URL`      | `--persist` flag |
-| `SUPABASE_ANON_KEY` | `--persist` flag |
+| Variable            | Required for                           |
+| ------------------- | -------------------------------------- |
+| `OPENAI_API_KEY`    | OpenAI provider                        |
+| `ANTHROPIC_API_KEY` | Claude provider                        |
+| `GEMINI_API_KEY`    | Gemini provider                        |
+| `SUPABASE_URL`      | `--persist` or `--persist-exploratory` |
+| `SUPABASE_ANON_KEY` | `--persist` or `--persist-exploratory` |
 
 Add the relevant keys to your `.env` file. The npm scripts load them automatically via Node's native `--env-file` flag.
 
@@ -142,6 +147,9 @@ Optional exploratory visibility-axis check (CSV-only by default):
 
 ```bash
 npm run evaluate:all -- --variant-set combined-visibility --tier validation --repetitions 5
+
+# with separate exploratory DB persistence
+npm run evaluate:all -- --variant-set combined-visibility --persist-exploratory --tier validation --repetitions 5
 ```
 
 Exploratory estimates assume similar token volumes across both model runs; `gpt-5` is priced at 5x `gpt-5-mini` for input and output.
@@ -175,11 +183,21 @@ The script includes `callLLMWithRetry()` which handles 429 responses by parsing 
 
 ## Supabase Schema
 
-The `llm_evaluation_results` table stores one row per variant x provider run and includes `thinking_controls` metadata for each persisted row. The `llm_eval_comparison` view aggregates averages across runs and keeps both model tier and derived thinking profile in the grouping:
+Canonical persisted rows are stored in `llm_evaluation_results`, while exploratory visibility-axis persisted rows are stored in `llm_evaluation_results_exploratory`. Both include `thinking_controls` metadata per run.
+
+Canonical aggregation view:
 
 ```sql
 SELECT *
 FROM llm_eval_comparison
+ORDER BY variant_id, provider, model, tier, thinking_profile;
+```
+
+Exploratory aggregation view:
+
+```sql
+SELECT *
+FROM llm_eval_comparison_exploratory
 ORDER BY variant_id, provider, model, tier, thinking_profile;
 ```
 
