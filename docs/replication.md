@@ -52,10 +52,6 @@ Initialize Supabase schema before any `--persist` run:
 1. Open Supabase SQL Editor.
 2. Execute [`supabase/schema.sql`](../supabase/schema.sql).
 
-If your Supabase project already has historical `llm_evaluation_results` rows and you want to keep existing data, run the incremental migration afterwards:
-
-3. Execute [`supabase/migrations/2026-03-14_llm-thinking-controls.sql`](../supabase/migrations/2026-03-14_llm-thinking-controls.sql).
-
 ---
 
 ## 3. Build and Run Locally

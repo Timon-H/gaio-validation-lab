@@ -37,8 +37,6 @@ results/gaio_evaluation_<provider>_<model>_<timestamp>.csv
 | `DB`                | string      | Persistence status: `-`, `OK`, `ERR`, or `ERROR`                                                 |
 | `Raw_JSON_Output`   | JSON string | Full structured output returned by the model                                                     |
 
-Note: older CSV files generated before model-tier rollout may not include `Model` and `Tier` columns.
-
 ---
 
 ## How To Read These Metrics

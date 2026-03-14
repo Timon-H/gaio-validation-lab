@@ -18,10 +18,6 @@ Run the full SQL file in Supabase SQL Editor:
 
 The current schema is a full reset script (drops and recreates tables, enums, and views).
 
-For existing projects where data already exists, run the incremental migration script:
-
-- [supabase/migrations/2026-03-14_llm-thinking-controls.sql](../supabase/migrations/2026-03-14_llm-thinking-controls.sql)
-
 ## 2. Canonical Variant IDs
 
 All tables use canonical variant IDs via enum `gaio_variant`:
