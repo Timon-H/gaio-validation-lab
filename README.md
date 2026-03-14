@@ -25,16 +25,16 @@ Each GAIO measure is isolated to a separate page variant to quantify its indepen
 
 Eight variants of the same insurance page content, each isolating a single GAIO variable:
 
-| Variant                | GAIO Measure                                          | URL                                                                      |
-| ---------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------ |
-| Control                | None — bare Shadow DOM baseline                       | [/control](https://gaio-validation-lab.vercel.app/control)               |
-| Combined               | All measures combined                                 | [/combined](https://gaio-validation-lab.vercel.app/combined)             |
-| JSON-LD only           | Structured data in `<head>`                           | [/test-jsonld](https://gaio-validation-lab.vercel.app/test-jsonld)       |
-| Semantic HTML only     | `<section>`, `<article>`, `<aside>` wrappers          | [/test-semantic](https://gaio-validation-lab.vercel.app/test-semantic)   |
-| ARIA only              | `aria-label` / `aria-labelledby` on host elements     | [/test-aria](https://gaio-validation-lab.vercel.app/test-aria)           |
-| `<noscript>` only      | Light DOM fallbacks for no-JS crawlers                | [/test-noscript](https://gaio-validation-lab.vercel.app/test-noscript)   |
-| Declarative Shadow DOM | SSR-rendered shadow content via `@lit-labs/ssr`       | [/test-dsd](https://gaio-validation-lab.vercel.app/test-dsd)             |
-| Microdata only         | Inline `schema.org` `itemscope`/`itemprop` attributes | [/test-microdata](https://gaio-validation-lab.vercel.app/test-microdata) |
+| Variant                | GAIO Measure                                                                                | URL                                                                      |
+| ---------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Control                | None — bare Shadow DOM baseline                                                             | [/control](https://gaio-validation-lab.vercel.app/control)               |
+| Combined               | Combined stack (JSON-LD + Semantic + ARIA + DSD + Microdata; `<noscript>` remains isolated) | [/combined](https://gaio-validation-lab.vercel.app/combined)             |
+| JSON-LD only           | Structured data in `<head>`                                                                 | [/test-jsonld](https://gaio-validation-lab.vercel.app/test-jsonld)       |
+| Semantic HTML only     | `<section>`, `<article>`, `<aside>` wrappers                                                | [/test-semantic](https://gaio-validation-lab.vercel.app/test-semantic)   |
+| ARIA only              | `aria-label` / `aria-labelledby` on host elements                                           | [/test-aria](https://gaio-validation-lab.vercel.app/test-aria)           |
+| `<noscript>` only      | Light DOM fallbacks for no-JS crawlers                                                      | [/test-noscript](https://gaio-validation-lab.vercel.app/test-noscript)   |
+| Declarative Shadow DOM | SSR-rendered shadow content via `@lit-labs/ssr`                                             | [/test-dsd](https://gaio-validation-lab.vercel.app/test-dsd)             |
+| Microdata only         | Inline `schema.org` `itemscope`/`itemprop` attributes                                       | [/test-microdata](https://gaio-validation-lab.vercel.app/test-microdata) |
 
 ## Quick Start
 
@@ -70,7 +70,7 @@ src/
   middleware.ts           ← AI bot detection + Supabase logging
   pages/
     control/             ← Baseline — no GAIO measures
-    combined/            ← All GAIO measures combined
+    combined/            ← Combined stack (JSON-LD + Semantic + ARIA + DSD + Microdata)
     test-jsonld/         ← Isolated: JSON-LD
     test-semantic/       ← Isolated: Semantic HTML
     test-aria/           ← Isolated: ARIA attributes
@@ -78,7 +78,7 @@ src/
     test-dsd/            ← Isolated: Declarative Shadow DOM
     test-microdata/      ← Isolated: Microdata
 scripts/
-  evaluate.mjs           ← Multi-provider LLM extraction benchmark
+  evaluate.mjs           ← Multi-provider LLM extraction benchmark (tier/profile controls + metadata)
   test-bots.mjs          ← Bot UA simulation
   test-extract.mjs       ← Structural content extraction
   test-integrity.mjs     ← Variant/header/marker integrity gate

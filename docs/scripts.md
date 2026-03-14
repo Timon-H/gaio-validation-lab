@@ -14,7 +14,7 @@ This page documents all executable scripts in `scripts/` and how they relate to 
 
 Structured multi-provider extraction benchmark with provider and tier selection.
 
-See [docs/evaluation.md](evaluation.md) for full details, including model tiers, deterministic settings, pricing, and recommended thesis runs.
+See [docs/evaluation.md](evaluation.md) for full details, including model tiers, provider-specific variance controls, pricing, and recommended thesis runs.
 
 ### Quick Commands
 
@@ -27,6 +27,9 @@ npm run evaluate:gemini
 # All providers, validation tier, repeated runs
 npm run evaluate:all -- --tier validation --repetitions 5
 
+# Sensitivity run with provider-default thinking
+npm run evaluate:all -- --tier validation --thinking-profile provider-default --repetitions 5
+
 # Optional persistence to Supabase
 npm run evaluate:all -- --persist --repetitions 5
 ```
@@ -35,6 +38,7 @@ npm run evaluate:all -- --persist --repetitions 5
 
 - `--provider <openai|claude|gemini|all>`
 - `--tier <primary|validation|exploratory>`
+- `--thinking-profile <minimized|provider-default>`
 - `--model <model-id>`
 - `--repetitions <n>`
 - `--variant <id>`
@@ -42,6 +46,8 @@ npm run evaluate:all -- --persist --repetitions 5
 - `--persist`
 
 Output is always written to `results/gaio_evaluation_<provider>_<model>_<timestamp>.csv`.
+CSV rows use metadata-first ordering (`Provider, Model, Tier, Thinking_Controls, Variant_ID, Run, ...`) so settings/context are separated from extraction outcomes.
+Persisted rows include `thinking_controls` in `llm_evaluation_results`.
 
 ## Bot Simulation (`test-bots.mjs`)
 
@@ -210,6 +216,6 @@ Schema v2 provides three analytics views:
 
 - `gaio_comparison` -> bot visit aggregates per variant
 - `extraction_comparison` -> structural extraction aggregates per variant and extractor
-- `llm_eval_comparison` -> LLM extraction aggregates per variant/provider/model/tier
+- `llm_eval_comparison` -> LLM extraction aggregates per variant/provider/model/tier/thinking profile
 
 See [docs/database.md](database.md) for SQL examples.

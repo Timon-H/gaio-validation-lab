@@ -63,16 +63,16 @@ npm run dev         # Local server at http://localhost:4321
 
 The eight variant pages are available at:
 
-| Path              | Variant                            |
-| ----------------- | ---------------------------------- |
-| `/control`        | Bare Shadow DOM — no GAIO measures |
-| `/combined`       | All GAIO measures combined         |
-| `/test-jsonld`    | JSON-LD only                       |
-| `/test-semantic`  | Semantic HTML only                 |
-| `/test-aria`      | ARIA only                          |
-| `/test-noscript`  | `<noscript>` fallbacks only        |
-| `/test-dsd`       | Declarative Shadow DOM only        |
-| `/test-microdata` | Microdata only                     |
+| Path              | Variant                                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------------------------- |
+| `/control`        | Bare Shadow DOM — no GAIO measures                                                                         |
+| `/combined`       | Combined stack (JSON-LD + Semantic + ARIA + DSD + Microdata; `<noscript>` is isolated in `/test-noscript`) |
+| `/test-jsonld`    | JSON-LD only                                                                                               |
+| `/test-semantic`  | Semantic HTML only                                                                                         |
+| `/test-aria`      | ARIA only                                                                                                  |
+| `/test-noscript`  | `<noscript>` fallbacks only                                                                                |
+| `/test-dsd`       | Declarative Shadow DOM only                                                                                |
+| `/test-microdata` | Microdata only                                                                                             |
 
 ---
 
@@ -149,6 +149,7 @@ npm run evaluate:openai -- --url https://gaio-validation-lab.vercel.app --persis
 ```
 
 This requires `SUPABASE_URL` and `SUPABASE_ANON_KEY` in `.env`.
+Persisted rows include `tier` plus `thinking_controls` metadata for reproducibility.
 
 To run a different model tier, pass `--tier`:
 
@@ -161,19 +162,25 @@ npm run evaluate:openai -- --tier exploratory --repetitions 5
 
 # Run the exploratory tier with full GPT-5
 npm run evaluate:openai -- --tier exploratory --model gpt-5 --repetitions 5
+
+# Sensitivity run with provider-default thinking behavior
+npm run evaluate:all -- --tier validation --thinking-profile provider-default --repetitions 5
 ```
+
+By default, `evaluate.mjs` uses `--thinking-profile minimized` to apply the strongest available per-provider controls for internal reasoning depth.
 
 ### Available Flags
 
-| Flag                | Default                 | Description                                                                                                        |
-| ------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `--provider <id>`   | —                       | Provider to use: `openai`, `claude`, `gemini`, or `all`                                                            |
-| `--url <base-url>`  | `http://localhost:4321` | Base URL for all variant fetches                                                                                   |
-| `--persist`         | off                     | Write results to Supabase in addition to CSV                                                                       |
-| `--repetitions <n>` | `1`                     | Number of extraction runs per variant                                                                              |
-| `--variant <id>`    | all                     | Run a single variant only (e.g. `--variant control`)                                                               |
-| `--tier <tier>`     | `primary`               | Model tier: `primary`, `validation`, or `exploratory`. See [`docs/evaluation.md`](evaluation.md) for tier details. |
-| `--model <id>`      | tier default            | Optional model override where supported. For OpenAI exploratory: `gpt-5-mini` (default) or `gpt-5`.                |
+| Flag                     | Default                 | Description                                                                                                        |
+| ------------------------ | ----------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `--provider <id>`        | —                       | Provider to use: `openai`, `claude`, `gemini`, or `all`                                                            |
+| `--url <base-url>`       | `http://localhost:4321` | Base URL for all variant fetches                                                                                   |
+| `--persist`              | off                     | Write results to Supabase in addition to CSV                                                                       |
+| `--repetitions <n>`      | `1`                     | Number of extraction runs per variant                                                                              |
+| `--variant <id>`         | all                     | Run a single variant only (e.g. `--variant control`)                                                               |
+| `--tier <tier>`          | `primary`               | Model tier: `primary`, `validation`, or `exploratory`. See [`docs/evaluation.md`](evaluation.md) for tier details. |
+| `--model <id>`           | tier default            | Optional model override where supported. For OpenAI exploratory: `gpt-5-mini` (default) or `gpt-5`.                |
+| `--thinking-profile <p>` | `minimized`             | Thinking-depth control strategy: `minimized` (recommended) or `provider-default` (sensitivity check).              |
 
 ---
 
@@ -190,7 +197,7 @@ If results were persisted, query the `llm_eval_comparison` view:
 ```sql
 SELECT *
 FROM llm_eval_comparison
-ORDER BY variant_id, provider, model, tier;
+ORDER BY variant_id, provider, model, tier, thinking_profile;
 ```
 
 You can also inspect structural extraction aggregates:
@@ -225,4 +232,5 @@ Each call generates a new timestamped CSV; aggregate multiple runs for more reli
 - **API quotas:** Gemini free-tier quota may throttle or reject requests during high-load periods. The script includes automatic retry logic with exponential backoff.
 - **Live vs. local differences:** Passing `--url https://gaio-validation-lab.vercel.app` evaluates the deployed Vercel URL; the default targets `localhost:4321`. Results should be identical given the same HTML output, but network latency and caching may introduce minor differences.
 - **`/combined` and `/test-dsd` are SSR-only:** These two variants disable client-side hydration to keep the initial HTML deterministic. Other variants use standard Astro SSR with client-side Lit hydration.
-- **`seed` support varies by provider:** OpenAI uses `seed: 42`; Claude and Gemini do not currently expose a seed parameter in this script path. Temperature is fixed at `0.0` for all providers except OpenAI reasoning models.
+- **Control surfaces differ by provider:** OpenAI Chat Completions (`gpt-4.1*`) and Gemini runs use `seed: 42`; Claude has no seed parameter in this script path; OpenAI reasoning models (`gpt-5*`) do not support seed/temperature.
+- **Thinking controls are asymmetric:** Gemini `2.5-flash` can disable thinking (`thinkingBudget=0`), while Gemini `2.5-pro` cannot fully disable thinking (minimum budget is `128`). Claude extended thinking is opt-in and is left disabled unless explicitly enabled.

@@ -72,6 +72,7 @@ Key fields written:
 - `provider`
 - `model`
 - `tier`
+- `thinking_controls`
 - `variant_id`
 - `run`
 - `base_url`
@@ -103,12 +104,12 @@ ORDER BY variant_id, extractor;
 
 ### `llm_eval_comparison`
 
-Aggregates LLM benchmark results per variant/provider/model/tier.
+Aggregates LLM benchmark results per variant/provider/model/tier/thinking profile.
 
 ```sql
 SELECT *
 FROM llm_eval_comparison
-ORDER BY variant_id, provider, model, tier;
+ORDER BY variant_id, provider, model, tier, thinking_profile;
 ```
 
 ## 5. Quick End-to-End Checks
@@ -129,6 +130,11 @@ ORDER BY created_at DESC
 LIMIT 10;
 
 SELECT created_at, provider, model, tier, variant_id, run
+FROM llm_evaluation_results
+ORDER BY created_at DESC
+LIMIT 10;
+
+SELECT created_at, provider, model, tier, thinking_controls, variant_id, run
 FROM llm_evaluation_results
 ORDER BY created_at DESC
 LIMIT 10;

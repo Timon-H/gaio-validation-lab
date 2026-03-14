@@ -111,6 +111,7 @@ CREATE TABLE llm_evaluation_results (
   provider             gaio_provider NOT NULL,
   model                TEXT NOT NULL,
   tier                 TEXT NOT NULL,
+  thinking_controls    TEXT NOT NULL DEFAULT 'profile=provider-default',
   variant_id           gaio_variant NOT NULL,
   run                  INT NOT NULL CHECK (run >= 1),
   base_url             TEXT NOT NULL,
@@ -129,6 +130,9 @@ CREATE INDEX idx_llm_eval_variant_provider_model_created
 
 CREATE INDEX idx_llm_eval_provider_variant_run
   ON llm_evaluation_results (provider, variant_id, run);
+
+CREATE INDEX idx_llm_eval_tier_thinking_created
+  ON llm_evaluation_results (tier, thinking_controls, created_at DESC);
 
 CREATE INDEX idx_llm_eval_created
   ON llm_evaluation_results (created_at DESC);
@@ -173,6 +177,7 @@ SELECT
   provider,
   model,
   tier,
+  COALESCE(NULLIF(substring(thinking_controls FROM 'profile=([^;]+)'), ''), 'unknown') AS thinking_profile,
   COUNT(*) AS runs,
   ROUND(AVG(tarife_count)::numeric, 2) AS avg_tarife,
   ROUND(AVG(faq_count)::numeric, 2) AS avg_faq,
@@ -182,8 +187,13 @@ SELECT
   ROUND(100.0 * SUM(hat_anbieter::int) / COUNT(*), 0) AS pct_anbieter,
   MAX(created_at) AS last_run_at
 FROM llm_evaluation_results
-GROUP BY variant_id, provider, model, tier
-ORDER BY variant_id, provider, model, tier;
+GROUP BY
+  variant_id,
+  provider,
+  model,
+  tier,
+  COALESCE(NULLIF(substring(thinking_controls FROM 'profile=([^;]+)'), ''), 'unknown')
+ORDER BY variant_id, provider, model, tier, thinking_profile;
 
 -- --------------------------------------------------------------------------
 -- 6) RLS (permissive by design for lab environment)

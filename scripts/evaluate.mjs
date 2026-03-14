@@ -5,13 +5,15 @@
  *
  * Supports three LLM providers: openai, claude, gemini, all (runs all three sequentially)
  * Supports three model tiers: primary (default), validation, exploratory
+ * Supports thinking-profile controls: minimized (default), provider-default
  *
  * Usage:
  *   node evaluate.mjs --provider openai       # OpenAI only (primary tier)
  *   node evaluate.mjs --provider all          # All three providers sequentially
  *   node evaluate.mjs --provider all --tier validation   # Higher-capability models
- *   node evaluate.mjs --provider openai --tier exploratory  # GPT-5-mini reasoning model (default)
- *   node evaluate.mjs --provider openai --tier exploratory --model gpt-5  # GPT-5 reasoning model
+ *   node evaluate.mjs --provider openai --tier exploratory  # GPT-5-mini reasoning probe (default)
+ *   node evaluate.mjs --provider openai --tier exploratory --model gpt-5  # GPT-5 reasoning probe
+ *   node evaluate.mjs --provider all --thinking-profile provider-default  # Use provider defaults for thinking
  *
  * Required environment variables (per provider):
  *   openai  → OPENAI_API_KEY
@@ -47,9 +49,15 @@ const tierFlagIndex = args.indexOf("--tier");
 const TIER = tierFlagIndex !== -1 ? args[tierFlagIndex + 1] : "primary";
 const modelFlagIndex = args.indexOf("--model");
 const MODEL_OVERRIDE = modelFlagIndex !== -1 ? args[modelFlagIndex + 1] : null;
+const thinkingProfileFlagIndex = args.indexOf("--thinking-profile");
+const THINKING_PROFILE =
+  thinkingProfileFlagIndex !== -1
+    ? args[thinkingProfileFlagIndex + 1]
+    : "minimized";
 
 const SUPPORTED_PROVIDERS = ["openai", "claude", "gemini", "all"];
 const SUPPORTED_TIERS = ["primary", "validation", "exploratory"];
+const SUPPORTED_THINKING_PROFILES = ["minimized", "provider-default"];
 
 if (!PROVIDER) {
   console.log(`
@@ -75,6 +83,13 @@ Options:
                           exploratory  → reasoning model probe (gpt-5-mini default, gpt-5 via --model; openai provider)
   --model <model-id>      Optional model override for the selected provider+tier.
                           Exploratory OpenAI values: gpt-5-mini (default), gpt-5
+  --thinking-profile <p>  Thinking control profile (default: minimized).
+                          minimized         → strongest available variance controls per provider.
+                                               OpenAI reasoning: effort=minimal
+                                               Gemini 2.5 Flash: thinkingBudget=0
+                                               Gemini 2.5 Pro: thinkingBudget=128 (minimum allowed; cannot disable)
+                                               Claude: extended thinking remains off (opt-in, omitted here)
+                          provider-default  → leave provider thinking depth at API defaults
 
 Npm shortcuts (pass flags after --):
   npm run evaluate:openai -- --persist
@@ -102,6 +117,13 @@ if (!SUPPORTED_TIERS.includes(TIER)) {
   process.exit(1);
 }
 
+if (!SUPPORTED_THINKING_PROFILES.includes(THINKING_PROFILE)) {
+  console.error(
+    `❌ Unknown thinking profile "${THINKING_PROFILE}". Choose from: ${SUPPORTED_THINKING_PROFILES.join(", ")}`,
+  );
+  process.exit(1);
+}
+
 if (MODEL_OVERRIDE && PROVIDER === "all") {
   console.error(
     "❌ --model cannot be combined with --provider all. Choose a single provider.",
@@ -113,16 +135,16 @@ if (MODEL_OVERRIDE && PROVIDER === "all") {
 // Provider configuration — organised by tier
 // ---------------------------------------------------------------------------
 //
-// primary      — cost-effective models with full determinism controls
+// primary      — cost-effective models with strongest variance controls
 //                (temperature: 0.0, seed where supported, JSON mode)
 // validation   — higher-capability models from the same providers;
-//                same API surface and determinism controls, used with
+//                same API surface and variance controls, used with
 //                fewer repetitions to confirm that results generalise
 //                across model capability levels.
-// exploratory  — OpenAI-only GPT-5 reasoning model probe.
-//                Uses the Responses API with reasoning.effort: 'low'.
-//                No temperature/seed support — non-deterministic by design.
-//                Included as a forward-looking supplementary analysis.
+// exploratory  — OpenAI-only GPT-5 reasoning probe.
+//                Uses the Responses API with configurable reasoning effort.
+//                Not part of the cross-provider baseline due control-surface differences.
+//                Included as a supplementary forward-looking analysis.
 
 const TIER_CONFIGS = {
   primary: {
@@ -159,6 +181,7 @@ const TIER_CONFIGS = {
       model: "gpt-5-mini",
       availableModels: ["gpt-5-mini", "gpt-5"],
       reasoning: true, // flag: use Responses API with reasoning.effort
+      reasoningEffort: "low", // overridable by thinking profile
     },
   },
 };
@@ -167,7 +190,7 @@ const TIER_CONFIGS = {
 /**
  * Resolves provider configuration from the selected tier.
  * @param {'openai'|'claude'|'gemini'} provider - Provider key.
- * @returns {{ envVar: string, model: string, reasoning?: boolean } | null}
+ * @returns {{ envVar: string, model: string, reasoning?: boolean, reasoningEffort?: string, seed?: number, thinkingBudget?: number } | null}
  */
 function getProviderConfig(provider) {
   const tierConfig = TIER_CONFIGS[TIER];
@@ -201,11 +224,49 @@ function getProviderConfig(provider) {
   };
 }
 
+/**
+ * Applies provider-specific thinking controls according to `THINKING_PROFILE`.
+ * - Claude extended thinking is opt-in; omitting `thinking` keeps it disabled.
+ * - Gemini 2.5 Pro cannot fully disable thinking; `128` is the minimum budget.
+ * @param {'openai'|'claude'|'gemini'} provider - Provider key.
+ * @param {{ envVar: string, model: string, reasoning?: boolean, reasoningEffort?: string, seed?: number, thinkingBudget?: number }} providerConfig - Tier config before control adjustment.
+ * @returns {{ envVar: string, model: string, reasoning?: boolean, reasoningEffort?: string, seed?: number, thinkingBudget?: number }}
+ */
+function applyThinkingProfile(provider, providerConfig) {
+  const config = { ...providerConfig };
+
+  if (provider === "openai" && config.reasoning) {
+    config.reasoningEffort =
+      THINKING_PROFILE === "minimized"
+        ? OPENAI_REASONING_EFFORT_MINIMIZED
+        : OPENAI_REASONING_EFFORT_DEFAULT;
+  }
+
+  if (provider === "gemini") {
+    config.seed = GEMINI_SEED;
+
+    if (THINKING_PROFILE === "minimized") {
+      if (config.model === "gemini-2.5-flash") {
+        config.thinkingBudget = GEMINI_25_FLASH_THINKING_BUDGET_MIN;
+      } else if (config.model === "gemini-2.5-pro") {
+        config.thinkingBudget = GEMINI_25_PRO_THINKING_BUDGET_MIN;
+      }
+    }
+  }
+
+  return config;
+}
+
 // ---------------------------------------------------------------------------
 // General configuration
 // ---------------------------------------------------------------------------
 const BASE_URL = URL_OVERRIDE ?? "http://localhost:4321";
 const OPENAI_SEED = 42;
+const GEMINI_SEED = 42;
+const GEMINI_25_FLASH_THINKING_BUDGET_MIN = 0;
+const GEMINI_25_PRO_THINKING_BUDGET_MIN = 128;
+const OPENAI_REASONING_EFFORT_DEFAULT = "low";
+const OPENAI_REASONING_EFFORT_MINIMIZED = "minimal";
 const MAX_TOKENS = 2048;
 const RETRY_BUFFER_MS = 2000;
 const BACKOFF_INTERVAL_MS = 15_000;
@@ -317,7 +378,7 @@ async function callOpenAI(htmlContent, model, apiKey) {
   const client = new OpenAI({ apiKey });
   const completion = await client.chat.completions.create({
     model,
-    temperature: 0.0, // Deterministic output for consistent evaluation
+    temperature: 0.0, // Lower sampling variance for consistent evaluation
     seed: OPENAI_SEED, // Fixed seed for reproducibility (if supported by the model)
     response_format: { type: "json_object" },
     messages: [
@@ -330,18 +391,24 @@ async function callOpenAI(htmlContent, model, apiKey) {
 
 /**
  * Sends the page HTML to OpenAI (Responses API) for reasoning models (GPT-5 family).
- * Uses reasoning.effort: 'low' to minimise non-deterministic thinking tokens.
+ * Uses configurable reasoning.effort to tune thinking depth.
  * NOTE: Reasoning models do not support temperature or seed parameters.
  * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
  * @param {string} model - OpenAI reasoning model ID.
  * @param {string} apiKey - OpenAI API key.
+ * @param {string} reasoningEffort - Reasoning effort level (e.g. minimal, low).
  * @returns {Promise<string>} JSON string extracted by the model.
  */
-async function callOpenAIReasoning(htmlContent, model, apiKey) {
+async function callOpenAIReasoning(
+  htmlContent,
+  model,
+  apiKey,
+  reasoningEffort = OPENAI_REASONING_EFFORT_DEFAULT,
+) {
   const client = new OpenAI({ apiKey });
   const response = await client.responses.create({
     model,
-    reasoning: { effort: "low" },
+    reasoning: { effort: reasoningEffort },
     text: { format: { type: "json_object" } },
     instructions: SYSTEM_PROMPT,
     // Responses json_object requires "json" to appear in the input messages.
@@ -383,18 +450,31 @@ async function callClaude(htmlContent, model, apiKey) {
  * Sends the page HTML to Google Gemini and returns the raw JSON string response.
  * Uses `responseMimeType: application/json` to guarantee valid JSON output.
  * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
- * @param {string} modelName - Gemini model ID.
+ * @param {{ model: string, seed?: number, thinkingBudget?: number }} config - Gemini provider config.
  * @param {string} apiKey - Google AI API key.
  * @returns {Promise<string>} JSON string extracted by the model.
  */
-async function callGemini(htmlContent, modelName, apiKey) {
+async function callGemini(htmlContent, config, apiKey) {
   const genAI = new GoogleGenerativeAI(apiKey);
+
+  const generationConfig = {
+    temperature: 0.0,
+    responseMimeType: "application/json",
+  };
+
+  if (Number.isInteger(config.seed)) {
+    generationConfig.seed = config.seed;
+  }
+
+  if (Number.isInteger(config.thinkingBudget)) {
+    generationConfig.thinkingConfig = {
+      thinkingBudget: config.thinkingBudget,
+    };
+  }
+
   const model = genAI.getGenerativeModel({
-    model: modelName,
-    generationConfig: {
-      temperature: 0.0,
-      responseMimeType: "application/json",
-    },
+    model: config.model,
+    generationConfig,
     systemInstruction: SYSTEM_PROMPT,
   });
   const result = await model.generateContent(htmlContent);
@@ -406,7 +486,7 @@ async function callGemini(htmlContent, modelName, apiKey) {
  * Routes OpenAI reasoning models to the Responses API.
  * @param {'openai'|'claude'|'gemini'} provider - Provider key.
  * @param {string} htmlContent - Raw HTML of the page variant to evaluate.
- * @param {{ model: string, reasoning?: boolean }} config - Provider model config.
+ * @param {{ model: string, reasoning?: boolean, reasoningEffort?: string, seed?: number, thinkingBudget?: number }} config - Provider model config.
  * @param {string} apiKey - Provider API key.
  * @returns {Promise<string>} JSON string extracted by the model.
  */
@@ -414,15 +494,82 @@ async function callLLM(provider, htmlContent, config, apiKey) {
   switch (provider) {
     case "openai":
       return config.reasoning
-        ? callOpenAIReasoning(htmlContent, config.model, apiKey)
+        ? callOpenAIReasoning(
+            htmlContent,
+            config.model,
+            apiKey,
+            config.reasoningEffort,
+          )
         : callOpenAI(htmlContent, config.model, apiKey);
     case "claude":
       return callClaude(htmlContent, config.model, apiKey);
     case "gemini":
-      return callGemini(htmlContent, config.model, apiKey);
+      return callGemini(htmlContent, config, apiKey);
     default:
       throw new Error(`Unsupported provider: ${provider}`);
   }
+}
+
+/**
+ * Returns a human-readable summary of effective generation controls for logging.
+ * @param {'openai'|'claude'|'gemini'} provider - Provider key.
+ * @param {{ model: string, reasoning?: boolean, reasoningEffort?: string, seed?: number, thinkingBudget?: number }} config - Provider model config.
+ * @returns {string}
+ */
+function describeControlProfile(provider, config) {
+  if (provider === "openai") {
+    if (config.reasoning) {
+      return `Responses API, reasoning.effort=${config.reasoningEffort ?? OPENAI_REASONING_EFFORT_DEFAULT}`;
+    }
+    return `Chat Completions, temperature=0.0, seed=${OPENAI_SEED}`;
+  }
+
+  if (provider === "claude") {
+    return "Messages API, temperature=0.0, extended thinking not enabled (thinking omitted)";
+  }
+
+  if (provider === "gemini") {
+    const thinkingPart = Number.isInteger(config.thinkingBudget)
+      ? `thinkingBudget=${config.thinkingBudget}`
+      : "thinkingBudget=provider-default";
+    return `GenerateContent, temperature=0.0, seed=${config.seed ?? "provider-default"}, ${thinkingPart}`;
+  }
+
+  return "provider controls unavailable";
+}
+
+/**
+ * Builds stable, machine-readable control metadata for CSV output.
+ * The value intentionally uses semicolons instead of commas to keep CSV simple.
+ * @param {'openai'|'claude'|'gemini'} provider - Provider key.
+ * @param {{ model: string, reasoning?: boolean, reasoningEffort?: string, seed?: number, thinkingBudget?: number }} config - Provider model config.
+ * @returns {string}
+ */
+function buildThinkingControlsMetadata(provider, config) {
+  const profilePart = `profile=${THINKING_PROFILE}`;
+
+  if (provider === "openai") {
+    if (config.reasoning) {
+      return `${profilePart};api=responses;reasoning.effort=${config.reasoningEffort ?? OPENAI_REASONING_EFFORT_DEFAULT};text.format=json_object;temperature=unsupported;seed=unsupported`;
+    }
+    return `${profilePart};api=chat.completions;temperature=0.0;seed=${OPENAI_SEED};response_format=json_object`;
+  }
+
+  if (provider === "claude") {
+    return `${profilePart};api=messages;temperature=0.0;extended_thinking=not_enabled(omitted)`;
+  }
+
+  if (provider === "gemini") {
+    const seed = Number.isInteger(config.seed)
+      ? config.seed
+      : "provider-default";
+    const thinkingBudget = Number.isInteger(config.thinkingBudget)
+      ? config.thinkingBudget
+      : "provider-default";
+    return `${profilePart};api=generateContent;temperature=0.0;seed=${seed};thinkingBudget=${thinkingBudget};responseMimeType=application/json`;
+  }
+
+  return `${profilePart};provider=unknown`;
 }
 
 // ---------------------------------------------------------------------------
@@ -543,11 +690,19 @@ async function fetchHtml(url) {
  * @param {'openai'|'claude'|'gemini'} provider - Provider key.
  * @param {{ model: string, reasoning?: boolean }} config - Provider model config.
  * @param {string} apiKey - Provider API key.
+ * @param {string} thinkingControls - Serialised controls metadata for CSV output.
  * @param {{ id: string, path: string }} variant - Variant descriptor.
  * @param {number} runIndex - 1-based repetition index.
  * @returns {Promise<object>} Result row ready for CSV serialisation.
  */
-async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
+async function evaluateVariant(
+  provider,
+  config,
+  apiKey,
+  thinkingControls,
+  variant,
+  runIndex,
+) {
   const url = `${BASE_URL}${variant.path}`;
   console.log(
     `⏳ [${provider}] Testing variant "${variant.id}" (Run ${runIndex}/${REPETITIONS})...`,
@@ -582,6 +737,7 @@ async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
         provider,
         model: config.model,
         tier: TIER,
+        thinking_controls: thinkingControls,
         variant_id: variant.id,
         run: runIndex,
         base_url: BASE_URL,
@@ -609,6 +765,7 @@ async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
       hatKontakt: counts.hatKontakt,
       hatAnbieter: counts.hatAnbieter,
       dbStatus,
+      thinkingControls,
       rawOutput: JSON.stringify(parsedData).replace(/"/g, '""'),
     };
   } catch (error) {
@@ -626,6 +783,7 @@ async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
       hatKontakt: "ERROR",
       hatAnbieter: "ERROR",
       dbStatus: "ERROR",
+      thinkingControls,
       rawOutput: error.message.replace(/"/g, '""'),
     };
   }
@@ -641,15 +799,26 @@ async function evaluateVariant(provider, config, apiKey, variant, runIndex) {
 async function runProviderEvaluation(provider, config, apiKey) {
   const modelSlug = config.model.replace(/[^a-zA-Z0-9._-]+/g, "-");
   const outputFile = `./results/gaio_evaluation_${provider}_${modelSlug}_${new Date().toISOString().replace(/:/g, "-").replace(/\..+/, "")}.csv`;
+  const thinkingControls = buildThinkingControlsMetadata(provider, config);
   console.log(
-    `🚀 Starting GAIO evaluation pipeline  [provider: ${provider}, model: ${config.model}, tier: ${TIER}]`,
+    `🚀 Starting GAIO evaluation pipeline  [provider: ${provider}, model: ${config.model}, tier: ${TIER}, thinking-profile: ${THINKING_PROFILE}]`,
+  );
+  console.log(
+    `🧭 Effective controls: ${describeControlProfile(provider, config)}`,
   );
   const results = [];
 
   // Sequential testing to avoid overwhelming the server and to respect rate limits
   for (const variant of VARIANTS) {
     for (let i = 1; i <= REPETITIONS; i++) {
-      const res = await evaluateVariant(provider, config, apiKey, variant, i);
+      const res = await evaluateVariant(
+        provider,
+        config,
+        apiKey,
+        thinkingControls,
+        variant,
+        i,
+      );
       results.push(res);
       // Pause between requests to avoid rate limits and give the server time to recover
       await new Promise((r) => setTimeout(r, INTER_REQUEST_DELAY_MS));
@@ -657,11 +826,11 @@ async function runProviderEvaluation(provider, config, apiKey) {
   }
 
   const csvHeader =
-    "Provider,Model,Tier,Variant_ID,Run,Tarife,FAQ,Produktkarten,FormFelder,Hat_Kontakt,Hat_Anbieter,DB,Raw_JSON_Output\n";
+    "Provider,Model,Tier,Thinking_Controls,Variant_ID,Run,Tarife,FAQ,Produktkarten,FormFelder,Hat_Kontakt,Hat_Anbieter,DB,Raw_JSON_Output\n";
   const csvRows = results
     .map(
       (r) =>
-        `${r.provider},${r.model},${r.tier},${r.variantId},${r.run},${r.extractedTariffs},${r.extractedFaq},${r.extractedKarten},${r.extractedFormFelder},${r.hatKontakt},${r.hatAnbieter},${r.dbStatus},"${r.rawOutput}"`,
+        `${r.provider},${r.model},${r.tier},"${String(r.thinkingControls).replace(/"/g, '""')}",${r.variantId},${r.run},${r.extractedTariffs},${r.extractedFaq},${r.extractedKarten},${r.extractedFormFelder},${r.hatKontakt},${r.hatAnbieter},${r.dbStatus},"${r.rawOutput}"`,
     )
     .join("\n");
 
@@ -697,14 +866,16 @@ async function runEvaluation() {
     PROVIDER === "all" ? ["openai", "claude", "gemini"] : [PROVIDER];
 
   for (const provider of providersToRun) {
-    const config = getProviderConfig(provider);
+    const baseConfig = getProviderConfig(provider);
 
-    if (!config) {
+    if (!baseConfig) {
       console.warn(
         `⚠️  Provider "${provider}" is not available in the "${TIER}" tier. Skipping.`,
       );
       continue;
     }
+
+    const config = applyThinkingProfile(provider, baseConfig);
 
     const apiKey = process.env[config.envVar];
 
