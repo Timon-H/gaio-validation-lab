@@ -22,8 +22,11 @@ npm run evaluate:gemini
 # Run all providers with the validation tier
 npm run evaluate:all -- --tier validation --repetitions 5
 
-# Run OpenAI exploratory tier (GPT-5-mini reasoning model)
+# Run OpenAI exploratory tier (default: GPT-5-mini reasoning model)
 npm run evaluate:openai -- --tier exploratory --repetitions 5
+
+# Run OpenAI exploratory tier with full GPT-5
+npm run evaluate:openai -- --tier exploratory --model gpt-5 --repetitions 5
 
 # Persist results to Supabase (requires SUPABASE_URL + SUPABASE_ANON_KEY)
 npm run evaluate:openai -- --persist
@@ -33,6 +36,7 @@ npm run evaluate:gemini -- --persist
 
 Results are always written to `results/gaio_evaluation_<provider>_<model>_<timestamp>.csv`.
 CSV rows include `Provider`, `Model`, and `Tier` so local files can be compared across model tiers without relying on the database.
+For exploratory OpenAI runs, use `--model gpt-5-mini` (default) or `--model gpt-5` to run each model independently.
 With `--persist`, each run is also inserted into the `llm_evaluation_results` Supabase table (including `tier`, `variant_id`, and `base_url`), enabling cross-provider and cross-run comparisons via the `llm_eval_comparison` SQL view.
 
 ## Environment Variables
@@ -52,6 +56,11 @@ Add the relevant keys to your `.env` file. The npm scripts load them automatical
 ## Model Tiers
 
 The evaluation uses a tiered model strategy. Use `--tier <tier>` to select (default: `primary`).
+
+Use `--model <model-id>` only where multiple models are available for that provider+tier. Currently this applies to OpenAI exploratory:
+
+- `gpt-5-mini` (default)
+- `gpt-5`
 
 ### Primary Tier — `--tier primary`
 
@@ -75,21 +84,24 @@ Higher-capability models from each provider, same API surface and determinism co
 
 ### Exploratory Tier — `--tier exploratory`
 
-OpenAI-only GPT-5-mini reasoning model probe. Uses the Responses API with `reasoning.effort: 'low'` to minimise non-deterministic thinking tokens. Included as a forward-looking supplementary analysis.
+OpenAI-only GPT-5 reasoning runs. Default model is `gpt-5-mini`; use `--model gpt-5` for the full model. Uses the Responses API with `reasoning.effort: 'low'`.
 
-| Provider | Model        | Input/MTok | Output/MTok | Determinism                    |
-| -------- | ------------ | ---------- | ----------- | ------------------------------ |
-| OpenAI   | `gpt-5-mini` | $0.25      | $2.00       | No temp/seed — reasoning model |
+| Provider | Model        | Input/MTok | Output/MTok |
+| -------- | ------------ | ---------- | ----------- |
+| OpenAI   | `gpt-5-mini` | $0.25      | $2.00       |
+| OpenAI   | `gpt-5`      | $1.25      | $10.00      |
 
 Reasoning models (GPT-5 family, o3, o4-mini) do not support `temperature` or `seed` parameters. They use a separate code path (`callOpenAIReasoning`) that calls the OpenAI Responses API instead of Chat Completions. Claude and Gemini are not available in this tier.
 
 ### Recommended Runs for Thesis
 
-| Tier        | Command                                                                   | Repetitions | Purpose               | Est. Cost |
-| ----------- | ------------------------------------------------------------------------- | ----------- | --------------------- | --------- |
-| Primary     | `npm run evaluate:all -- --persist --repetitions 10`                      | 10          | Main analysis         | ~$5       |
-| Validation  | `npm run evaluate:all -- --persist --tier validation --repetitions 5`     | 5           | Cross-tier robustness | ~$7       |
-| Exploratory | `npm run evaluate:openai -- --persist --tier exploratory --repetitions 5` | 5           | Reasoning model probe | ~$1       |
+| Tier                 | Command                                                                                                                         | Repetitions | Purpose               | Est. Cost |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------- | --------------------- | --------- |
+| Primary              | `npm run evaluate:all -- --persist --repetitions 10`                                                                            | 10          | Main analysis         | ~$5       |
+| Validation           | `npm run evaluate:all -- --persist --tier validation --repetitions 5`                                                           | 5           | Cross-tier robustness | ~$7       |
+| Exploratory (OpenAI) | `npm run evaluate:openai -- --persist --tier exploratory --model gpt-5-mini --repetitions 5` or `--model gpt-5 --repetitions 5` | 5           | Reasoning model probe | ~$2       |
+
+Exploratory estimates assume similar token volumes across both model runs; `gpt-5` is priced at 5x `gpt-5-mini` for input and output.
 
 ## Default Models
 

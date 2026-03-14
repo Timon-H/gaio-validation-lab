@@ -35,6 +35,7 @@ npm run evaluate:all -- --persist --repetitions 5
 
 - `--provider <openai|claude|gemini|all>`
 - `--tier <primary|validation|exploratory>`
+- `--model <model-id>`
 - `--repetitions <n>`
 - `--variant <id>`
 - `--url <base-url>`
