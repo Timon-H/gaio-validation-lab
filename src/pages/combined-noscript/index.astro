@@ -1,0 +1,373 @@
+---
+/**
+ * Combined-noscript — GAIO Combined Variant With noscript Visibility Channel
+ *
+ * Mirrors the combined stack (JSON-LD + Semantic HTML + ARIA + Microdata)
+ * while replacing DSD with noscript fallbacks.
+ */
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  TrapAriaHiddenBonus,
+  TrapBirthYear,
+  TrapCoverageAmount,
+  TrapCrossSell,
+  TrapDeprecatedTariff,
+  TrapHiddenFaq,
+  TrapTestimonial,
+} from "../../components/traps/index.ts";
+import {
+  PAGE_TITLE,
+  PAGE_DESCRIPTION,
+  INTRO,
+  BUTTONS,
+  TEXT_INPUTS,
+  DROPDOWN,
+  RADIO,
+  FAQS,
+  CARDS,
+  FLYOUT,
+  TARIFF,
+  FOOTER_LINK,
+  SECTION_HEADINGS,
+  ARIA_LABELS,
+  buildGaioSchema,
+} from "../../data/content";
+
+const gaioSchema = buildGaioSchema();
+---
+
+<BaseLayout
+  title={PAGE_TITLE}
+  description={PAGE_DESCRIPTION}
+  schemaData={gaioSchema}
+>
+  <script>
+    import "../../components/baseline/index.ts";
+  </script>
+
+  <section aria-labelledby="page-heading" style="margin-top: 1.5rem;">
+    <h2 id="page-heading">{INTRO.heading}</h2>
+    <p>{INTRO.description}</p>
+  </section>
+
+  <!-- BUTTON — noscript + Semantic + ARIA -->
+  <section aria-label="Call-to-Action Buttons" style="margin: 2rem 0;">
+    <h3>{SECTION_HEADINGS.buttons.heading}</h3>
+    <p>{SECTION_HEADINGS.buttons.description}</p>
+    <dxp-button aria-label={ARIA_LABELS.buttonPrimary}
+      >{BUTTONS.primary}</dxp-button
+    >
+    <dxp-button variant="secondary" aria-label={ARIA_LABELS.buttonSecondary}
+      >{BUTTONS.secondary}</dxp-button
+    >
+    <dxp-button disabled aria-label={ARIA_LABELS.buttonDisabled}
+      >{BUTTONS.disabled}</dxp-button
+    >
+    <noscript>
+      <ul>
+        <li><a href="/berechnen">Jetzt berechnen</a></li>
+        <li><a href="/produkte">Mehr erfahren</a></li>
+      </ul>
+    </noscript>
+  </section>
+
+  <!-- TEXT INPUT — noscript + Semantic + ARIA + Microdata -->
+  <section
+    aria-label="Kontaktformular"
+    style="margin: 2rem 0;"
+    itemscope
+    itemtype="https://schema.org/Person"
+  >
+    <meta
+      itemprop="description"
+      content="Persönliche Angaben: Vorname und E-Mail-Adresse für ein individuelles Versicherungsangebot"
+    />
+    <h3>{SECTION_HEADINGS.textInputs.heading}</h3>
+    <p>{SECTION_HEADINGS.textInputs.description}</p>
+    <div role="group" aria-label={ARIA_LABELS.textInputGroup}>
+      <dxp-text-input
+        label={TEXT_INPUTS.vorname.label}
+        name={TEXT_INPUTS.vorname.name}
+        placeholder={TEXT_INPUTS.vorname.placeholder}
+        required
+        required-error-text={TEXT_INPUTS.vorname.requiredErrorText}
+        aria-required="true"></dxp-text-input>
+      <dxp-text-input
+        label={TEXT_INPUTS.email.label}
+        name={TEXT_INPUTS.email.name}
+        type={TEXT_INPUTS.email.type}
+        placeholder={TEXT_INPUTS.email.placeholder}
+        regex={TEXT_INPUTS.email.regex}
+        regex-error-text={TEXT_INPUTS.email.regexErrorText}></dxp-text-input>
+    </div>
+    <noscript>
+      <form>
+        <label for="fallback-vorname">Vorname (Pflichtfeld)</label>
+        <input id="fallback-vorname" name="vorname" type="text" required />
+        <label for="fallback-email">E-Mail</label>
+        <input id="fallback-email" name="email" type="email" />
+      </form>
+    </noscript>
+  </section>
+
+  <TrapCoverageAmount aria />
+
+  <!-- DROPDOWN — noscript + Semantic + ARIA + Microdata -->
+  <section
+    aria-label="Versicherungsauswahl"
+    style="margin: 2rem 0;"
+    itemscope
+    itemtype="https://schema.org/ItemList"
+  >
+    <meta itemprop="name" content="Versicherungstyp" />
+    <h3>{SECTION_HEADINGS.dropdown.heading}</h3>
+    <p>{SECTION_HEADINGS.dropdown.description}</p>
+    <dxp-dropdown-v1
+      label={DROPDOWN.label}
+      name={DROPDOWN.name}
+      placeholder={DROPDOWN.placeholder}
+      options={DROPDOWN.options}
+      required
+      aria-label={ARIA_LABELS.dropdown}></dxp-dropdown-v1>
+    <noscript>
+      <label for="fallback-versicherung">Versicherungstyp</label>
+      <select id="fallback-versicherung" name="versicherungstyp">
+        <option value="">Bitte wählen...</option>
+        <option value="haftpflicht">Haftpflichtversicherung</option>
+        <option value="kasko">Kaskoversicherung</option>
+        <option value="teilkasko">Teilkaskoversicherung</option>
+      </select>
+    </noscript>
+  </section>
+
+  <!-- RADIO — noscript + Semantic + ARIA + Microdata -->
+  <section
+    aria-label="Zahlungsoptionen"
+    style="margin: 2rem 0;"
+    itemscope
+    itemtype="https://schema.org/ItemList"
+  >
+    <meta itemprop="name" content="Zahlungsweise" />
+    <h3>{SECTION_HEADINGS.radio.heading}</h3>
+    <p>{SECTION_HEADINGS.radio.description}</p>
+    <dxp-input-radio
+      label={RADIO.label}
+      name={RADIO.name}
+      options={RADIO.options}
+      default={RADIO.default}
+      aria-label={ARIA_LABELS.radio}></dxp-input-radio>
+    <noscript>
+      <fieldset>
+        <legend>Zahlungsweise</legend>
+        <label
+          ><input type="radio" name="zahlungsweise" value="monatlich" checked /> Monatlich</label
+        >
+        <label
+          ><input type="radio" name="zahlungsweise" value="quartal" /> Vierteljährlich</label
+        >
+        <label
+          ><input type="radio" name="zahlungsweise" value="jaehrlich" /> Jährlich</label
+        >
+      </fieldset>
+    </noscript>
+  </section>
+
+  <TrapBirthYear aria noscript />
+
+  <!-- ACCORDION / FAQ — noscript + Semantic + ARIA + Microdata -->
+  <section
+    aria-labelledby="faq-heading"
+    style="margin: 2rem 0;"
+    itemscope
+    itemtype="https://schema.org/FAQPage"
+  >
+    <h3 id="faq-heading">{SECTION_HEADINGS.accordion.heading}</h3>
+    <p>{SECTION_HEADINGS.accordion.description}</p>
+    <dxp-accordion aria-label={ARIA_LABELS.accordion}>
+      {
+        FAQS.map((faq) => (
+          <dxp-accordion-element
+            id={faq.id}
+            aria-label={faq.headline}
+            headline={faq.headline}
+            body={faq.body}
+          />
+        ))
+      }
+      <TrapHiddenFaq aria noscript />
+    </dxp-accordion>
+    <noscript>
+      <dl>
+        <dt>Was ist eine Haftpflichtversicherung?</dt>
+        <dd>
+          Eine Haftpflichtversicherung schützt Sie vor Schadensersatzansprüchen
+          Dritter. Sie übernimmt die Kosten, wenn Sie versehentlich Schäden an
+          Personen oder deren Eigentum verursachen.
+        </dd>
+        <dt>Wie berechne ich meinen Beitrag?</dt>
+        <dd>
+          Ihr Beitrag hängt von verschiedenen Faktoren ab, wie z.B. Ihrem Alter,
+          Ihrem Wohnort und dem gewünschten Versicherungsschutz. Nutzen Sie
+          unseren Online-Rechner für eine individuelle Berechnung.
+        </dd>
+        <dt>Kann ich meine Versicherung online kündigen?</dt>
+        <dd>
+          Ja, Sie können Ihre Versicherung jederzeit online über Ihr Kundenkonto
+          kündigen. Die Kündigungsfrist beträgt in der Regel einen Monat zum
+          Ende der Vertragslaufzeit.
+        </dd>
+      </dl>
+    </noscript>
+  </section>
+
+  <!-- CARD — noscript + Semantic + ARIA -->
+  <section aria-labelledby="products-heading" style="margin: 2rem 0;">
+    <h3 id="products-heading">{SECTION_HEADINGS.cards.heading}</h3>
+    <p>{SECTION_HEADINGS.cards.description}</p>
+    <div
+      style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;"
+    >
+      <article
+        aria-label="Privathaftpflicht – ab 3,50 € monatlich"
+        itemscope
+        itemtype="https://schema.org/Product"
+      >
+        <meta itemprop="name" content="Privathaftpflicht" />
+        <meta
+          itemprop="description"
+          content="Umfassender Schutz für Ihren Alltag – ab 3,50 € im Monat."
+        />
+        <div itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+          <meta itemprop="price" content="3.50" />
+          <meta itemprop="priceCurrency" content="EUR" />
+        </div>
+        <dxp-card
+          aria-label={ARIA_LABELS.card1}
+          card-title={CARDS[0].title}
+          card-description={CARDS[0].description}
+        >
+          <span slot="badge" style="background: #e3f2fd; color: #0066cc;"
+            >{CARDS[0].badge}</span
+          >
+          <dxp-button slot="buttons">{CARDS[0].button}</dxp-button>
+        </dxp-card>
+        <noscript>
+          <h4>Privathaftpflicht</h4>
+          <p>
+            Umfassender Schutz für Ihren Alltag – ab 3,50 € im Monat. <a
+              href="/produkte/haftpflicht">Jetzt abschließen</a
+            >
+          </p>
+        </noscript>
+      </article>
+
+      <article
+        aria-label="Hausratversicherung – Schutz für Hab und Gut"
+        itemscope
+        itemtype="https://schema.org/Product"
+      >
+        <meta itemprop="name" content="Hausratversicherung" />
+        <meta
+          itemprop="description"
+          content="Schützen Sie Ihr Hab und Gut gegen Einbruch, Feuer und Wasserschäden."
+        />
+        <div itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+          <meta itemprop="price" content="4.20" />
+          <meta itemprop="priceCurrency" content="EUR" />
+        </div>
+        <dxp-card
+          aria-label={ARIA_LABELS.card2}
+          card-title={CARDS[1].title}
+          card-description={CARDS[1].description}
+        >
+          <dxp-button slot="buttons" variant="secondary"
+            >{CARDS[1].button}</dxp-button
+          >
+        </dxp-card>
+        <noscript>
+          <h4>Hausratversicherung</h4>
+          <p>
+            Schützen Sie Ihr Hab und Gut gegen Einbruch, Feuer und
+            Wasserschäden. <a href="/produkte/hausrat">Details ansehen</a>
+          </p>
+        </noscript>
+      </article>
+    </div>
+  </section>
+
+  <!-- FLYOUT — noscript + Semantic + ARIA -->
+  <section aria-label="Hilfe und Kontakt" style="margin: 2rem 0;">
+    <h3>{SECTION_HEADINGS.flyout.heading}</h3>
+    <p>{SECTION_HEADINGS.flyout.description}</p>
+    <dxp-flyout
+      flyout-position={FLYOUT.position}
+      aria-label={ARIA_LABELS.flyout}
+      phone={FLYOUT.phone}
+      hours={FLYOUT.hours}
+    >
+      <dxp-button slot="content" variant="secondary">{FLYOUT.button}</dxp-button
+      >
+    </dxp-flyout>
+    <noscript>
+      <address>
+        <strong>Kundenservice</strong><br />
+        Telefon: <a href="tel:+498001234567890">0800 123 456 789</a><br />
+        Erreichbar Mo–Fr: 8:00–18:00 Uhr
+      </address>
+    </noscript>
+  </section>
+
+  <!-- TARIFF COMPARISON — noscript + Semantic + ARIA -->
+  <section
+    aria-labelledby="tariff-heading"
+    style="margin: 2rem 0;"
+    itemscope
+    itemtype="https://schema.org/WebPage"
+  >
+    <meta itemprop="name" content="Haftpflichtversicherung – Tarifvergleich" />
+    <h3 id="tariff-heading">{SECTION_HEADINGS.tariff.heading}</h3>
+    <p>{SECTION_HEADINGS.tariff.description}</p>
+    <TrapTestimonial semantic />
+    <TrapDeprecatedTariff semantic />
+    <TrapAriaHiddenBonus aria semantic />
+    <dxp-tariff-comparison
+      headline={TARIFF.headline}
+      sub-headline={TARIFF.subHeadline}
+      aria-label={ARIA_LABELS.tariff}
+      tariffs={TARIFF.data}></dxp-tariff-comparison>
+    <noscript>
+      <table>
+        <caption>Haftpflichtversicherung – Tarifvergleich</caption>
+        <thead>
+          <tr
+            ><th>Tarif</th><th>Monatsbeitrag</th><th>Deckungssumme</th><th
+              >Selbstbeteiligung</th
+            ></tr
+          >
+        </thead>
+        <tbody>
+          <tr
+            ><td>Basis</td><td>ab 3,50 €</td><td>5 Mio. €</td><td>150 €</td></tr
+          >
+          <tr
+            ><td>Komfort (Beliebteste Wahl)</td><td>ab 5,90 €</td><td
+              >10 Mio. €</td
+            ><td>0 €</td></tr
+          >
+          <tr
+            ><td>Premium</td><td>ab 9,80 €</td><td>50 Mio. €</td><td>0 €</td
+            ></tr
+          >
+        </tbody>
+      </table>
+    </noscript>
+  </section>
+
+  <TrapCrossSell semantic />
+
+  <aside
+    style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-left: 4px solid #4a5dc9;"
+  >
+    <a href={FOOTER_LINK.href}>{FOOTER_LINK.text}</a>
+  </aside>
+</BaseLayout>

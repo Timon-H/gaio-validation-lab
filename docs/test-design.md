@@ -2,7 +2,7 @@
 
 ## Multi-Arm Structure
 
-Eight variants of the same insurance page content. Each isolates a single GAIO variable so its effect on LLM extraction can be measured independently.
+Canonical benchmark matrix (8 variants). Each variant isolates a single GAIO variable so its effect on LLM extraction can be measured independently.
 
 | Variant           | JSON-LD | Semantic HTML | ARIA | Noscript | DSD | Microdata |
 | ----------------- | :-----: | :-----------: | :--: | :------: | :-: | :-------: |
@@ -17,13 +17,25 @@ Eight variants of the same insurance page content. Each isolates a single GAIO v
 
 **Hydration note:** `/combined` and `/test-dsd` are SSR-only to keep the initial HTML deterministic for crawler/LLM evaluation and to avoid client-side re-rendering artifacts.
 
+### Exploratory Visibility-Axis Pair (Optional)
+
+Two additional routes are available for a focused sensitivity check of the visibility axis and are **not** part of the canonical 8-arm trial statistics:
+
+| Route                | Purpose                                                           |
+| -------------------- | ----------------------------------------------------------------- |
+| `/combined-dsd`      | Alias of canonical `/combined` (visibility via DSD)               |
+| `/combined-noscript` | Same combined stack with visibility via `noscript` instead of DSD |
+
+This pair is used to address the methodological question why `noscript` is excluded from canonical `/combined`, without changing the primary study design.
+
 ### Constants across all variants
 
 - Same 9 Lit web components with Shadow DOM encapsulation
 - Same content (insurance FAQ, tariff comparison, form fields, product cards)
 - Traditional SEO signals (robots meta, canonical URL) on every page
 - Same BaseLayout styling shell
-- All 8 variants are covered by the extraction and bot test scripts.
+- All canonical 8 variants are covered by the extraction and bot test scripts.
+- Exploratory routes are evaluated via `evaluate.mjs` only and are excluded from canonical bot/integrity checks.
 
 ### BaseLayout
 

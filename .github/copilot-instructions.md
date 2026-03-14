@@ -2,7 +2,16 @@
 
 ## Project Overview
 
-This is a master's thesis research project benchmarking how HTML markup techniques affect AI/LLM content extraction from Web Components with Shadow DOM encapsulation. It tests six **GAIO (Generative AI Optimization)** measures across 8 isolated page variants deployed on Vercel.
+This is a master's thesis research project benchmarking how HTML markup techniques affect AI/LLM content extraction from Web Components with Shadow DOM encapsulation.
+
+Primary study design:
+
+- Canonical **8-arm** matrix (control + six isolated GAIO measures + combined)
+
+Exploratory extension:
+
+- Optional visibility-axis pair (`/combined-dsd`, `/combined-noscript`) for sensitivity checks
+- Not part of canonical trial accounting unless explicitly stated
 
 ## Stack
 
@@ -23,8 +32,9 @@ npm run evaluate:openai            # Run OpenAI extraction benchmark, output CSV
 npm run evaluate:claude            # Run Claude extraction benchmark
 npm run evaluate:gemini            # Run Gemini extraction benchmark
 npm run evaluate:all               # Run all three providers in sequence
-# Flags (pass after --): --persist, --url <url>, --repetitions <n>, --variant <id>
+# Flags (pass after --): --persist, --url <url>, --repetitions <n>, --variant <id>, --variant-set <set>, --tier <tier>, --thinking-profile <profile>
 # Example: npm run evaluate:all -- --persist --repetitions 3
+# Exploratory example: npm run evaluate:all -- --variant-set combined-visibility --tier validation --repetitions 5
 
 # Testing
 npm run test:extract               # Simulate bot content extraction (curl/UA variants)
@@ -37,20 +47,37 @@ There is no unit test framework — `test:*` scripts are integration/simulation 
 
 ## Architecture
 
-### Page Variants
+### Variant Source Of Truth (`src/data/variants.mjs`)
 
-Each of the 8 routes under `src/pages/` is an isolated single-variable experiment:
+Variant routing is intentionally split:
 
-| Route             | GAIO Measure                          |
-| ----------------- | ------------------------------------- |
-| `/control`        | None (baseline)                       |
-| `/test-jsonld`    | JSON-LD structured data in `<head>`   |
-| `/test-semantic`  | Semantic HTML landmarks               |
-| `/test-aria`      | ARIA attributes                       |
-| `/test-noscript`  | `<noscript>` Light DOM fallbacks      |
-| `/test-dsd`       | Declarative Shadow DOM (SSR-rendered) |
-| `/test-microdata` | Microdata `itemscope`/`itemprop`      |
-| `/combined`       | All measures combined                 |
+- `VARIANTS` / `VARIANT_IDS` / `VARIANT_PATHS`: canonical 8-arm matrix
+- `EXPLORATORY_VARIANTS`: optional sensitivity routes (`combined-dsd`, `combined-noscript`)
+- `ALL_VARIANTS`: union for evaluator-side filtering/CLI validation
+
+Keep this file authoritative when adding/changing routes referenced by scripts.
+
+### Canonical Page Variants
+
+Each canonical route is part of the primary benchmark matrix:
+
+| Route             | GAIO Measure                                                                                      |
+| ----------------- | ------------------------------------------------------------------------------------------------- |
+| `/control`        | None (baseline)                                                                                   |
+| `/test-jsonld`    | JSON-LD structured data in `<head>`                                                               |
+| `/test-semantic`  | Semantic HTML landmarks                                                                           |
+| `/test-aria`      | ARIA attributes                                                                                   |
+| `/test-noscript`  | `<noscript>` Light DOM fallbacks                                                                  |
+| `/test-dsd`       | Declarative Shadow DOM (SSR-rendered)                                                             |
+| `/test-microdata` | Microdata `itemscope`/`itemprop`                                                                  |
+| `/combined`       | Combined stack (JSON-LD + Semantic + ARIA + DSD + Microdata; `<noscript>` intentionally excluded) |
+
+### Exploratory Routes
+
+| Route                | Purpose                                                             |
+| -------------------- | ------------------------------------------------------------------- |
+| `/combined-dsd`      | Alias of canonical `/combined` for explicit visibility-axis pairing |
+| `/combined-noscript` | Combined stack with `noscript` visibility channel instead of DSD    |
 
 All pages share the same hardcoded insurance product content (Haftpflicht, Hausrat, Kasko tariffs). Content is never fetched or generated dynamically — the _markup_ differs, not the content.
 
@@ -64,15 +91,17 @@ All pages share the same hardcoded insurance product content (Haftpflicht, Hausr
 
 ### Declarative Shadow DOM (DSD) via SSR
 
-`src/lib/lit-ssr.ts` wraps `@lit-labs/ssr` to server-render Lit components into `<template shadowrootmode="open">` elements, making Shadow DOM content visible in the initial HTML without JavaScript. Only `/test-dsd` and `/combined` use this.
+`src/lib/lit-ssr.ts` wraps `@lit-labs/ssr` to server-render Lit components into `<template shadowrootmode="open">` elements, making Shadow DOM content visible in the initial HTML without JavaScript. Canonical DSD usage is on `/test-dsd` and `/combined` (with `/combined-dsd` as exploratory alias).
 
 ### Middleware (`src/middleware.ts`)
 
 Runs on every request:
 
 1. Detects AI bot User-Agent strings (GPTBot, ClaudeBot, Google-Extended, etc.)
-2. Logs the visit to Supabase `bot_logs` with `bot_name`, `test_group`, `latency_ms`
-3. Sets response headers: `X-AI-Bot-Detected`, `X-Test-Group`, `X-Response-Time`
+2. Logs the visit to Supabase `bot_logs` with `bot_name`, `variant_id`, `latency_ms`
+3. Sets response headers: `X-AI-Bot-Detected`, `X-Test-Group`, `X-Variant-Id`, `X-Response-Time`
+
+Note: middleware matching currently follows canonical `VARIANTS`.
 
 ### Test Traps (`src/components/traps/`)
 
@@ -88,11 +117,16 @@ Three tables:
 
 RLS is enabled but intentionally permissive (anon insert/read) for the lab environment.
 
+`gaio_variant` enum currently contains canonical IDs only, so exploratory evaluator routes are CSV-only unless the enum is extended.
+
 ## Key Conventions
 
-- **`--persist` flag**: Any evaluation/extraction script writes to Supabase only when `--persist` is passed. Without it, results go to stdout/CSV only.
+- **`--persist` flag**: Evaluation/extraction scripts write to Supabase only when `--persist` is passed. Without it, results go to stdout/CSV only.
+- **Persist scope**: `evaluate.mjs --persist` supports canonical variant IDs only; exploratory visibility-set runs are CSV-only by default.
 - **`--url` flag**: Evaluation scripts default to `http://localhost:4321`; pass `--url` to target production.
-- **Variant IDs** used across scripts and DB: `control`, `combined`, `jsonld`, `semantic`, `aria`, `noscript`, `dsd`, `microdata`
+- **`--variant-set` flag**: `main` (canonical 8-arm matrix) or `combined-visibility` (exploratory pair).
+- **Canonical variant IDs** used across scripts and DB enum: `control`, `combined`, `jsonld`, `semantic`, `aria`, `noscript`, `dsd`, `microdata`.
+- **Exploratory variant IDs** for evaluator sensitivity runs: `combined-dsd`, `combined-noscript`.
 - **`useDefineForClassFields: false`** in tsconfig is required for Lit decorators — do not change this.
 - **`output: 'server'`** in `astro.config.mjs` is intentional (not a static site) — needed so middleware runs on every request for bot logging.
 - Results CSVs in `results/` are gitignored and generated by the evaluate scripts.

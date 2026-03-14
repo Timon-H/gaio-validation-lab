@@ -1,6 +1,6 @@
 # LLM Evaluation
 
-`scripts/evaluate.mjs` runs the structured extraction benchmark against all 8 page variants using a chosen LLM provider. Each run fetches the live HTML and asks the model to extract a fixed set of fields:
+`scripts/evaluate.mjs` runs the structured extraction benchmark against the canonical 8-page matrix by default, and can optionally run an exploratory visibility-axis pair (`combined-dsd`, `combined-noscript`) via `--variant-set combined-visibility`. Each run fetches the live HTML and asks the model to extract a fixed set of fields:
 
 - **tarife** — name, price, Deckungssumme, Selbstbeteiligung, payment period, highlighted flag
 - **faq** — question + answer pairs
@@ -33,6 +33,9 @@ npm run evaluate:openai -- --tier exploratory --model gpt-5 --repetitions 5
 # Sensitivity run with provider-default thinking behavior
 npm run evaluate:all -- --tier validation --thinking-profile provider-default --repetitions 5
 
+# Exploratory visibility-axis pair (combined-dsd vs combined-noscript)
+npm run evaluate:all -- --variant-set combined-visibility --tier validation --repetitions 5
+
 # Persist results to Supabase (requires SUPABASE_URL + SUPABASE_ANON_KEY)
 npm run evaluate:openai -- --persist
 npm run evaluate:claude -- --persist
@@ -44,6 +47,17 @@ CSV columns are metadata-first to separate setup from outcomes:
 `Provider, Model, Tier, Thinking_Controls, Variant_ID, Run, ...metrics..., DB, Raw_JSON_Output`.
 For exploratory OpenAI runs, use `--model gpt-5-mini` (default) or `--model gpt-5` to run each model independently.
 With `--persist`, each run is also inserted into the `llm_evaluation_results` Supabase table (including `tier`, `thinking_controls`, `variant_id`, and `base_url`), enabling cross-provider and cross-run comparisons via the `llm_eval_comparison` SQL view.
+
+`--persist` is restricted to canonical variant IDs only. Exploratory routes (`combined-dsd`, `combined-noscript`) are CSV-only unless the Supabase enum `gaio_variant` is explicitly extended.
+
+## Variant Selection
+
+- Default: canonical set (`control`, `jsonld`, `semantic`, `aria`, `noscript`, `dsd`, `microdata`, `combined`)
+- Optional set: `--variant-set combined-visibility` (only `combined-dsd`, `combined-noscript`)
+- Single route: `--variant <id>` supports canonical and exploratory IDs
+
+Variant IDs come from [src/data/variants.mjs](../src/data/variants.mjs):
+`VARIANTS` (canonical), `EXPLORATORY_VARIANTS` (exploratory), and `ALL_VARIANTS` (combined).
 
 ## Environment Variables
 
@@ -123,6 +137,12 @@ Gemini runs always set `seed = 42` for additional run-to-run stability.
 | Validation           | `npm run evaluate:all -- --persist --tier validation --repetitions 5`                                                           | 5           | Cross-tier robustness | ~$7       |
 | Exploratory (OpenAI) | `npm run evaluate:openai -- --persist --tier exploratory --model gpt-5-mini --repetitions 5` or `--model gpt-5 --repetitions 5` | 5           | Reasoning model probe | ~$2       |
 | Sensitivity          | `npm run evaluate:all -- --persist --tier validation --thinking-profile provider-default --repetitions 5`                       | 5           | Control-surface check | ~$7       |
+
+Optional exploratory visibility-axis check (CSV-only by default):
+
+```bash
+npm run evaluate:all -- --variant-set combined-visibility --tier validation --repetitions 5
+```
 
 Exploratory estimates assume similar token volumes across both model runs; `gpt-5` is priced at 5x `gpt-5-mini` for input and output.
 

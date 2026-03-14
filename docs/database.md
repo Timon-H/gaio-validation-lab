@@ -31,7 +31,9 @@ All tables use canonical variant IDs via enum `gaio_variant`:
 - `microdata`
 - `combined`
 
-These IDs come from [src/data/variants.mjs](../src/data/variants.mjs).
+Canonical IDs come from `VARIANTS` in [src/data/variants.mjs](../src/data/variants.mjs).
+
+Exploratory evaluator routes (`combined-dsd`, `combined-noscript`) are defined in `EXPLORATORY_VARIANTS` and are intentionally outside this enum, therefore CSV-only by default.
 
 ## 3. Writers and Required Payloads
 
@@ -145,3 +147,4 @@ LIMIT 10;
 - RLS is enabled with permissive anon insert/select policies for this lab environment.
 - The `meta` column on all three tables defaults to `{}` and can be used for future annotations without schema changes.
 - If inserts fail after schema changes, first confirm your Supabase project actually ran the latest [supabase/schema.sql](../supabase/schema.sql).
+- If you need to persist exploratory evaluator routes, you must explicitly extend enum `gaio_variant` and update dependent checks/views.

@@ -4,7 +4,9 @@ This page documents all executable scripts in `scripts/` and how they relate to 
 
 ## Shared Conventions
 
-- Variant routing comes from `src/data/variants.mjs` (`VARIANTS`, `VARIANT_PATHS`) and is shared by middleware and scripts.
+- Variant routing comes from `src/data/variants.mjs`:
+  canonical routes via `VARIANTS`/`VARIANT_PATHS`, exploratory routes via `EXPLORATORY_VARIANTS`.
+- `evaluate.mjs` uses canonical routes by default and switches to exploratory routes with `--variant-set combined-visibility`.
 - Supabase writes use `src/lib/supabase.mjs` (`supabaseInsert`).
 - Scripts that persist data require `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
 - NPM shortcuts for `evaluate:*`, `indexnow`, and `test:extract:persist` load `.env` via Node `--env-file`.
@@ -30,6 +32,9 @@ npm run evaluate:all -- --tier validation --repetitions 5
 # Sensitivity run with provider-default thinking
 npm run evaluate:all -- --tier validation --thinking-profile provider-default --repetitions 5
 
+# Exploratory visibility-axis pair (CSV-only unless DB enum is extended)
+npm run evaluate:all -- --variant-set combined-visibility --tier validation --repetitions 5
+
 # Optional persistence to Supabase
 npm run evaluate:all -- --persist --repetitions 5
 ```
@@ -42,12 +47,14 @@ npm run evaluate:all -- --persist --repetitions 5
 - `--model <model-id>`
 - `--repetitions <n>`
 - `--variant <id>`
+- `--variant-set <main|combined-visibility>`
 - `--url <base-url>`
 - `--persist`
 
 Output is always written to `results/gaio_evaluation_<provider>_<model>_<timestamp>.csv`.
 CSV rows use metadata-first ordering (`Provider, Model, Tier, Thinking_Controls, Variant_ID, Run, ...`) so settings/context are separated from extraction outcomes.
 Persisted rows include `thinking_controls` in `llm_evaluation_results`.
+`--persist` is limited to canonical variant IDs; the exploratory visibility-set is CSV-only by default.
 
 ## Bot Simulation (`test-bots.mjs`)
 

@@ -25,7 +25,11 @@ import fs from "fs";
 import { OpenAI } from "openai";
 import Anthropic from "@anthropic-ai/sdk";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { VARIANTS as ALL_VARIANTS_SOURCE } from "../src/data/variants.mjs";
+import {
+  VARIANTS as MAIN_VARIANTS_SOURCE,
+  EXPLORATORY_VARIANTS as EXPLORATORY_VARIANTS_SOURCE,
+  ALL_VARIANTS as ALL_VARIANTS_SOURCE,
+} from "../src/data/variants.mjs";
 import { supabaseInsert } from "../src/lib/supabase.mjs";
 
 // ---------------------------------------------------------------------------
@@ -47,6 +51,9 @@ const VARIANT_FILTER =
   variantFlagIndex !== -1 ? args[variantFlagIndex + 1] : null;
 const tierFlagIndex = args.indexOf("--tier");
 const TIER = tierFlagIndex !== -1 ? args[tierFlagIndex + 1] : "primary";
+const variantSetFlagIndex = args.indexOf("--variant-set");
+const VARIANT_SET =
+  variantSetFlagIndex !== -1 ? args[variantSetFlagIndex + 1] : "main";
 const modelFlagIndex = args.indexOf("--model");
 const MODEL_OVERRIDE = modelFlagIndex !== -1 ? args[modelFlagIndex + 1] : null;
 const thinkingProfileFlagIndex = args.indexOf("--thinking-profile");
@@ -58,6 +65,7 @@ const THINKING_PROFILE =
 const SUPPORTED_PROVIDERS = ["openai", "claude", "gemini", "all"];
 const SUPPORTED_TIERS = ["primary", "validation", "exploratory"];
 const SUPPORTED_THINKING_PROFILES = ["minimized", "provider-default"];
+const SUPPORTED_VARIANT_SETS = ["main", "combined-visibility"];
 
 if (!PROVIDER) {
   console.log(`
@@ -76,7 +84,11 @@ Options:
                           Example: --url https://gaio-validation-lab.vercel.app
   --repetitions <n>       Number of runs per variant (default: 1).
   --variant <id>          Run only a single variant (default: all).
-                          IDs: control, jsonld, semantic, aria, noscript, dsd, microdata, combined
+                          IDs (main): control, jsonld, semantic, aria, noscript, dsd, microdata, combined
+                          IDs (exploratory): combined-dsd, combined-noscript
+  --variant-set <set>     Variant set to execute when --variant is not provided (default: main).
+                          main                 → canonical 8-variant benchmark matrix
+                          combined-visibility  → exploratory pair: combined-dsd vs combined-noscript
   --tier <tier>           Model tier to use (default: primary).
                           primary      → cost-effective models (gpt-4.1-mini, claude-haiku-4-5, gemini-2.5-flash)
                           validation   → higher-capability models (gpt-4.1, claude-sonnet-4-5, gemini-2.5-pro)
@@ -99,6 +111,7 @@ Npm shortcuts (pass flags after --):
   npm run evaluate:all   -- --persist --tier validation --repetitions 5
   npm run evaluate:openai -- --tier exploratory --repetitions 5
   npm run evaluate:openai -- --tier exploratory --model gpt-5 --repetitions 5
+  npm run evaluate:all   -- --variant-set combined-visibility --tier validation --repetitions 5
 `);
   process.exit(0);
 }
@@ -120,6 +133,13 @@ if (!SUPPORTED_TIERS.includes(TIER)) {
 if (!SUPPORTED_THINKING_PROFILES.includes(THINKING_PROFILE)) {
   console.error(
     `❌ Unknown thinking profile "${THINKING_PROFILE}". Choose from: ${SUPPORTED_THINKING_PROFILES.join(", ")}`,
+  );
+  process.exit(1);
+}
+
+if (!SUPPORTED_VARIANT_SETS.includes(VARIANT_SET)) {
+  console.error(
+    `❌ Unknown variant set "${VARIANT_SET}". Choose from: ${SUPPORTED_VARIANT_SETS.join(", ")}`,
   );
   process.exit(1);
 }
@@ -274,6 +294,15 @@ const INTER_REQUEST_DELAY_MS = 1000;
 const REPETITIONS =
   Number.isFinite(REPETITIONS_ARG) && REPETITIONS_ARG > 0 ? REPETITIONS_ARG : 1;
 
+const MAIN_VARIANTS = MAIN_VARIANTS_SOURCE;
+const EXPLORATORY_VARIANTS = EXPLORATORY_VARIANTS_SOURCE;
+
+const VARIANT_SETS = {
+  main: MAIN_VARIANTS,
+  "combined-visibility": EXPLORATORY_VARIANTS,
+};
+
+const SELECTED_VARIANT_SET = VARIANT_SETS[VARIANT_SET];
 const ALL_VARIANTS = ALL_VARIANTS_SOURCE;
 
 if (VARIANT_FILTER && !ALL_VARIANTS.some((v) => v.id === VARIANT_FILTER)) {
@@ -285,7 +314,7 @@ if (VARIANT_FILTER && !ALL_VARIANTS.some((v) => v.id === VARIANT_FILTER)) {
 
 const VARIANTS = VARIANT_FILTER
   ? ALL_VARIANTS.filter((v) => v.id === VARIANT_FILTER)
-  : ALL_VARIANTS;
+  : SELECTED_VARIANT_SET;
 
 // Ensure results directory exists
 fs.mkdirSync("./results", { recursive: true });
@@ -801,11 +830,12 @@ async function runProviderEvaluation(provider, config, apiKey) {
   const outputFile = `./results/gaio_evaluation_${provider}_${modelSlug}_${new Date().toISOString().replace(/:/g, "-").replace(/\..+/, "")}.csv`;
   const thinkingControls = buildThinkingControlsMetadata(provider, config);
   console.log(
-    `🚀 Starting GAIO evaluation pipeline  [provider: ${provider}, model: ${config.model}, tier: ${TIER}, thinking-profile: ${THINKING_PROFILE}]`,
+    `🚀 Starting GAIO evaluation pipeline  [provider: ${provider}, model: ${config.model}, tier: ${TIER}, thinking-profile: ${THINKING_PROFILE}, variant-set: ${VARIANT_SET}]`,
   );
   console.log(
     `🧭 Effective controls: ${describeControlProfile(provider, config)}`,
   );
+  console.log(`🧪 Selected variants: ${VARIANTS.map((v) => v.id).join(", ")}`);
   const results = [];
 
   // Sequential testing to avoid overwhelming the server and to respect rate limits
@@ -851,6 +881,18 @@ async function runProviderEvaluation(provider, config, apiKey) {
  */
 async function runEvaluation() {
   if (PERSIST) {
+    const canonicalVariantIds = new Set(MAIN_VARIANTS.map((v) => v.id));
+    const hasExploratoryVariant = VARIANTS.some(
+      (v) => !canonicalVariantIds.has(v.id),
+    );
+
+    if (hasExploratoryVariant) {
+      console.error(
+        "❌ Error: --persist is only supported for canonical variants in Supabase enum gaio_variant. Remove --persist or run with --variant-set main.",
+      );
+      process.exit(1);
+    }
+
     if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
       console.error(
         "❌ Error: --persist requires SUPABASE_URL and SUPABASE_ANON_KEY to be set.",

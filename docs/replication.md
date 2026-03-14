@@ -61,7 +61,7 @@ npm run build       # TypeScript check + Astro build
 npm run dev         # Local server at http://localhost:4321
 ```
 
-The eight variant pages are available at:
+Canonical benchmark matrix (8 variants):
 
 | Path              | Variant                                                                                                    |
 | ----------------- | ---------------------------------------------------------------------------------------------------------- |
@@ -73,6 +73,13 @@ The eight variant pages are available at:
 | `/test-noscript`  | `<noscript>` fallbacks only                                                                                |
 | `/test-dsd`       | Declarative Shadow DOM only                                                                                |
 | `/test-microdata` | Microdata only                                                                                             |
+
+Optional exploratory visibility-axis pair (not part of canonical trial statistics):
+
+| Path                 | Variant                                                          |
+| -------------------- | ---------------------------------------------------------------- |
+| `/combined-dsd`      | Alias of canonical `/combined` (DSD visibility channel)          |
+| `/combined-noscript` | Combined stack with `noscript` visibility channel instead of DSD |
 
 ---
 
@@ -101,7 +108,7 @@ Verifies that structural markers (headings, word count, schema presence) are cor
 npm run test:extract
 ```
 
-Expected output: a table showing per-variant word counts, heading counts, link counts, and schema detection flags. All 8 variants should return results. No credentials are required for this step.
+Expected output: a table showing per-variant word counts, heading counts, link counts, and schema detection flags. All canonical 8 variants should return results. No credentials are required for this step.
 
 To persist the results to Supabase:
 
@@ -125,7 +132,7 @@ Expected output: a table showing each simulated bot UA, the detected group, and 
 
 ## 6. LLM Evaluation
 
-Runs the structured extraction benchmark against all 8 variants using a chosen LLM provider. Each variant is evaluated **n times** for variance measurement.
+Runs the structured extraction benchmark against the canonical 8 variants by default using a chosen LLM provider. Each variant is evaluated **n times** for variance measurement.
 
 ```bash
 # Run against local server (http://localhost:4321, requires npm run dev)
@@ -165,6 +172,9 @@ npm run evaluate:openai -- --tier exploratory --model gpt-5 --repetitions 5
 
 # Sensitivity run with provider-default thinking behavior
 npm run evaluate:all -- --tier validation --thinking-profile provider-default --repetitions 5
+
+# Exploratory visibility-axis pair (combined-dsd vs combined-noscript)
+npm run evaluate:all -- --variant-set combined-visibility --tier validation --repetitions 5
 ```
 
 By default, `evaluate.mjs` uses `--thinking-profile minimized` to apply the strongest available per-provider controls for internal reasoning depth.
@@ -178,9 +188,12 @@ By default, `evaluate.mjs` uses `--thinking-profile minimized` to apply the stro
 | `--persist`              | off                     | Write results to Supabase in addition to CSV                                                                       |
 | `--repetitions <n>`      | `1`                     | Number of extraction runs per variant                                                                              |
 | `--variant <id>`         | all                     | Run a single variant only (e.g. `--variant control`)                                                               |
+| `--variant-set <set>`    | `main`                  | Variant set when `--variant` is not provided: `main` (canonical 8) or `combined-visibility` (exploratory pair)     |
 | `--tier <tier>`          | `primary`               | Model tier: `primary`, `validation`, or `exploratory`. See [`docs/evaluation.md`](evaluation.md) for tier details. |
 | `--model <id>`           | tier default            | Optional model override where supported. For OpenAI exploratory: `gpt-5-mini` (default) or `gpt-5`.                |
 | `--thinking-profile <p>` | `minimized`             | Thinking-depth control strategy: `minimized` (recommended) or `provider-default` (sensitivity check).              |
+
+Note: `--persist` is supported only for canonical variant IDs in the current Supabase enum. Exploratory visibility-set runs are CSV-only unless the database enum is extended.
 
 ---
 
@@ -231,6 +244,7 @@ Each call generates a new timestamped CSV; aggregate multiple runs for more reli
 
 - **API quotas:** Gemini free-tier quota may throttle or reject requests during high-load periods. The script includes automatic retry logic with exponential backoff.
 - **Live vs. local differences:** Passing `--url https://gaio-validation-lab.vercel.app` evaluates the deployed Vercel URL; the default targets `localhost:4321`. Results should be identical given the same HTML output, but network latency and caching may introduce minor differences.
-- **`/combined` and `/test-dsd` are SSR-only:** These two variants disable client-side hydration to keep the initial HTML deterministic. Other variants use standard Astro SSR with client-side Lit hydration.
+- **`/combined` and `/test-dsd` are SSR-only:** These two canonical variants disable client-side hydration to keep the initial HTML deterministic. Other canonical variants use standard Astro SSR with client-side Lit hydration.
+- **Exploratory routes are isolated from canonical trial accounting:** `/combined-dsd` and `/combined-noscript` support sensitivity checks for visibility-channel criticism and do not alter baseline 8-arm results.
 - **Control surfaces differ by provider:** OpenAI Chat Completions (`gpt-4.1*`) and Gemini runs use `seed: 42`; Claude has no seed parameter in this script path; OpenAI reasoning models (`gpt-5*`) do not support seed/temperature.
 - **Thinking controls are asymmetric:** Gemini `2.5-flash` can disable thinking (`thinkingBudget=0`), while Gemini `2.5-pro` cannot fully disable thinking (minimum budget is `128`). Claude extended thinking is opt-in and is left disabled unless explicitly enabled.
