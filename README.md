@@ -19,11 +19,11 @@ Shadow DOM — used extensively in component-driven DXP architectures — is opa
 - **RQ2:** Which individual GAIO measures (JSON-LD, Semantic HTML, ARIA, Declarative Shadow DOM, Microdata) contribute most effectively to improving content extraction and disambiguation?
 - **RQ3:** To what extent can these results be generalized across different LLM providers (OpenAI, Anthropic, Google)?
 
-Each GAIO measure is isolated to a separate page variant to quantify its independent contribution. Seven deliberate test traps are embedded to create meaningful per-variant signals. See [`docs/test-design.md`](docs/test-design.md) for the full methodology and [`docs/traps.md`](docs/traps.md) for the trap specifications.
+Each GAIO measure is isolated to a separate canonical page variant to quantify its independent contribution. Seven deliberate test traps are embedded to create meaningful per-variant signals. See [`docs/test-design.md`](docs/test-design.md) for the full methodology and [`docs/traps.md`](docs/traps.md) for the trap specifications.
 
 ## Live Deployment
 
-Eight variants of the same insurance page content, each isolating a single GAIO variable:
+Canonical benchmark matrix (8 variants):
 
 | Variant                | GAIO Measure                                                                                | URL                                                                      |
 | ---------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
@@ -35,6 +35,13 @@ Eight variants of the same insurance page content, each isolating a single GAIO 
 | `<noscript>` only      | Light DOM fallbacks for no-JS crawlers                                                      | [/test-noscript](https://gaio-validation-lab.vercel.app/test-noscript)   |
 | Declarative Shadow DOM | SSR-rendered shadow content via `@lit-labs/ssr`                                             | [/test-dsd](https://gaio-validation-lab.vercel.app/test-dsd)             |
 | Microdata only         | Inline `schema.org` `itemscope`/`itemprop` attributes                                       | [/test-microdata](https://gaio-validation-lab.vercel.app/test-microdata) |
+
+Exploratory visibility-axis pair (optional, not part of canonical trial statistics):
+
+| Variant           | Purpose                                                        | URL                                                                            |
+| ----------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Combined DSD      | Alias of canonical combined variant (DSD visibility channel)   | [/combined-dsd](https://gaio-validation-lab.vercel.app/combined-dsd)           |
+| Combined noscript | Combined stack with noscript visibility channel instead of DSD | [/combined-noscript](https://gaio-validation-lab.vercel.app/combined-noscript) |
 
 ## Quick Start
 
@@ -62,8 +69,8 @@ src/
   components/baseline/   ← 9 Lit web components (Shadow DOM)
     dxp-form-base.ts     ← shared base class for form components
   data/
-    content.ts           ← shared page copy/constants for all 8 variants
-    variants.mjs         ← shared variant IDs/paths for pages, scripts, middleware
+    content.ts           ← shared page copy/constants for canonical + exploratory variants
+    variants.mjs         ← shared canonical + exploratory variant IDs/paths (split exports)
   layouts/BaseLayout.astro ← Shared page shell
   lib/lit-ssr.ts          ← @lit-labs/ssr helper for Declarative Shadow DOM
   lib/supabase.mjs        ← shared Supabase insert utility for scripts + middleware
@@ -71,6 +78,8 @@ src/
   pages/
     control/             ← Baseline — no GAIO measures
     combined/            ← Combined stack (JSON-LD + Semantic + ARIA + DSD + Microdata)
+    combined-dsd/        ← Exploratory alias of combined (DSD visibility channel)
+    combined-noscript/   ← Exploratory combined variant with noscript visibility channel
     test-jsonld/         ← Isolated: JSON-LD
     test-semantic/       ← Isolated: Semantic HTML
     test-aria/           ← Isolated: ARIA attributes
