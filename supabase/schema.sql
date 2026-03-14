@@ -13,9 +13,11 @@
 -- 0) Reset existing objects
 -- --------------------------------------------------------------------------
 DROP VIEW IF EXISTS llm_eval_comparison;
+DROP VIEW IF EXISTS llm_eval_comparison_exploratory;
 DROP VIEW IF EXISTS extraction_comparison;
 DROP VIEW IF EXISTS gaio_comparison;
 
+DROP TABLE IF EXISTS llm_evaluation_results_exploratory;
 DROP TABLE IF EXISTS llm_evaluation_results;
 DROP TABLE IF EXISTS extraction_results;
 DROP TABLE IF EXISTS bot_logs;
@@ -138,6 +140,41 @@ CREATE INDEX idx_llm_eval_created
   ON llm_evaluation_results (created_at DESC);
 
 -- --------------------------------------------------------------------------
+-- 4b) Exploratory visibility-axis rows (scripts/evaluate.mjs --persist-exploratory)
+-- --------------------------------------------------------------------------
+CREATE TABLE llm_evaluation_results_exploratory (
+  id                   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  created_at           TIMESTAMPTZ NOT NULL DEFAULT now(),
+  provider             gaio_provider NOT NULL,
+  model                TEXT NOT NULL,
+  tier                 TEXT NOT NULL,
+  thinking_controls    TEXT NOT NULL DEFAULT 'profile=provider-default',
+  variant_id           TEXT NOT NULL CHECK (variant_id IN ('combined-dsd', 'combined-noscript')),
+  run                  INT NOT NULL CHECK (run >= 1),
+  base_url             TEXT NOT NULL,
+  tarife_count         INT NOT NULL DEFAULT 0 CHECK (tarife_count >= 0),
+  faq_count            INT NOT NULL DEFAULT 0 CHECK (faq_count >= 0),
+  produktkarten_count  INT NOT NULL DEFAULT 0 CHECK (produktkarten_count >= 0),
+  form_felder_count    INT NOT NULL DEFAULT 0 CHECK (form_felder_count >= 0),
+  hat_kontakt          BOOLEAN NOT NULL DEFAULT FALSE,
+  hat_anbieter         BOOLEAN NOT NULL DEFAULT FALSE,
+  raw_output           JSONB,
+  meta                 JSONB NOT NULL DEFAULT '{}'::jsonb
+);
+
+CREATE INDEX idx_llm_eval_expl_variant_provider_model_created
+  ON llm_evaluation_results_exploratory (variant_id, provider, model, created_at DESC);
+
+CREATE INDEX idx_llm_eval_expl_provider_variant_run
+  ON llm_evaluation_results_exploratory (provider, variant_id, run);
+
+CREATE INDEX idx_llm_eval_expl_tier_thinking_created
+  ON llm_evaluation_results_exploratory (tier, thinking_controls, created_at DESC);
+
+CREATE INDEX idx_llm_eval_expl_created
+  ON llm_evaluation_results_exploratory (created_at DESC);
+
+-- --------------------------------------------------------------------------
 -- 5) Analytics views
 -- --------------------------------------------------------------------------
 CREATE OR REPLACE VIEW gaio_comparison AS
@@ -195,12 +232,37 @@ GROUP BY
   COALESCE(NULLIF(substring(thinking_controls FROM 'profile=([^;]+)'), ''), 'unknown')
 ORDER BY variant_id, provider, model, tier, thinking_profile;
 
+CREATE OR REPLACE VIEW llm_eval_comparison_exploratory AS
+SELECT
+  variant_id,
+  provider,
+  model,
+  tier,
+  COALESCE(NULLIF(substring(thinking_controls FROM 'profile=([^;]+)'), ''), 'unknown') AS thinking_profile,
+  COUNT(*) AS runs,
+  ROUND(AVG(tarife_count)::numeric, 2) AS avg_tarife,
+  ROUND(AVG(faq_count)::numeric, 2) AS avg_faq,
+  ROUND(AVG(produktkarten_count)::numeric, 2) AS avg_produktkarten,
+  ROUND(AVG(form_felder_count)::numeric, 2) AS avg_form_felder,
+  ROUND(100.0 * SUM(hat_kontakt::int) / COUNT(*), 0) AS pct_kontakt,
+  ROUND(100.0 * SUM(hat_anbieter::int) / COUNT(*), 0) AS pct_anbieter,
+  MAX(created_at) AS last_run_at
+FROM llm_evaluation_results_exploratory
+GROUP BY
+  variant_id,
+  provider,
+  model,
+  tier,
+  COALESCE(NULLIF(substring(thinking_controls FROM 'profile=([^;]+)'), ''), 'unknown')
+ORDER BY variant_id, provider, model, tier, thinking_profile;
+
 -- --------------------------------------------------------------------------
 -- 6) RLS (permissive by design for lab environment)
 -- --------------------------------------------------------------------------
 ALTER TABLE bot_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE extraction_results ENABLE ROW LEVEL SECURITY;
 ALTER TABLE llm_evaluation_results ENABLE ROW LEVEL SECURITY;
+ALTER TABLE llm_evaluation_results_exploratory ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY bot_logs_anon_insert
   ON bot_logs FOR INSERT TO anon WITH CHECK (true);
@@ -219,3 +281,9 @@ CREATE POLICY llm_eval_anon_insert
 
 CREATE POLICY llm_eval_anon_read
   ON llm_evaluation_results FOR SELECT TO anon USING (true);
+
+CREATE POLICY llm_eval_expl_anon_insert
+  ON llm_evaluation_results_exploratory FOR INSERT TO anon WITH CHECK (true);
+
+CREATE POLICY llm_eval_expl_anon_read
+  ON llm_evaluation_results_exploratory FOR SELECT TO anon USING (true);

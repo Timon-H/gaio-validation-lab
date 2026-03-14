@@ -25,7 +25,11 @@ import fs from "fs";
 import { OpenAI } from "openai";
 import Anthropic from "@anthropic-ai/sdk";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { VARIANTS as ALL_VARIANTS_SOURCE } from "../src/data/variants.mjs";
+import {
+  VARIANTS as MAIN_VARIANTS_SOURCE,
+  EXPLORATORY_VARIANTS as EXPLORATORY_VARIANTS_SOURCE,
+  ALL_VARIANTS as ALL_VARIANTS_SOURCE,
+} from "../src/data/variants.mjs";
 import { supabaseInsert } from "../src/lib/supabase.mjs";
 
 // ---------------------------------------------------------------------------
@@ -35,6 +39,8 @@ const args = process.argv.slice(2);
 const providerFlagIndex = args.indexOf("--provider");
 const PROVIDER = providerFlagIndex !== -1 ? args[providerFlagIndex + 1] : null;
 const PERSIST = args.includes("--persist");
+const PERSIST_EXPLORATORY = args.includes("--persist-exploratory");
+const PERSIST_ANY = PERSIST || PERSIST_EXPLORATORY;
 const urlFlagIndex = args.indexOf("--url");
 const URL_OVERRIDE = urlFlagIndex !== -1 ? args[urlFlagIndex + 1] : null;
 const repetitionsFlagIndex = args.indexOf("--repetitions");
@@ -47,6 +53,9 @@ const VARIANT_FILTER =
   variantFlagIndex !== -1 ? args[variantFlagIndex + 1] : null;
 const tierFlagIndex = args.indexOf("--tier");
 const TIER = tierFlagIndex !== -1 ? args[tierFlagIndex + 1] : "primary";
+const variantSetFlagIndex = args.indexOf("--variant-set");
+const VARIANT_SET =
+  variantSetFlagIndex !== -1 ? args[variantSetFlagIndex + 1] : "main";
 const modelFlagIndex = args.indexOf("--model");
 const MODEL_OVERRIDE = modelFlagIndex !== -1 ? args[modelFlagIndex + 1] : null;
 const thinkingProfileFlagIndex = args.indexOf("--thinking-profile");
@@ -58,6 +67,7 @@ const THINKING_PROFILE =
 const SUPPORTED_PROVIDERS = ["openai", "claude", "gemini", "all"];
 const SUPPORTED_TIERS = ["primary", "validation", "exploratory"];
 const SUPPORTED_THINKING_PROFILES = ["minimized", "provider-default"];
+const SUPPORTED_VARIANT_SETS = ["main", "combined-visibility"];
 
 if (!PROVIDER) {
   console.log(`
@@ -70,13 +80,22 @@ Providers:
   all      → runs openai, claude, gemini sequentially; all three API keys required
 
 Options:
-  --persist               Write results to Supabase in addition to CSV output.
+  --persist               Write canonical results to Supabase table llm_evaluation_results.
                           Requires SUPABASE_URL and SUPABASE_ANON_KEY.
+                          Only valid for canonical variants (main set).
+  --persist-exploratory   Write exploratory visibility results to Supabase table
+                          llm_evaluation_results_exploratory.
+                          Requires SUPABASE_URL and SUPABASE_ANON_KEY.
+                          Only valid for exploratory variants (combined-dsd, combined-noscript).
   --url <base-url>        Override the target base URL (default: http://localhost:4321).
                           Example: --url https://gaio-validation-lab.vercel.app
   --repetitions <n>       Number of runs per variant (default: 1).
   --variant <id>          Run only a single variant (default: all).
-                          IDs: control, jsonld, semantic, aria, noscript, dsd, microdata, combined
+                          IDs (main): control, jsonld, semantic, aria, noscript, dsd, microdata, combined
+                          IDs (exploratory): combined-dsd, combined-noscript
+  --variant-set <set>     Variant set to execute when --variant is not provided (default: main).
+                          main                 → canonical 8-variant benchmark matrix
+                          combined-visibility  → exploratory pair: combined-dsd vs combined-noscript
   --tier <tier>           Model tier to use (default: primary).
                           primary      → cost-effective models (gpt-4.1-mini, claude-haiku-4-5, gemini-2.5-flash)
                           validation   → higher-capability models (gpt-4.1, claude-sonnet-4-5, gemini-2.5-pro)
@@ -99,6 +118,8 @@ Npm shortcuts (pass flags after --):
   npm run evaluate:all   -- --persist --tier validation --repetitions 5
   npm run evaluate:openai -- --tier exploratory --repetitions 5
   npm run evaluate:openai -- --tier exploratory --model gpt-5 --repetitions 5
+  npm run evaluate:all   -- --variant-set combined-visibility --persist-exploratory --tier validation --repetitions 5
+  npm run evaluate:all   -- --variant-set combined-visibility --tier validation --repetitions 5
 `);
   process.exit(0);
 }
@@ -120,6 +141,13 @@ if (!SUPPORTED_TIERS.includes(TIER)) {
 if (!SUPPORTED_THINKING_PROFILES.includes(THINKING_PROFILE)) {
   console.error(
     `❌ Unknown thinking profile "${THINKING_PROFILE}". Choose from: ${SUPPORTED_THINKING_PROFILES.join(", ")}`,
+  );
+  process.exit(1);
+}
+
+if (!SUPPORTED_VARIANT_SETS.includes(VARIANT_SET)) {
+  console.error(
+    `❌ Unknown variant set "${VARIANT_SET}". Choose from: ${SUPPORTED_VARIANT_SETS.join(", ")}`,
   );
   process.exit(1);
 }
@@ -274,6 +302,15 @@ const INTER_REQUEST_DELAY_MS = 1000;
 const REPETITIONS =
   Number.isFinite(REPETITIONS_ARG) && REPETITIONS_ARG > 0 ? REPETITIONS_ARG : 1;
 
+const MAIN_VARIANTS = MAIN_VARIANTS_SOURCE;
+const EXPLORATORY_VARIANTS = EXPLORATORY_VARIANTS_SOURCE;
+
+const VARIANT_SETS = {
+  main: MAIN_VARIANTS,
+  "combined-visibility": EXPLORATORY_VARIANTS,
+};
+
+const SELECTED_VARIANT_SET = VARIANT_SETS[VARIANT_SET];
 const ALL_VARIANTS = ALL_VARIANTS_SOURCE;
 
 if (VARIANT_FILTER && !ALL_VARIANTS.some((v) => v.id === VARIANT_FILTER)) {
@@ -285,7 +322,7 @@ if (VARIANT_FILTER && !ALL_VARIANTS.some((v) => v.id === VARIANT_FILTER)) {
 
 const VARIANTS = VARIANT_FILTER
   ? ALL_VARIANTS.filter((v) => v.id === VARIANT_FILTER)
-  : ALL_VARIANTS;
+  : SELECTED_VARIANT_SET;
 
 // Ensure results directory exists
 fs.mkdirSync("./results", { recursive: true });
@@ -633,12 +670,13 @@ async function callLLMWithRetry(provider, htmlContent, config, apiKey) {
 // ---------------------------------------------------------------------------
 
 /**
- * Persists a single evaluation result row to the Supabase `llm_evaluation_results` table.
+ * Persists a single evaluation result row to a Supabase evaluation table.
+ * @param {string} table - Target table name.
  * @param {object} payload - Row data matching the table schema.
  * @returns {Promise<boolean>} `true` if the insert succeeded, `false` otherwise.
  */
-async function persistEvalResult(payload) {
-  const result = await supabaseInsert("llm_evaluation_results", payload);
+async function persistEvalResult(table, payload) {
+  const result = await supabaseInsert(table, payload);
   if (!result.ok) {
     console.error("Persist failed:", result.status, result.error);
   }
@@ -732,8 +770,11 @@ async function evaluateVariant(
     };
 
     let dbStatus = "-";
-    if (PERSIST) {
-      const ok = await persistEvalResult({
+    if (PERSIST_ANY) {
+      const targetTable = PERSIST
+        ? "llm_evaluation_results"
+        : "llm_evaluation_results_exploratory";
+      const ok = await persistEvalResult(targetTable, {
         provider,
         model: config.model,
         tier: TIER,
@@ -801,11 +842,12 @@ async function runProviderEvaluation(provider, config, apiKey) {
   const outputFile = `./results/gaio_evaluation_${provider}_${modelSlug}_${new Date().toISOString().replace(/:/g, "-").replace(/\..+/, "")}.csv`;
   const thinkingControls = buildThinkingControlsMetadata(provider, config);
   console.log(
-    `🚀 Starting GAIO evaluation pipeline  [provider: ${provider}, model: ${config.model}, tier: ${TIER}, thinking-profile: ${THINKING_PROFILE}]`,
+    `🚀 Starting GAIO evaluation pipeline  [provider: ${provider}, model: ${config.model}, tier: ${TIER}, thinking-profile: ${THINKING_PROFILE}, variant-set: ${VARIANT_SET}]`,
   );
   console.log(
     `🧭 Effective controls: ${describeControlProfile(provider, config)}`,
   );
+  console.log(`🧪 Selected variants: ${VARIANTS.map((v) => v.id).join(", ")}`);
   const results = [];
 
   // Sequential testing to avoid overwhelming the server and to respect rate limits
@@ -837,7 +879,7 @@ async function runProviderEvaluation(provider, config, apiKey) {
   fs.writeFileSync(outputFile, csvHeader + csvRows);
   console.log(`✅ Results saved to: ${outputFile}`);
 
-  if (PERSIST) {
+  if (PERSIST_ANY) {
     const persisted = results.filter((r) => r.dbStatus === "OK").length;
     const failed = results.filter((r) => r.dbStatus === "ERR").length;
     console.log(`💾 Database: ${persisted} persisted / ${failed} failed`);
@@ -850,15 +892,55 @@ async function runProviderEvaluation(provider, config, apiKey) {
  * @returns {Promise<void>}
  */
 async function runEvaluation() {
+  const canonicalVariantIds = new Set(MAIN_VARIANTS.map((v) => v.id));
+  const exploratoryVariantIds = new Set(EXPLORATORY_VARIANTS.map((v) => v.id));
+
+  if (PERSIST && PERSIST_EXPLORATORY) {
+    console.error(
+      "❌ Error: Use either --persist or --persist-exploratory, not both.",
+    );
+    process.exit(1);
+  }
+
   if (PERSIST) {
-    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+    const hasNonCanonicalVariant = VARIANTS.some(
+      (v) => !canonicalVariantIds.has(v.id),
+    );
+
+    if (hasNonCanonicalVariant) {
       console.error(
-        "❌ Error: --persist requires SUPABASE_URL and SUPABASE_ANON_KEY to be set.",
+        "❌ Error: --persist is only supported for canonical variants. Use --persist-exploratory for combined-dsd/combined-noscript.",
       );
       process.exit(1);
     }
+  }
+
+  if (PERSIST_EXPLORATORY) {
+    const hasNonExploratoryVariant = VARIANTS.some(
+      (v) => !exploratoryVariantIds.has(v.id),
+    );
+
+    if (hasNonExploratoryVariant) {
+      console.error(
+        "❌ Error: --persist-exploratory only supports exploratory variants (combined-dsd, combined-noscript). Use --variant-set combined-visibility or --variant with an exploratory id.",
+      );
+      process.exit(1);
+    }
+  }
+
+  if (PERSIST_ANY) {
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+      console.error(
+        "❌ Error: persistence requires SUPABASE_URL and SUPABASE_ANON_KEY to be set.",
+      );
+      process.exit(1);
+    }
+
+    const targetTable = PERSIST
+      ? "llm_evaluation_results"
+      : "llm_evaluation_results_exploratory";
     console.log(
-      `💾 Persist mode: results will be written to Supabase (${process.env.SUPABASE_URL})`,
+      `💾 Persist mode: results will be written to Supabase table ${targetTable} (${process.env.SUPABASE_URL})`,
     );
   }
 
@@ -899,9 +981,12 @@ async function runEvaluation() {
     console.log(`${"=".repeat(60)}`);
   }
 
-  if (PERSIST) {
+  if (PERSIST_ANY) {
+    const targetTable = PERSIST
+      ? "llm_evaluation_results"
+      : "llm_evaluation_results_exploratory";
     console.log(
-      `\n   Query: SELECT * FROM llm_evaluation_results ORDER BY created_at DESC;`,
+      `\n   Query: SELECT * FROM ${targetTable} ORDER BY created_at DESC;`,
     );
   }
 }
