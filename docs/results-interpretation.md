@@ -2,11 +2,9 @@
 
 Column reference and analysis guide for the CSV outputs produced by `scripts/evaluate.mjs`.
 
-This version is calibrated to the Claude run from today:
+This version is calibrated to the following Claude run:
 
-`results/gaio_evaluation_claude_2026-03-13T09-38-20.csv`
-
-Note: newer runs include the model in the filename.
+`results/gaio_evaluation_claude_claude-haiku-4-5_2026-03-13T16-16-56.csv`
 
 ---
 
@@ -133,7 +131,7 @@ Minimal pandas summary from CSV files:
 ```python
 import pandas as pd
 
-df = pd.read_csv("results/gaio_evaluation_claude_2026-03-13T09-38-20.csv")
+df = pd.read_csv("results/gaio_evaluation_claude_claude-haiku-4-5_2026-03-13T16-16-56.csv")
 summary = df.groupby("Variant_ID")[["Tarife", "FAQ", "Produktkarten", "FormFelder"]].agg(["mean", "std"])
 print(summary)
 ```

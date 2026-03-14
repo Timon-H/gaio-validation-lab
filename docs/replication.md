@@ -63,16 +63,16 @@ npm run dev         # Local server at http://localhost:4321
 
 The eight variant pages are available at:
 
-| Path              | Variant                            |
-| ----------------- | ---------------------------------- |
-| `/control`        | Bare Shadow DOM — no GAIO measures |
-| `/combined`       | All GAIO measures combined         |
-| `/test-jsonld`    | JSON-LD only                       |
-| `/test-semantic`  | Semantic HTML only                 |
-| `/test-aria`      | ARIA only                          |
-| `/test-noscript`  | `<noscript>` fallbacks only        |
-| `/test-dsd`       | Declarative Shadow DOM only        |
-| `/test-microdata` | Microdata only                     |
+| Path              | Variant                                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------------------------- |
+| `/control`        | Bare Shadow DOM — no GAIO measures                                                                         |
+| `/combined`       | Combined stack (JSON-LD + Semantic + ARIA + DSD + Microdata; `<noscript>` is isolated in `/test-noscript`) |
+| `/test-jsonld`    | JSON-LD only                                                                                               |
+| `/test-semantic`  | Semantic HTML only                                                                                         |
+| `/test-aria`      | ARIA only                                                                                                  |
+| `/test-noscript`  | `<noscript>` fallbacks only                                                                                |
+| `/test-dsd`       | Declarative Shadow DOM only                                                                                |
+| `/test-microdata` | Microdata only                                                                                             |
 
 ---
 

@@ -45,9 +45,9 @@ Eight variants of the same insurance page content. Each isolates a single GAIO v
 
 ### Research Questions
 
-- **RQ1** — Does adding JSON-LD structured data to a Shadow DOM page improve the accuracy and completeness of LLM-based content extraction compared to a bare control?
-- **RQ2** — Do semantic HTML5 landmark elements (`<article>`, `<aside>`, `<figure>`, `<s>`) improve scope disambiguation for LLM extractors?
-- **RQ3** — Does ARIA labelling on Web Component hosts improve form-field detection by LLMs?
+- **RQ1** — How do semantic and structural markup measures impact the extraction accuracy of LLMs for Shadow DOM-encapsulated web content?
+- **RQ2** — Which individual GAIO measures (JSON-LD, Semantic HTML, ARIA, Declarative Shadow DOM, Microdata) contribute most effectively to improving content extraction and disambiguation?
+- **RQ3** — To what extent can these results be generalized across different LLM providers (OpenAI, Anthropic, Google)?
 
 ### Hypotheses
 

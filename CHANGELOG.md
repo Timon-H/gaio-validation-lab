@@ -47,7 +47,7 @@ All notable changes to this project are documented in this file.
 
 ### Additional Delivered Work
 
-- Canonical variant ID migration across runtime paths (`variant_id` adoption in middleware, scripts, and schema).
+- Canonical variant ID alignment across runtime paths (`variant_id` adoption in middleware, scripts, and schema).
 - New trap barrel export and page-level trap import standardization.
 - Supabase schema redesign (v2) with enums, stronger constraints, indexes, analytics views, and permissive lab RLS.
 - Added and validated analytics views: `gaio_comparison`, `extraction_comparison`, `llm_eval_comparison`.
