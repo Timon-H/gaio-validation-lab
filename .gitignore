@@ -23,6 +23,7 @@ pnpm-debug.log*
 # IDEs
 .vscode/
 .idea/
+.gemini/
 
 # Vercel
 .vercel
