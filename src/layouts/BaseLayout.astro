@@ -17,6 +17,7 @@ interface Props {
 }
 
 const { title, description, schemaData, lang = "de" } = Astro.props;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
 const schemaJson = schemaData
   ? JSON.stringify(schemaData).replace(/</g, "\\u003c")
   : undefined;
@@ -39,7 +40,7 @@ const schemaJson = schemaData
       name="google-site-verification"
       content="RcH4qStaWdH1zyAHbHCdAXJl6kFDnMjo2yZDCVXd53w"
     />
-    <link rel="canonical" href={Astro.url} />
+    <link rel="canonical" href={canonicalUrl} />
 
     {
       schemaJson && (
