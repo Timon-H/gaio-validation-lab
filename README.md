@@ -9,14 +9,16 @@ Shadow DOM — used extensively in component-driven DXP architectures — is opa
 | **JSON-LD**                | Structured `schema.org` data in `<head>`                 |
 | **Semantic HTML**          | `<section>`, `<article>`, `<aside>` landmark wrappers    |
 | **ARIA**                   | `aria-label` / `aria-labelledby` on custom element hosts |
-| `<noscript>`               | Light DOM fallbacks for no-JS parsers                    |
 | **Declarative Shadow DOM** | SSR-rendered shadow content via `@lit-labs/ssr`          |
 | **Microdata**              | Inline `itemscope` / `itemprop` attributes               |
+| `<noscript>`               | Light DOM fallbacks for no-JS parsers (see note below)   |
+
+> **Note:** `<noscript>` is included as an isolated variant and in exploratory combined variants, but is not part of the canonical combined stack. See the variant matrix below for details.
 
 ### Research Questions
 
 - **RQ1:** How do semantic and structural markup measures impact the extraction accuracy of LLMs for Shadow DOM-encapsulated web content?
-- **RQ2:** Which individual GAIO measures (JSON-LD, Semantic HTML, ARIA, Declarative Shadow DOM, Microdata) contribute most effectively to improving content extraction and disambiguation?
+- **RQ2:** Which individual GAIO measures (JSON-LD, Semantic HTML, ARIA, Declarative Shadow DOM, Microdata, `<noscript>`) contribute most effectively to improving content extraction and disambiguation?
 - **RQ3:** To what extent can these results be generalized across different LLM providers (OpenAI, Anthropic, Google)?
 
 Each GAIO measure is isolated to a separate canonical page variant to quantify its independent contribution. Seven deliberate test traps are embedded to create meaningful per-variant signals. See [`docs/test-design.md`](docs/test-design.md) for the full methodology and [`docs/traps.md`](docs/traps.md) for the trap specifications.
@@ -47,64 +49,85 @@ Exploratory visibility-axis pair (optional, not part of canonical trial statisti
 
 ```bash
 npm install
-npm run dev    # development server
-npm run build  # production build
-npm run lint   # formatting + markdown checks
+npm run dev    # development server (Astro)
+npm run build  # production build (Astro)
+npm run lint   # formatting + markdown checks (Prettier + markdownlint)
 ```
 
-Copy `.env.example` to `.env` and add your API keys. See [`docs/replication.md`](docs/replication.md) for full step-by-step replication instructions, including LLM evaluation and result persistence.
+**Linting and formatting:**
+
+- `npm run lint` runs Prettier (`format:check`) and markdownlint (`lint:md`).
+- `npm run lint:staged` (pre-commit) auto-fixes staged files using Prettier and markdownlint (see `lint-staged` in package.json).
+
+**Testing and evaluation:**
+
+- `npm run test:bots`, `npm run test:extract`, `npm run test:integrity`, and `npm run test:all` run integration/simulation scripts (see scripts/).
+- `npm run test:ci` runs all tests in a CI environment using `start-server-and-test`.
+
+**Environment variables:**
+Copy `.env.example` to `.env` and fill in the required values:
+
+- `SUPABASE_URL` and `SUPABASE_ANON_KEY` (from your Supabase project; required for logging and persistence)
+- `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY` (for LLM evaluation; only the key for the provider you use is required)
+- `INDEXNOW_KEY`, `SITE_HOST` (optional, for IndexNow URL submission)
+  See comments in `.env.example` for details. See [`docs/replication.md`](docs/replication.md) for full step-by-step replication instructions, including LLM evaluation and result persistence.
 
 ## Quality Workflow
 
-- `npm run lint` runs formatting + markdown checks.
-- `npm run build` runs Astro type-check + production build.
-- `npm run test:ci` runs server-backed experiment checks (`test:bots`, `test:extract`, `test:integrity`).
-- A pre-commit hook runs `npm run lint:staged` on staged files.
+- `npm run lint` runs Prettier and markdownlint checks.
+- `npm run build` runs Astro type-check and production build.
+- `npm run test:ci` runs all experiment checks in CI (see scripts/ and package.json).
+- A pre-commit hook (via simple-git-hooks) runs `npm run lint:staged` on staged files (see package.json for configuration).
 - GitHub Actions runs the same gate in `.github/workflows/quality.yml`.
 
 ## Project Structure
 
 ```
 src/
-  components/baseline/   ← 9 Lit web components (Shadow DOM)
-    dxp-form-base.ts     ← shared base class for form components
+  components/baseline/     ← 10 Lit web components (Shadow DOM)
+    dxp-form-base.ts       ← shared base class for form components
+  components/traps/        ← 7 test trap components (signal disambiguation)
   data/
-    content.ts           ← shared page copy/constants for canonical + exploratory variants
-    variants.mjs         ← shared canonical + exploratory variant IDs/paths (split exports)
+    content.ts             ← shared page copy/constants for canonical + exploratory variants
+    variants.mjs           ← shared canonical + exploratory variant IDs/paths (split exports)
   layouts/BaseLayout.astro ← Shared page shell
-  lib/lit-ssr.ts          ← @lit-labs/ssr helper for Declarative Shadow DOM
-  lib/supabase.mjs        ← shared Supabase insert utility for scripts + middleware
-  middleware.ts           ← AI bot detection + Supabase logging
+  lib/lit-ssr.ts           ← @lit-labs/ssr helper for Declarative Shadow DOM
+  lib/supabase.mjs         ← shared Supabase insert utility for scripts + middleware
+  middleware.ts            ← AI bot detection + Supabase logging
   pages/
-    control/             ← Baseline — no GAIO measures
-    combined/            ← Combined stack (JSON-LD + Semantic + ARIA + DSD + Microdata)
-    combined-dsd/        ← Exploratory alias of combined (DSD visibility channel)
-    combined-noscript/   ← Exploratory combined variant with noscript visibility channel
-    test-jsonld/         ← Isolated: JSON-LD
-    test-semantic/       ← Isolated: Semantic HTML
-    test-aria/           ← Isolated: ARIA attributes
-    test-noscript/       ← Isolated: <noscript> fallbacks
-    test-dsd/            ← Isolated: Declarative Shadow DOM
-    test-microdata/      ← Isolated: Microdata
+    control/               ← Baseline — no GAIO measures
+    combined/              ← Combined stack (JSON-LD + Semantic + ARIA + DSD + Microdata)
+    combined-dsd/          ← Exploratory alias of combined (DSD visibility channel)
+    combined-noscript/     ← Exploratory combined variant with noscript visibility channel
+    test-jsonld/           ← Isolated: JSON-LD
+    test-semantic/         ← Isolated: Semantic HTML
+    test-aria/             ← Isolated: ARIA attributes
+    test-noscript/         ← Isolated: <noscript> fallbacks
+    test-dsd/              ← Isolated: Declarative Shadow DOM
+    test-microdata/        ← Isolated: Microdata
 scripts/
-  evaluate.mjs           ← Multi-provider LLM extraction benchmark (tier/profile controls + metadata)
-  test-bots.mjs          ← Bot UA simulation
-  test-extract.mjs       ← Structural content extraction
-  test-integrity.mjs     ← Variant/header/marker integrity gate
-  indexnow.mjs           ← Submit all variant URLs to IndexNow (Bing)
-.github/workflows/
-  quality.yml            ← CI quality gate (lint, build, experiment checks)
+  evaluate.mjs             ← Multi-provider LLM extraction benchmark (tier/profile controls + metadata)
+  test-bots.mjs            ← Bot UA simulation
+  test-extract.mjs         ← Structural content extraction
+  test-integrity.mjs       ← Variant/header/marker integrity gate
+  indexnow.mjs             ← Submit all variant URLs to IndexNow (Bing)
 supabase/
-  schema.sql             ← DDL v2: enums, tables, views, and RLS policies
-results/                 ← Local evaluation CSVs (gitignored; generated by npm run evaluate:*)
+  schema.sql               ← DDL v2: enums, tables, views, and RLS policies
+results/
+  archive/                 ← Archived result sets (pre-traps, pre-shadowdom, etc.)
+  results_baseline/        ← Canonical evaluation CSVs
+  results_combined-visibility/ ← Exploratory visibility-axis results
+  results_pre-minimized/   ← Pre-minimization results
+public/                    ← Static assets (robots.txt, etc.)
 docs/
-  database.md            ← Supabase setup, table contracts, view queries, validation checks
-  test-design.md         ← Variant matrix, BaseLayout, methodology, research questions
-  traps.md               ← Seven test traps and signal matrix
-  evaluation.md          ← LLM evaluation script reference
-  scripts.md             ← All scripts and middleware reference
-  replication.md         ← Step-by-step replication guide
+  database.md              ← Supabase setup, table contracts, view queries, validation checks
+  test-design.md           ← Variant matrix, BaseLayout, methodology, research questions
+  traps.md                 ← Seven test traps and signal matrix
+  evaluation.md            ← LLM evaluation script reference
+  scripts.md               ← All scripts and middleware reference
+  replication.md           ← Step-by-step replication guide
   results-interpretation.md ← How to read and analyse the CSV outputs
+.env.example               ← Environment variable template
 ```
 
 ## Documentation
@@ -124,3 +147,8 @@ docs/
 - **Astro 5** · **Lit 3** · **@lit-labs/ssr** · **TypeScript**
 - **openai** · **@anthropic-ai/sdk** · **@google/generative-ai**
 - **Supabase** · **Vercel**
+- **Prettier** · **markdownlint-cli2** · **lint-staged** · **simple-git-hooks** · **start-server-and-test**
+
+> **Note:** This list covers core and developer-facing technologies. Some build, formatting, and CI tools are only used in development and may not be required for all users.
+
+> **Disclaimer:** This README summarizes the main workflow and technologies. For full details, see `package.json`, `.env.example`, and the `docs/` directory. If you find any gaps or have questions, please open an issue or consult the documentation.
