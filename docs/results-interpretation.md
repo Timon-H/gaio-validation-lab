@@ -145,7 +145,9 @@ With a single run, `std` will be `NaN`. That is expected.
 When runs are persisted, use:
 
 - `llm_eval_comparison` for canonical model extraction aggregates (`--persist`)
+- `v_macro_f1_scores` for canonical per-dimension F1 and macro F1 aggregates
 - `llm_eval_comparison_exploratory` for exploratory visibility aggregates (`--persist-exploratory`)
+- `v_macro_f1_scores_exploratory` for exploratory per-dimension F1 and macro F1 aggregates
 - `extraction_comparison` for structural marker extraction aggregates
 - `gaio_comparison` for crawler telemetry aggregates
 

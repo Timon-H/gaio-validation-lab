@@ -130,6 +130,26 @@ FROM llm_eval_comparison_exploratory
 ORDER BY variant_id, provider, model, tier, thinking_profile;
 ```
 
+### `v_macro_f1_scores`
+
+Computes per-dimension F1 scores and an overall macro F1 score from canonical `llm_eval_comparison` aggregates.
+
+```sql
+SELECT *
+FROM v_macro_f1_scores
+ORDER BY variant_id, provider, model;
+```
+
+### `v_macro_f1_scores_exploratory`
+
+Computes per-dimension F1 scores and an overall macro F1 score from exploratory `llm_eval_comparison_exploratory` aggregates.
+
+```sql
+SELECT *
+FROM v_macro_f1_scores_exploratory
+ORDER BY variant_id, provider, model;
+```
+
 ## 5. Quick End-to-End Checks
 
 Run these after schema setup:

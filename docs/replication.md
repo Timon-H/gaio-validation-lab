@@ -220,12 +220,28 @@ FROM llm_eval_comparison
 ORDER BY variant_id, provider, model, tier, thinking_profile;
 ```
 
+For macro F1 analytics over canonical runs, query:
+
+```sql
+SELECT *
+FROM v_macro_f1_scores
+ORDER BY variant_id, provider, model;
+```
+
 For exploratory visibility runs, query:
 
 ```sql
 SELECT *
 FROM llm_eval_comparison_exploratory
 ORDER BY variant_id, provider, model, tier, thinking_profile;
+```
+
+For macro F1 analytics over exploratory runs, query:
+
+```sql
+SELECT *
+FROM v_macro_f1_scores_exploratory
+ORDER BY variant_id, provider, model;
 ```
 
 You can also inspect structural extraction aggregates:

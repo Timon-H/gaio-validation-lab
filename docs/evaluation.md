@@ -201,4 +201,20 @@ FROM llm_eval_comparison_exploratory
 ORDER BY variant_id, provider, model, tier, thinking_profile;
 ```
 
+Canonical macro F1 view:
+
+```sql
+SELECT *
+FROM v_macro_f1_scores
+ORDER BY variant_id, provider, model;
+```
+
+Exploratory macro F1 view:
+
+```sql
+SELECT *
+FROM v_macro_f1_scores_exploratory
+ORDER BY variant_id, provider, model;
+```
+
 See [`supabase/schema.sql`](../supabase/schema.sql) for the full DDL and [`docs/database.md`](database.md) for operational usage.
