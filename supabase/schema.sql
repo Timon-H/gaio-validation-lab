@@ -14,6 +14,8 @@
 -- --------------------------------------------------------------------------
 DROP VIEW IF EXISTS llm_eval_comparison;
 DROP VIEW IF EXISTS llm_eval_comparison_exploratory;
+DROP VIEW IF EXISTS v_macro_f1_scores;
+DROP VIEW IF EXISTS v_macro_f1_scores_exploratory;
 DROP VIEW IF EXISTS extraction_comparison;
 DROP VIEW IF EXISTS gaio_comparison;
 
@@ -255,6 +257,118 @@ GROUP BY
   tier,
   COALESCE(NULLIF(substring(thinking_controls FROM 'profile=([^;]+)'), ''), 'unknown')
 ORDER BY variant_id, provider, model, tier, thinking_profile;
+
+CREATE OR REPLACE VIEW v_macro_f1_scores AS
+WITH metric_calcs AS (
+  SELECT
+    variant_id,
+    provider,
+    model,
+    LEAST(avg_tarife / 3.0, 1.0) AS recall_tarife,
+    LEAST(avg_faq / 3.0, 1.0) AS recall_faq,
+    LEAST(avg_form_felder / 6.0, 1.0) AS recall_felder,
+    LEAST(avg_produktkarten / 2.0, 1.0) AS recall_karten,
+    CASE WHEN avg_tarife = 0 THEN 0 ELSE LEAST(3.0 / avg_tarife, 1.0) END AS prec_tarife,
+    CASE WHEN avg_faq = 0 THEN 0 ELSE LEAST(3.0 / avg_faq, 1.0) END AS prec_faq,
+    CASE WHEN avg_form_felder = 0 THEN 0 ELSE LEAST(6.0 / avg_form_felder, 1.0) END AS prec_felder,
+    CASE WHEN avg_produktkarten = 0 THEN 0 ELSE LEAST(2.0 / avg_produktkarten, 1.0) END AS prec_karten,
+    (pct_kontakt / 100.0) AS f1_kontakt,
+    (pct_anbieter / 100.0) AS f1_anbieter
+  FROM llm_eval_comparison
+),
+f1_calcs AS (
+  SELECT
+    *,
+    CASE
+      WHEN (prec_tarife + recall_tarife) = 0 THEN 0
+      ELSE 2.0 * (prec_tarife * recall_tarife) / (prec_tarife + recall_tarife)
+    END AS f1_tarife,
+    CASE
+      WHEN (prec_faq + recall_faq) = 0 THEN 0
+      ELSE 2.0 * (prec_faq * recall_faq) / (prec_faq + recall_faq)
+    END AS f1_faq,
+    CASE
+      WHEN (prec_felder + recall_felder) = 0 THEN 0
+      ELSE 2.0 * (prec_felder * recall_felder) / (prec_felder + recall_felder)
+    END AS f1_felder,
+    CASE
+      WHEN (prec_karten + recall_karten) = 0 THEN 0
+      ELSE 2.0 * (prec_karten * recall_karten) / (prec_karten + recall_karten)
+    END AS f1_karten
+  FROM metric_calcs
+)
+SELECT
+  variant_id,
+  provider,
+  model,
+  ROUND(f1_tarife::numeric, 3) AS f1_tarife,
+  ROUND(f1_faq::numeric, 3) AS f1_faq,
+  ROUND(f1_felder::numeric, 3) AS f1_felder,
+  ROUND(f1_karten::numeric, 3) AS f1_karten,
+  ROUND(f1_kontakt::numeric, 3) AS f1_kontakt,
+  ROUND(f1_anbieter::numeric, 3) AS f1_anbieter,
+  ROUND(
+    ((f1_tarife + f1_faq + f1_felder + f1_karten + f1_kontakt + f1_anbieter) / 6.0)::numeric,
+    3
+  ) AS macro_f1_score
+FROM f1_calcs
+ORDER BY variant_id, provider;
+
+CREATE OR REPLACE VIEW v_macro_f1_scores_exploratory AS
+WITH metric_calcs AS (
+  SELECT
+    variant_id,
+    provider,
+    model,
+    LEAST(avg_tarife / 3.0, 1.0) AS recall_tarife,
+    LEAST(avg_faq / 3.0, 1.0) AS recall_faq,
+    LEAST(avg_form_felder / 6.0, 1.0) AS recall_felder,
+    LEAST(avg_produktkarten / 2.0, 1.0) AS recall_karten,
+    CASE WHEN avg_tarife = 0 THEN 0 ELSE LEAST(3.0 / avg_tarife, 1.0) END AS prec_tarife,
+    CASE WHEN avg_faq = 0 THEN 0 ELSE LEAST(3.0 / avg_faq, 1.0) END AS prec_faq,
+    CASE WHEN avg_form_felder = 0 THEN 0 ELSE LEAST(6.0 / avg_form_felder, 1.0) END AS prec_felder,
+    CASE WHEN avg_produktkarten = 0 THEN 0 ELSE LEAST(2.0 / avg_produktkarten, 1.0) END AS prec_karten,
+    (pct_kontakt / 100.0) AS f1_kontakt,
+    (pct_anbieter / 100.0) AS f1_anbieter
+  FROM llm_eval_comparison_exploratory
+),
+f1_calcs AS (
+  SELECT
+    *,
+    CASE
+      WHEN (prec_tarife + recall_tarife) = 0 THEN 0
+      ELSE 2.0 * (prec_tarife * recall_tarife) / (prec_tarife + recall_tarife)
+    END AS f1_tarife,
+    CASE
+      WHEN (prec_faq + recall_faq) = 0 THEN 0
+      ELSE 2.0 * (prec_faq * recall_faq) / (prec_faq + recall_faq)
+    END AS f1_faq,
+    CASE
+      WHEN (prec_felder + recall_felder) = 0 THEN 0
+      ELSE 2.0 * (prec_felder * recall_felder) / (prec_felder + recall_felder)
+    END AS f1_felder,
+    CASE
+      WHEN (prec_karten + recall_karten) = 0 THEN 0
+      ELSE 2.0 * (prec_karten * recall_karten) / (prec_karten + recall_karten)
+    END AS f1_karten
+  FROM metric_calcs
+)
+SELECT
+  variant_id,
+  provider,
+  model,
+  ROUND(f1_tarife::numeric, 3) AS f1_tarife,
+  ROUND(f1_faq::numeric, 3) AS f1_faq,
+  ROUND(f1_felder::numeric, 3) AS f1_felder,
+  ROUND(f1_karten::numeric, 3) AS f1_karten,
+  ROUND(f1_kontakt::numeric, 3) AS f1_kontakt,
+  ROUND(f1_anbieter::numeric, 3) AS f1_anbieter,
+  ROUND(
+    ((f1_tarife + f1_faq + f1_felder + f1_karten + f1_kontakt + f1_anbieter) / 6.0)::numeric,
+    3
+  ) AS macro_f1_score
+FROM f1_calcs
+ORDER BY variant_id, provider;
 
 -- --------------------------------------------------------------------------
 -- 6) RLS (permissive by design for lab environment)
