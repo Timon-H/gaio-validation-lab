@@ -1,0 +1,602 @@
+id,created_at,variant_id,path,bot_name,user_agent,method,status,latency_ms,meta
+1,2026-03-27 18:04:22.475144+00,combined,/combined/,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,66,{}
+2,2026-03-27 18:04:22.475699+00,semantic,/test-semantic/,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,4,{}
+3,2026-03-27 18:04:24.354442+00,combined,/combined-dsd/,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,2,{}
+4,2026-03-27 18:04:26.088071+00,dsd,/test-dsd/,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,7,{}
+5,2026-03-27 18:04:27.111528+00,combined,/combined-noscript/,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,4,{}
+6,2026-03-27 18:04:29.426703+00,noscript,/test-noscript/,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,4,{}
+7,2026-03-27 18:04:31.376203+00,jsonld,/test-jsonld/,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,3,{}
+8,2026-03-27 18:04:33.575059+00,microdata,/test-microdata/,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,2,{}
+9,2026-03-27 18:04:34.458318+00,control,/control/,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,2,{}
+10,2026-03-27 18:04:36.374304+00,aria,/test-aria/,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,3,{}
+11,2026-03-27 18:04:39.169017+00,semantic,/test-semantic,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,2,{}
+12,2026-03-27 18:04:41.424021+00,aria,/test-aria,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,2,{}
+13,2026-03-27 18:04:42.72663+00,jsonld,/test-jsonld,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,1,{}
+14,2026-03-27 18:04:44.260226+00,noscript,/test-noscript,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,1,{}
+15,2026-03-27 18:04:45.761402+00,semantic,/test-semantic,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,2,{}
+16,2026-03-27 18:04:47.291453+00,control,/control,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,1,{}
+17,2026-03-27 18:04:48.976882+00,aria,/test-aria,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,1,{}
+18,2026-03-27 18:04:55.250932+00,jsonld,/test-jsonld,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,1,{}
+19,2026-03-27 18:04:57.745716+00,control,/control,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,1,{}
+20,2026-03-27 18:05:00.434314+00,noscript,/test-noscript,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,2,{}
+21,2026-03-27 18:05:04.82956+00,combined,/combined,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,23,{}
+22,2026-03-27 18:05:05.591718+00,microdata,/test-microdata,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,2,{}
+23,2026-03-27 18:05:08.760992+00,microdata,/test-microdata,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,2,{}
+24,2026-03-27 18:05:09.801139+00,dsd,/test-dsd,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,5,{}
+25,2026-03-27 18:05:11.350505+00,combined,/combined,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,5,{}
+26,2026-03-27 18:05:13.157058+00,dsd,/test-dsd,Meta,meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler),GET,200,12,{}
+27,2026-03-31 12:57:52.1479+00,control,/control,ChatGPT,GPTBot,HEAD,200,11,{}
+28,2026-03-31 12:57:52.793741+00,control,/control,ChatGPT,ChatGPT-User,HEAD,200,2,{}
+29,2026-03-31 12:57:53.473123+00,control,/control,ChatGPT,OAI-SearchBot,HEAD,200,4,{}
+30,2026-03-31 12:57:53.817837+00,control,/control,ChatGPT,ChatGPT Agent,HEAD,200,2,{}
+31,2026-03-31 12:57:55.271157+00,control,/control,Claude,ClaudeBot,HEAD,200,18,{}
+32,2026-03-31 12:57:55.621594+00,control,/control,Claude,Claude-Web,HEAD,200,2,{}
+33,2026-03-31 12:57:55.932444+00,control,/control,Claude,Claude-User,HEAD,200,1,{}
+34,2026-03-31 12:57:56.447383+00,control,/control,Claude,Claude-SearchBot,HEAD,200,1,{}
+35,2026-03-31 12:57:56.776229+00,control,/control,Claude,anthropic-ai,HEAD,200,3,{}
+36,2026-03-31 12:57:57.101237+00,control,/control,Gemini,Google-Extended,HEAD,200,3,{}
+37,2026-03-31 12:57:57.416931+00,control,/control,Gemini,Gemini-Deep-Research,HEAD,200,2,{}
+38,2026-03-31 12:57:57.719884+00,control,/control,Gemini,Google-NotebookLM,HEAD,200,1,{}
+39,2026-03-31 12:57:58.030041+00,control,/control,Gemini,NotebookLM,HEAD,200,1,{}
+40,2026-03-31 12:57:58.331242+00,control,/control,Gemini,GoogleAgent-Mariner,HEAD,200,2,{}
+41,2026-03-31 12:57:58.676423+00,control,/control,Perplexity,PerplexityBot,HEAD,200,2,{}
+42,2026-03-31 12:57:58.978693+00,control,/control,Perplexity,Perplexity-User,HEAD,200,2,{}
+43,2026-03-31 12:57:59.290967+00,control,/control,CommonCrawl,CCBot,HEAD,200,1,{}
+44,2026-03-31 12:57:59.584155+00,control,/control,Applebot,Applebot,HEAD,200,1,{}
+45,2026-03-31 12:57:59.909182+00,control,/control,Applebot,Applebot-Extended,HEAD,200,2,{}
+46,2026-03-31 12:58:00.201496+00,control,/control,Meta,meta-externalagent,HEAD,200,1,{}
+47,2026-03-31 12:58:00.502751+00,control,/control,Meta,Meta-ExternalAgent,HEAD,200,1,{}
+48,2026-03-31 12:58:00.802647+00,control,/control,Meta,meta-externalfetcher,HEAD,200,1,{}
+49,2026-03-31 12:58:01.10026+00,control,/control,Meta,meta-webindexer,HEAD,200,1,{}
+50,2026-03-31 12:58:01.384461+00,control,/control,DeepSeek,DeepSeekBot,HEAD,200,1,{}
+51,2026-03-31 12:58:01.680844+00,control,/control,Mistral,MistralAI-User,HEAD,200,1,{}
+52,2026-03-31 12:58:01.983504+00,control,/control,DuckDuckGo,DuckAssistBot,HEAD,200,2,{}
+53,2026-03-31 12:58:02.284257+00,control,/control,Brave,Bravebot,HEAD,200,1,{}
+54,2026-03-31 12:58:02.635421+00,control,/control,You,YouBot,HEAD,200,1,{}
+55,2026-03-31 12:58:02.944649+00,control,/control,Cohere,cohere-ai,HEAD,200,1,{}
+56,2026-03-31 12:58:03.258492+00,control,/control,ByteDance,Bytespider,HEAD,200,2,{}
+57,2026-03-31 12:58:03.559831+00,control,/control,ByteDance,TikTokSpider,HEAD,200,1,{}
+58,2026-03-31 12:58:03.87296+00,control,/control,Manus,Manus-User,HEAD,200,1,{}
+59,2026-03-31 12:58:04.195663+00,control,/control,Amazon,Amazonbot,HEAD,200,2,{}
+60,2026-03-31 12:58:04.689656+00,jsonld,/test-jsonld,ChatGPT,GPTBot,HEAD,200,2,{}
+61,2026-03-31 12:58:05.007872+00,jsonld,/test-jsonld,ChatGPT,ChatGPT-User,HEAD,200,1,{}
+62,2026-03-31 12:58:05.312484+00,jsonld,/test-jsonld,ChatGPT,OAI-SearchBot,HEAD,200,1,{}
+63,2026-03-31 12:58:05.614618+00,jsonld,/test-jsonld,ChatGPT,ChatGPT Agent,HEAD,200,3,{}
+64,2026-03-31 12:58:05.94699+00,jsonld,/test-jsonld,Claude,ClaudeBot,HEAD,200,2,{}
+65,2026-03-31 12:58:06.249086+00,jsonld,/test-jsonld,Claude,Claude-Web,HEAD,200,2,{}
+66,2026-03-31 12:58:06.555318+00,jsonld,/test-jsonld,Claude,Claude-User,HEAD,200,1,{}
+67,2026-03-31 12:58:06.853652+00,jsonld,/test-jsonld,Claude,Claude-SearchBot,HEAD,200,1,{}
+68,2026-03-31 12:58:07.159769+00,jsonld,/test-jsonld,Claude,anthropic-ai,HEAD,200,1,{}
+69,2026-03-31 12:58:07.452919+00,jsonld,/test-jsonld,Gemini,Google-Extended,HEAD,200,1,{}
+70,2026-03-31 12:58:07.767584+00,jsonld,/test-jsonld,Gemini,Gemini-Deep-Research,HEAD,200,1,{}
+71,2026-03-31 12:58:08.06903+00,jsonld,/test-jsonld,Gemini,Google-NotebookLM,HEAD,200,0,{}
+72,2026-03-31 12:58:08.366917+00,jsonld,/test-jsonld,Gemini,NotebookLM,HEAD,200,1,{}
+73,2026-03-31 12:58:08.662922+00,jsonld,/test-jsonld,Gemini,GoogleAgent-Mariner,HEAD,200,3,{}
+74,2026-03-31 12:58:08.968588+00,jsonld,/test-jsonld,Perplexity,PerplexityBot,HEAD,200,2,{}
+75,2026-03-31 12:58:09.254329+00,jsonld,/test-jsonld,Perplexity,Perplexity-User,HEAD,200,1,{}
+76,2026-03-31 12:58:09.580083+00,jsonld,/test-jsonld,CommonCrawl,CCBot,HEAD,200,1,{}
+77,2026-03-31 12:58:09.902387+00,jsonld,/test-jsonld,Applebot,Applebot,HEAD,200,2,{}
+78,2026-03-31 12:58:10.200521+00,jsonld,/test-jsonld,Applebot,Applebot-Extended,HEAD,200,2,{}
+79,2026-03-31 12:58:10.506697+00,jsonld,/test-jsonld,Meta,meta-externalagent,HEAD,200,0,{}
+80,2026-03-31 12:58:10.827156+00,jsonld,/test-jsonld,Meta,Meta-ExternalAgent,HEAD,200,1,{}
+81,2026-03-31 12:58:11.125631+00,jsonld,/test-jsonld,Meta,meta-externalfetcher,HEAD,200,1,{}
+82,2026-03-31 12:58:11.427202+00,jsonld,/test-jsonld,Meta,meta-webindexer,HEAD,200,1,{}
+83,2026-03-31 12:58:11.730629+00,jsonld,/test-jsonld,DeepSeek,DeepSeekBot,HEAD,200,1,{}
+84,2026-03-31 12:58:12.24394+00,jsonld,/test-jsonld,Mistral,MistralAI-User,HEAD,200,1,{}
+85,2026-03-31 12:58:12.556185+00,jsonld,/test-jsonld,DuckDuckGo,DuckAssistBot,HEAD,200,1,{}
+86,2026-03-31 12:58:12.85144+00,jsonld,/test-jsonld,Brave,Bravebot,HEAD,200,1,{}
+87,2026-03-31 12:58:13.162662+00,jsonld,/test-jsonld,You,YouBot,HEAD,200,1,{}
+88,2026-03-31 12:58:13.487702+00,jsonld,/test-jsonld,Cohere,cohere-ai,HEAD,200,1,{}
+89,2026-03-31 12:58:13.813+00,jsonld,/test-jsonld,ByteDance,Bytespider,HEAD,200,3,{}
+90,2026-03-31 12:58:14.11868+00,jsonld,/test-jsonld,ByteDance,TikTokSpider,HEAD,200,2,{}
+91,2026-03-31 12:58:14.417901+00,jsonld,/test-jsonld,Manus,Manus-User,HEAD,200,2,{}
+92,2026-03-31 12:58:14.760716+00,jsonld,/test-jsonld,Amazon,Amazonbot,HEAD,200,1,{}
+93,2026-03-31 12:58:15.242293+00,semantic,/test-semantic,ChatGPT,GPTBot,HEAD,200,1,{}
+94,2026-03-31 12:58:15.541564+00,semantic,/test-semantic,ChatGPT,ChatGPT-User,HEAD,200,1,{}
+95,2026-03-31 12:58:15.872803+00,semantic,/test-semantic,ChatGPT,OAI-SearchBot,HEAD,200,3,{}
+96,2026-03-31 12:58:16.575825+00,semantic,/test-semantic,ChatGPT,ChatGPT Agent,HEAD,200,1,{}
+97,2026-03-31 12:58:16.878596+00,semantic,/test-semantic,Claude,ClaudeBot,HEAD,200,1,{}
+98,2026-03-31 12:58:17.192127+00,semantic,/test-semantic,Claude,Claude-Web,HEAD,200,0,{}
+99,2026-03-31 12:58:17.491185+00,semantic,/test-semantic,Claude,Claude-User,HEAD,200,2,{}
+100,2026-03-31 12:58:17.815497+00,semantic,/test-semantic,Claude,Claude-SearchBot,HEAD,200,0,{}
+101,2026-03-31 12:58:18.114885+00,semantic,/test-semantic,Claude,anthropic-ai,HEAD,200,1,{}
+102,2026-03-31 12:58:18.414814+00,semantic,/test-semantic,Gemini,Google-Extended,HEAD,200,1,{}
+103,2026-03-31 12:58:18.724423+00,semantic,/test-semantic,Gemini,Gemini-Deep-Research,HEAD,200,1,{}
+104,2026-03-31 12:58:19.036838+00,semantic,/test-semantic,Gemini,Google-NotebookLM,HEAD,200,1,{}
+105,2026-03-31 12:58:19.356367+00,semantic,/test-semantic,Gemini,NotebookLM,HEAD,200,1,{}
+106,2026-03-31 12:58:19.651957+00,semantic,/test-semantic,Gemini,GoogleAgent-Mariner,HEAD,200,1,{}
+107,2026-03-31 12:58:19.967244+00,semantic,/test-semantic,Perplexity,PerplexityBot,HEAD,200,1,{}
+108,2026-03-31 12:58:20.276976+00,semantic,/test-semantic,Perplexity,Perplexity-User,HEAD,200,1,{}
+109,2026-03-31 12:58:20.586316+00,semantic,/test-semantic,CommonCrawl,CCBot,HEAD,200,1,{}
+110,2026-03-31 12:58:20.894448+00,semantic,/test-semantic,Applebot,Applebot,HEAD,200,1,{}
+111,2026-03-31 12:58:21.19358+00,semantic,/test-semantic,Applebot,Applebot-Extended,HEAD,200,0,{}
+112,2026-03-31 12:58:21.48858+00,semantic,/test-semantic,Meta,meta-externalagent,HEAD,200,1,{}
+113,2026-03-31 12:58:21.78874+00,semantic,/test-semantic,Meta,Meta-ExternalAgent,HEAD,200,1,{}
+114,2026-03-31 12:58:22.090398+00,semantic,/test-semantic,Meta,meta-externalfetcher,HEAD,200,1,{}
+115,2026-03-31 12:58:22.389616+00,semantic,/test-semantic,Meta,meta-webindexer,HEAD,200,1,{}
+116,2026-03-31 12:58:22.703364+00,semantic,/test-semantic,DeepSeek,DeepSeekBot,HEAD,200,1,{}
+117,2026-03-31 12:58:22.992476+00,semantic,/test-semantic,Mistral,MistralAI-User,HEAD,200,1,{}
+118,2026-03-31 12:58:23.287931+00,semantic,/test-semantic,DuckDuckGo,DuckAssistBot,HEAD,200,2,{}
+119,2026-03-31 12:58:24.59519+00,semantic,/test-semantic,Brave,Bravebot,HEAD,200,13,{}
+120,2026-03-31 12:58:24.9909+00,semantic,/test-semantic,You,YouBot,HEAD,200,1,{}
+121,2026-03-31 12:58:25.292393+00,semantic,/test-semantic,Cohere,cohere-ai,HEAD,200,1,{}
+122,2026-03-31 12:58:25.616753+00,semantic,/test-semantic,ByteDance,Bytespider,HEAD,200,1,{}
+123,2026-03-31 12:58:25.927651+00,semantic,/test-semantic,ByteDance,TikTokSpider,HEAD,200,1,{}
+124,2026-03-31 12:58:26.240615+00,semantic,/test-semantic,Manus,Manus-User,HEAD,200,1,{}
+125,2026-03-31 12:58:26.619012+00,semantic,/test-semantic,Amazon,Amazonbot,HEAD,200,2,{}
+126,2026-03-31 12:58:27.140457+00,aria,/test-aria,ChatGPT,GPTBot,HEAD,200,1,{}
+127,2026-03-31 12:58:27.430686+00,aria,/test-aria,ChatGPT,ChatGPT-User,HEAD,200,0,{}
+128,2026-03-31 12:58:27.747252+00,aria,/test-aria,ChatGPT,OAI-SearchBot,HEAD,200,2,{}
+129,2026-03-31 12:58:28.079711+00,aria,/test-aria,ChatGPT,ChatGPT Agent,HEAD,200,0,{}
+130,2026-03-31 12:58:28.463762+00,aria,/test-aria,Claude,ClaudeBot,HEAD,200,1,{}
+131,2026-03-31 12:58:28.773077+00,aria,/test-aria,Claude,Claude-Web,HEAD,200,1,{}
+132,2026-03-31 12:58:29.060108+00,aria,/test-aria,Claude,Claude-User,HEAD,200,1,{}
+133,2026-03-31 12:58:29.359182+00,aria,/test-aria,Claude,Claude-SearchBot,HEAD,200,1,{}
+134,2026-03-31 12:58:29.667262+00,aria,/test-aria,Claude,anthropic-ai,HEAD,200,1,{}
+135,2026-03-31 12:58:29.979581+00,aria,/test-aria,Gemini,Google-Extended,HEAD,200,2,{}
+136,2026-03-31 12:58:30.296997+00,aria,/test-aria,Gemini,Gemini-Deep-Research,HEAD,200,2,{}
+137,2026-03-31 12:58:30.608663+00,aria,/test-aria,Gemini,Google-NotebookLM,HEAD,200,1,{}
+138,2026-03-31 12:58:30.918553+00,aria,/test-aria,Gemini,NotebookLM,HEAD,200,1,{}
+139,2026-03-31 12:58:31.219146+00,aria,/test-aria,Gemini,GoogleAgent-Mariner,HEAD,200,1,{}
+140,2026-03-31 12:58:31.531185+00,aria,/test-aria,Perplexity,PerplexityBot,HEAD,200,2,{}
+141,2026-03-31 12:58:31.824582+00,aria,/test-aria,Perplexity,Perplexity-User,HEAD,200,2,{}
+142,2026-03-31 12:58:32.160428+00,aria,/test-aria,CommonCrawl,CCBot,HEAD,200,1,{}
+143,2026-03-31 12:58:32.47869+00,aria,/test-aria,Applebot,Applebot,HEAD,200,1,{}
+144,2026-03-31 12:58:32.790333+00,aria,/test-aria,Applebot,Applebot-Extended,HEAD,200,1,{}
+145,2026-03-31 12:58:33.091113+00,aria,/test-aria,Meta,meta-externalagent,HEAD,200,0,{}
+146,2026-03-31 12:58:33.385102+00,aria,/test-aria,Meta,Meta-ExternalAgent,HEAD,200,1,{}
+147,2026-03-31 12:58:33.680274+00,aria,/test-aria,Meta,meta-externalfetcher,HEAD,200,1,{}
+148,2026-03-31 12:58:33.974695+00,aria,/test-aria,Meta,meta-webindexer,HEAD,200,1,{}
+149,2026-03-31 12:58:34.263682+00,aria,/test-aria,DeepSeek,DeepSeekBot,HEAD,200,1,{}
+150,2026-03-31 12:58:34.565269+00,aria,/test-aria,Mistral,MistralAI-User,HEAD,200,1,{}
+151,2026-03-31 12:58:34.886091+00,aria,/test-aria,DuckDuckGo,DuckAssistBot,HEAD,200,1,{}
+152,2026-03-31 12:58:35.19087+00,aria,/test-aria,Brave,Bravebot,HEAD,200,1,{}
+153,2026-03-31 12:58:35.4776+00,aria,/test-aria,You,YouBot,HEAD,200,1,{}
+154,2026-03-31 12:58:35.770412+00,aria,/test-aria,Cohere,cohere-ai,HEAD,200,1,{}
+155,2026-03-31 12:58:36.131294+00,aria,/test-aria,ByteDance,Bytespider,HEAD,200,1,{}
+156,2026-03-31 12:58:36.438657+00,aria,/test-aria,ByteDance,TikTokSpider,HEAD,200,1,{}
+157,2026-03-31 12:58:36.740363+00,aria,/test-aria,Manus,Manus-User,HEAD,200,1,{}
+158,2026-03-31 12:58:37.061622+00,aria,/test-aria,Amazon,Amazonbot,HEAD,200,1,{}
+159,2026-03-31 12:58:37.563495+00,noscript,/test-noscript,ChatGPT,GPTBot,HEAD,200,1,{}
+160,2026-03-31 12:58:37.879883+00,noscript,/test-noscript,ChatGPT,ChatGPT-User,HEAD,200,1,{}
+161,2026-03-31 12:58:38.204018+00,noscript,/test-noscript,ChatGPT,OAI-SearchBot,HEAD,200,1,{}
+162,2026-03-31 12:58:38.52102+00,noscript,/test-noscript,ChatGPT,ChatGPT Agent,HEAD,200,1,{}
+163,2026-03-31 12:58:38.822866+00,noscript,/test-noscript,Claude,ClaudeBot,HEAD,200,1,{}
+164,2026-03-31 12:58:39.114044+00,noscript,/test-noscript,Claude,Claude-Web,HEAD,200,1,{}
+165,2026-03-31 12:58:39.411469+00,noscript,/test-noscript,Claude,Claude-User,HEAD,200,3,{}
+166,2026-03-31 12:58:39.767417+00,noscript,/test-noscript,Claude,Claude-SearchBot,HEAD,200,1,{}
+167,2026-03-31 12:58:40.076958+00,noscript,/test-noscript,Claude,anthropic-ai,HEAD,200,1,{}
+168,2026-03-31 12:58:40.381129+00,noscript,/test-noscript,Gemini,Google-Extended,HEAD,200,0,{}
+169,2026-03-31 12:58:40.673792+00,noscript,/test-noscript,Gemini,Gemini-Deep-Research,HEAD,200,1,{}
+170,2026-03-31 12:58:40.967209+00,noscript,/test-noscript,Gemini,Google-NotebookLM,HEAD,200,1,{}
+171,2026-03-31 12:58:41.281984+00,noscript,/test-noscript,Gemini,NotebookLM,HEAD,200,1,{}
+172,2026-03-31 12:58:41.583907+00,noscript,/test-noscript,Gemini,GoogleAgent-Mariner,HEAD,200,1,{}
+173,2026-03-31 12:58:41.888199+00,noscript,/test-noscript,Perplexity,PerplexityBot,HEAD,200,1,{}
+174,2026-03-31 12:58:42.223203+00,noscript,/test-noscript,Perplexity,Perplexity-User,HEAD,200,1,{}
+175,2026-03-31 12:58:42.538322+00,noscript,/test-noscript,CommonCrawl,CCBot,HEAD,200,1,{}
+176,2026-03-31 12:58:42.847196+00,noscript,/test-noscript,Applebot,Applebot,HEAD,200,1,{}
+177,2026-03-31 12:58:43.152947+00,noscript,/test-noscript,Applebot,Applebot-Extended,HEAD,200,1,{}
+178,2026-03-31 12:58:43.48198+00,noscript,/test-noscript,Meta,meta-externalagent,HEAD,200,1,{}
+179,2026-03-31 12:58:43.795279+00,noscript,/test-noscript,Meta,Meta-ExternalAgent,HEAD,200,1,{}
+180,2026-03-31 12:58:44.210741+00,noscript,/test-noscript,Meta,meta-externalfetcher,HEAD,200,1,{}
+181,2026-03-31 12:58:44.521857+00,noscript,/test-noscript,Meta,meta-webindexer,HEAD,200,1,{}
+182,2026-03-31 12:58:44.815819+00,noscript,/test-noscript,DeepSeek,DeepSeekBot,HEAD,200,1,{}
+183,2026-03-31 12:58:45.176082+00,noscript,/test-noscript,Mistral,MistralAI-User,HEAD,200,1,{}
+184,2026-03-31 12:58:45.491217+00,noscript,/test-noscript,DuckDuckGo,DuckAssistBot,HEAD,200,1,{}
+185,2026-03-31 12:58:45.811224+00,noscript,/test-noscript,Brave,Bravebot,HEAD,200,1,{}
+186,2026-03-31 12:58:46.117747+00,noscript,/test-noscript,You,YouBot,HEAD,200,0,{}
+187,2026-03-31 12:58:46.41294+00,noscript,/test-noscript,Cohere,cohere-ai,HEAD,200,1,{}
+188,2026-03-31 12:58:46.71323+00,noscript,/test-noscript,ByteDance,Bytespider,HEAD,200,0,{}
+189,2026-03-31 12:58:47.061303+00,noscript,/test-noscript,ByteDance,TikTokSpider,HEAD,200,1,{}
+190,2026-03-31 12:58:47.364458+00,noscript,/test-noscript,Manus,Manus-User,HEAD,200,0,{}
+191,2026-03-31 12:58:47.717297+00,noscript,/test-noscript,Amazon,Amazonbot,HEAD,200,1,{}
+192,2026-03-31 12:58:48.743009+00,dsd,/test-dsd,ChatGPT,GPTBot,HEAD,200,40,{}
+193,2026-03-31 12:58:49.059514+00,dsd,/test-dsd,ChatGPT,ChatGPT-User,HEAD,200,4,{}
+194,2026-03-31 12:58:49.369173+00,dsd,/test-dsd,ChatGPT,OAI-SearchBot,HEAD,200,4,{}
+195,2026-03-31 12:58:49.890879+00,dsd,/test-dsd,ChatGPT,ChatGPT Agent,HEAD,200,4,{}
+196,2026-03-31 12:58:50.201436+00,dsd,/test-dsd,Claude,ClaudeBot,HEAD,200,2,{}
+197,2026-03-31 12:58:50.52737+00,dsd,/test-dsd,Claude,Claude-Web,HEAD,200,3,{}
+198,2026-03-31 12:58:50.846041+00,dsd,/test-dsd,Claude,Claude-User,HEAD,200,4,{}
+199,2026-03-31 12:58:51.1514+00,dsd,/test-dsd,Claude,Claude-SearchBot,HEAD,200,2,{}
+200,2026-03-31 12:58:51.4784+00,dsd,/test-dsd,Claude,anthropic-ai,HEAD,200,3,{}
+201,2026-03-31 12:58:51.785394+00,dsd,/test-dsd,Gemini,Google-Extended,HEAD,200,2,{}
+202,2026-03-31 12:58:52.074015+00,dsd,/test-dsd,Gemini,Gemini-Deep-Research,HEAD,200,3,{}
+203,2026-03-31 12:58:52.369914+00,dsd,/test-dsd,Gemini,Google-NotebookLM,HEAD,200,2,{}
+204,2026-03-31 12:58:52.680227+00,dsd,/test-dsd,Gemini,NotebookLM,HEAD,200,2,{}
+205,2026-03-31 12:58:52.971556+00,dsd,/test-dsd,Gemini,GoogleAgent-Mariner,HEAD,200,2,{}
+206,2026-03-31 12:58:53.294298+00,dsd,/test-dsd,Perplexity,PerplexityBot,HEAD,200,2,{}
+207,2026-03-31 12:58:53.611174+00,dsd,/test-dsd,Perplexity,Perplexity-User,HEAD,200,2,{}
+208,2026-03-31 12:58:53.922491+00,dsd,/test-dsd,CommonCrawl,CCBot,HEAD,200,2,{}
+209,2026-03-31 12:58:54.237431+00,dsd,/test-dsd,Applebot,Applebot,HEAD,200,3,{}
+210,2026-03-31 12:58:54.549847+00,dsd,/test-dsd,Applebot,Applebot-Extended,HEAD,200,4,{}
+211,2026-03-31 12:58:54.868833+00,dsd,/test-dsd,Meta,meta-externalagent,HEAD,200,3,{}
+212,2026-03-31 12:58:55.183173+00,dsd,/test-dsd,Meta,Meta-ExternalAgent,HEAD,200,4,{}
+213,2026-03-31 12:58:55.496852+00,dsd,/test-dsd,Meta,meta-externalfetcher,HEAD,200,4,{}
+214,2026-03-31 12:58:55.847146+00,dsd,/test-dsd,Meta,meta-webindexer,HEAD,200,3,{}
+215,2026-03-31 12:58:56.171425+00,dsd,/test-dsd,DeepSeek,DeepSeekBot,HEAD,200,3,{}
+216,2026-03-31 12:58:56.470439+00,dsd,/test-dsd,Mistral,MistralAI-User,HEAD,200,4,{}
+217,2026-03-31 12:58:56.780396+00,dsd,/test-dsd,DuckDuckGo,DuckAssistBot,HEAD,200,3,{}
+218,2026-03-31 12:58:57.073169+00,dsd,/test-dsd,Brave,Bravebot,HEAD,200,3,{}
+219,2026-03-31 12:58:57.379464+00,dsd,/test-dsd,You,YouBot,HEAD,200,5,{}
+220,2026-03-31 12:58:57.695703+00,dsd,/test-dsd,Cohere,cohere-ai,HEAD,200,2,{}
+221,2026-03-31 12:58:58.000969+00,dsd,/test-dsd,ByteDance,Bytespider,HEAD,200,3,{}
+222,2026-03-31 12:58:58.328582+00,dsd,/test-dsd,ByteDance,TikTokSpider,HEAD,200,2,{}
+223,2026-03-31 12:58:58.633452+00,dsd,/test-dsd,Manus,Manus-User,HEAD,200,2,{}
+224,2026-03-31 12:58:58.937072+00,dsd,/test-dsd,Amazon,Amazonbot,HEAD,200,2,{}
+225,2026-03-31 12:58:59.433446+00,microdata,/test-microdata,ChatGPT,GPTBot,HEAD,200,2,{}
+226,2026-03-31 12:58:59.736279+00,microdata,/test-microdata,ChatGPT,ChatGPT-User,HEAD,200,1,{}
+227,2026-03-31 12:59:00.05791+00,microdata,/test-microdata,ChatGPT,OAI-SearchBot,HEAD,200,1,{}
+228,2026-03-31 12:59:00.416713+00,microdata,/test-microdata,ChatGPT,ChatGPT Agent,HEAD,200,2,{}
+229,2026-03-31 12:59:00.71674+00,microdata,/test-microdata,Claude,ClaudeBot,HEAD,200,1,{}
+230,2026-03-31 12:59:01.069565+00,microdata,/test-microdata,Claude,Claude-Web,HEAD,200,1,{}
+231,2026-03-31 12:59:01.385173+00,microdata,/test-microdata,Claude,Claude-User,HEAD,200,1,{}
+232,2026-03-31 12:59:01.696594+00,microdata,/test-microdata,Claude,Claude-SearchBot,HEAD,200,1,{}
+233,2026-03-31 12:59:02.023741+00,microdata,/test-microdata,Claude,anthropic-ai,HEAD,200,1,{}
+234,2026-03-31 12:59:02.355209+00,microdata,/test-microdata,Gemini,Google-Extended,HEAD,200,1,{}
+235,2026-03-31 12:59:02.681935+00,microdata,/test-microdata,Gemini,Gemini-Deep-Research,HEAD,200,1,{}
+236,2026-03-31 12:59:02.993577+00,microdata,/test-microdata,Gemini,Google-NotebookLM,HEAD,200,1,{}
+237,2026-03-31 12:59:03.322404+00,microdata,/test-microdata,Gemini,NotebookLM,HEAD,200,2,{}
+238,2026-03-31 12:59:03.619675+00,microdata,/test-microdata,Gemini,GoogleAgent-Mariner,HEAD,200,1,{}
+239,2026-03-31 12:59:03.962575+00,microdata,/test-microdata,Perplexity,PerplexityBot,HEAD,200,1,{}
+240,2026-03-31 12:59:04.375747+00,microdata,/test-microdata,Perplexity,Perplexity-User,HEAD,200,2,{}
+241,2026-03-31 12:59:04.692606+00,microdata,/test-microdata,CommonCrawl,CCBot,HEAD,200,2,{}
+242,2026-03-31 12:59:05.010147+00,microdata,/test-microdata,Applebot,Applebot,HEAD,200,1,{}
+243,2026-03-31 12:59:05.600428+00,microdata,/test-microdata,Applebot,Applebot-Extended,HEAD,200,4,{}
+244,2026-03-31 12:59:06.01002+00,microdata,/test-microdata,Meta,meta-externalagent,HEAD,200,1,{}
+245,2026-03-31 12:59:06.362063+00,microdata,/test-microdata,Meta,Meta-ExternalAgent,HEAD,200,1,{}
+246,2026-03-31 12:59:06.665746+00,microdata,/test-microdata,Meta,meta-externalfetcher,HEAD,200,1,{}
+247,2026-03-31 12:59:06.994932+00,microdata,/test-microdata,Meta,meta-webindexer,HEAD,200,1,{}
+248,2026-03-31 12:59:07.312965+00,microdata,/test-microdata,DeepSeek,DeepSeekBot,HEAD,200,1,{}
+249,2026-03-31 12:59:07.635144+00,microdata,/test-microdata,Mistral,MistralAI-User,HEAD,200,1,{}
+250,2026-03-31 12:59:07.940397+00,microdata,/test-microdata,DuckDuckGo,DuckAssistBot,HEAD,200,1,{}
+251,2026-03-31 12:59:08.245518+00,microdata,/test-microdata,Brave,Bravebot,HEAD,200,1,{}
+252,2026-03-31 12:59:08.558528+00,microdata,/test-microdata,You,YouBot,HEAD,200,1,{}
+253,2026-03-31 12:59:08.868993+00,microdata,/test-microdata,Cohere,cohere-ai,HEAD,200,1,{}
+254,2026-03-31 12:59:09.173858+00,microdata,/test-microdata,ByteDance,Bytespider,HEAD,200,0,{}
+255,2026-03-31 12:59:09.472114+00,microdata,/test-microdata,ByteDance,TikTokSpider,HEAD,200,1,{}
+256,2026-03-31 12:59:09.7785+00,microdata,/test-microdata,Manus,Manus-User,HEAD,200,0,{}
+257,2026-03-31 12:59:10.114264+00,microdata,/test-microdata,Amazon,Amazonbot,HEAD,200,1,{}
+258,2026-03-31 12:59:10.613564+00,combined,/combined,ChatGPT,GPTBot,HEAD,200,6,{}
+259,2026-03-31 12:59:10.963194+00,combined,/combined,ChatGPT,ChatGPT-User,HEAD,200,3,{}
+260,2026-03-31 12:59:11.298562+00,combined,/combined,ChatGPT,OAI-SearchBot,HEAD,200,3,{}
+261,2026-03-31 12:59:11.60115+00,combined,/combined,ChatGPT,ChatGPT Agent,HEAD,200,2,{}
+262,2026-03-31 12:59:11.907299+00,combined,/combined,Claude,ClaudeBot,HEAD,200,2,{}
+263,2026-03-31 12:59:12.212989+00,combined,/combined,Claude,Claude-Web,HEAD,200,2,{}
+264,2026-03-31 12:59:12.509361+00,combined,/combined,Claude,Claude-User,HEAD,200,2,{}
+265,2026-03-31 12:59:12.817457+00,combined,/combined,Claude,Claude-SearchBot,HEAD,200,2,{}
+266,2026-03-31 12:59:13.132605+00,combined,/combined,Claude,anthropic-ai,HEAD,200,2,{}
+267,2026-03-31 12:59:13.443154+00,combined,/combined,Gemini,Google-Extended,HEAD,200,2,{}
+268,2026-03-31 12:59:13.745976+00,combined,/combined,Gemini,Gemini-Deep-Research,HEAD,200,2,{}
+269,2026-03-31 12:59:14.043762+00,combined,/combined,Gemini,Google-NotebookLM,HEAD,200,2,{}
+270,2026-03-31 12:59:14.356137+00,combined,/combined,Gemini,NotebookLM,HEAD,200,2,{}
+271,2026-03-31 12:59:14.710135+00,combined,/combined,Gemini,GoogleAgent-Mariner,HEAD,200,2,{}
+272,2026-03-31 12:59:15.014082+00,combined,/combined,Perplexity,PerplexityBot,HEAD,200,2,{}
+273,2026-03-31 12:59:15.318553+00,combined,/combined,Perplexity,Perplexity-User,HEAD,200,2,{}
+274,2026-03-31 12:59:15.632274+00,combined,/combined,CommonCrawl,CCBot,HEAD,200,2,{}
+275,2026-03-31 12:59:15.931942+00,combined,/combined,Applebot,Applebot,HEAD,200,3,{}
+276,2026-03-31 12:59:16.242561+00,combined,/combined,Applebot,Applebot-Extended,HEAD,200,2,{}
+277,2026-03-31 12:59:16.537945+00,combined,/combined,Meta,meta-externalagent,HEAD,200,2,{}
+278,2026-03-31 12:59:16.840328+00,combined,/combined,Meta,Meta-ExternalAgent,HEAD,200,2,{}
+279,2026-03-31 12:59:17.160876+00,combined,/combined,Meta,meta-externalfetcher,HEAD,200,2,{}
+280,2026-03-31 12:59:17.472352+00,combined,/combined,Meta,meta-webindexer,HEAD,200,2,{}
+281,2026-03-31 12:59:17.780368+00,combined,/combined,DeepSeek,DeepSeekBot,HEAD,200,2,{}
+282,2026-03-31 12:59:18.089655+00,combined,/combined,Mistral,MistralAI-User,HEAD,200,2,{}
+283,2026-03-31 12:59:18.398716+00,combined,/combined,DuckDuckGo,DuckAssistBot,HEAD,200,2,{}
+284,2026-03-31 12:59:18.712998+00,combined,/combined,Brave,Bravebot,HEAD,200,2,{}
+285,2026-03-31 12:59:19.017196+00,combined,/combined,You,YouBot,HEAD,200,2,{}
+286,2026-03-31 12:59:19.320871+00,combined,/combined,Cohere,cohere-ai,HEAD,200,2,{}
+287,2026-03-31 12:59:19.625914+00,combined,/combined,ByteDance,Bytespider,HEAD,200,2,{}
+288,2026-03-31 12:59:19.933191+00,combined,/combined,ByteDance,TikTokSpider,HEAD,200,3,{}
+289,2026-03-31 12:59:20.257752+00,combined,/combined,Manus,Manus-User,HEAD,200,2,{}
+290,2026-03-31 12:59:20.573269+00,combined,/combined,Amazon,Amazonbot,HEAD,200,3,{}
+291,2026-03-31 12:59:21.727775+00,control,/control,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,0,{}
+292,2026-03-31 12:59:22.000846+00,control,/control,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,0,{}
+293,2026-03-31 12:59:22.630877+00,jsonld,/test-jsonld,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,1,{}
+294,2026-03-31 12:59:22.909704+00,jsonld,/test-jsonld,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,1,{}
+295,2026-03-31 12:59:23.456867+00,semantic,/test-semantic,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,1,{}
+296,2026-03-31 12:59:23.741843+00,semantic,/test-semantic,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,1,{}
+297,2026-03-31 12:59:24.363615+00,aria,/test-aria,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,1,{}
+298,2026-03-31 12:59:24.629966+00,aria,/test-aria,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,1,{}
+299,2026-03-31 12:59:25.181122+00,noscript,/test-noscript,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,1,{}
+300,2026-03-31 12:59:25.456526+00,noscript,/test-noscript,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,1,{}
+301,2026-03-31 12:59:25.996673+00,dsd,/test-dsd,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,3,{}
+302,2026-03-31 12:59:26.353228+00,dsd,/test-dsd,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,2,{}
+303,2026-03-31 12:59:26.994225+00,microdata,/test-microdata,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,1,{}
+304,2026-03-31 12:59:27.261871+00,microdata,/test-microdata,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,0,{}
+305,2026-03-31 12:59:28.150924+00,combined,/combined,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,54,{}
+306,2026-03-31 12:59:28.537113+00,combined,/combined,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,2,{}
+307,2026-03-31 12:59:49.379748+00,control,/control,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,0,{}
+308,2026-03-31 12:59:49.879261+00,control,/control,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,1,{}
+309,2026-03-31 12:59:50.466017+00,jsonld,/test-jsonld,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,1,{}
+310,2026-03-31 12:59:50.736466+00,jsonld,/test-jsonld,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,1,{}
+311,2026-03-31 12:59:51.307955+00,semantic,/test-semantic,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,1,{}
+312,2026-03-31 12:59:52.036826+00,semantic,/test-semantic,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,0,{}
+313,2026-03-31 12:59:52.771249+00,aria,/test-aria,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,1,{}
+314,2026-03-31 12:59:53.048128+00,aria,/test-aria,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,1,{}
+315,2026-03-31 12:59:53.596857+00,noscript,/test-noscript,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,1,{}
+316,2026-03-31 12:59:53.857231+00,noscript,/test-noscript,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,1,{}
+317,2026-03-31 12:59:54.394394+00,dsd,/test-dsd,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,3,{}
+318,2026-03-31 12:59:54.752389+00,dsd,/test-dsd,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,2,{}
+319,2026-03-31 12:59:55.569213+00,microdata,/test-microdata,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,1,{}
+320,2026-03-31 12:59:55.833989+00,microdata,/test-microdata,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,1,{}
+321,2026-03-31 12:59:56.388409+00,combined,/combined,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,2,{}
+322,2026-03-31 12:59:56.732346+00,combined,/combined,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,2,{}
+323,2026-03-31 15:24:19.144207+00,control,/control,ChatGPT,ChatGPT-User,HEAD,200,5,{}
+324,2026-03-31 15:24:19.99545+00,control,/control,ChatGPT,OAI-SearchBot,HEAD,200,5,{}
+325,2026-03-31 15:24:20.500768+00,control,/control,ChatGPT,ChatGPT Agent,HEAD,200,4,{}
+326,2026-03-31 15:24:21.049258+00,control,/control,Claude,ClaudeBot,HEAD,200,5,{}
+327,2026-03-31 15:24:21.364418+00,control,/control,Claude,Claude-Web,HEAD,200,1,{}
+328,2026-03-31 15:24:21.709581+00,control,/control,Claude,Claude-User,HEAD,200,1,{}
+329,2026-03-31 15:24:22.015149+00,control,/control,Claude,Claude-SearchBot,HEAD,200,2,{}
+330,2026-03-31 15:24:22.343893+00,control,/control,Claude,anthropic-ai,HEAD,200,1,{}
+331,2026-03-31 15:24:22.787874+00,control,/control,Gemini,Google-Extended,HEAD,200,1,{}
+332,2026-03-31 15:24:23.229749+00,control,/control,Gemini,Gemini-Deep-Research,HEAD,200,1,{}
+333,2026-03-31 15:24:23.537436+00,control,/control,Gemini,Google-NotebookLM,HEAD,200,1,{}
+334,2026-03-31 15:24:23.847834+00,control,/control,Gemini,NotebookLM,HEAD,200,1,{}
+335,2026-03-31 15:24:24.255883+00,control,/control,Gemini,GoogleAgent-Mariner,HEAD,200,1,{}
+336,2026-03-31 15:24:24.567793+00,control,/control,Perplexity,PerplexityBot,HEAD,200,0,{}
+337,2026-03-31 15:24:24.865176+00,control,/control,Perplexity,Perplexity-User,HEAD,200,1,{}
+338,2026-03-31 15:24:25.175458+00,control,/control,CommonCrawl,CCBot,HEAD,200,1,{}
+339,2026-03-31 15:24:25.478465+00,control,/control,Applebot,Applebot,HEAD,200,1,{}
+340,2026-03-31 15:24:25.78409+00,control,/control,Applebot,Applebot-Extended,HEAD,200,1,{}
+341,2026-03-31 15:24:26.088966+00,control,/control,Meta,meta-externalagent,HEAD,200,1,{}
+342,2026-03-31 15:24:26.387046+00,control,/control,Meta,Meta-ExternalAgent,HEAD,200,1,{}
+343,2026-03-31 15:24:26.6961+00,control,/control,Meta,meta-externalfetcher,HEAD,200,1,{}
+344,2026-03-31 15:24:27.011406+00,control,/control,Meta,meta-webindexer,HEAD,200,1,{}
+345,2026-03-31 15:24:27.333961+00,control,/control,DeepSeek,DeepSeekBot,HEAD,200,1,{}
+346,2026-03-31 15:24:27.65053+00,control,/control,Mistral,MistralAI-User,HEAD,200,6,{}
+347,2026-03-31 15:24:27.986593+00,control,/control,DuckDuckGo,DuckAssistBot,HEAD,200,1,{}
+348,2026-03-31 15:24:28.313196+00,control,/control,Brave,Bravebot,HEAD,200,1,{}
+349,2026-03-31 15:24:28.628338+00,control,/control,You,YouBot,HEAD,200,2,{}
+350,2026-03-31 15:24:28.947405+00,control,/control,Cohere,cohere-ai,HEAD,200,1,{}
+351,2026-03-31 15:24:29.275338+00,control,/control,ByteDance,Bytespider,HEAD,200,1,{}
+352,2026-03-31 15:24:29.589861+00,control,/control,ByteDance,TikTokSpider,HEAD,200,2,{}
+353,2026-03-31 15:24:29.900095+00,control,/control,Manus,Manus-User,HEAD,200,1,{}
+354,2026-03-31 15:24:30.240324+00,control,/control,Amazon,Amazonbot,HEAD,200,1,{}
+355,2026-03-31 15:24:30.752893+00,jsonld,/test-jsonld,ChatGPT,GPTBot,HEAD,200,2,{}
+356,2026-03-31 15:24:31.082894+00,jsonld,/test-jsonld,ChatGPT,ChatGPT-User,HEAD,200,1,{}
+357,2026-03-31 15:24:31.378954+00,jsonld,/test-jsonld,ChatGPT,OAI-SearchBot,HEAD,200,1,{}
+358,2026-03-31 15:24:31.694402+00,jsonld,/test-jsonld,ChatGPT,ChatGPT Agent,HEAD,200,1,{}
+359,2026-03-31 15:24:32.008941+00,jsonld,/test-jsonld,Claude,ClaudeBot,HEAD,200,3,{}
+360,2026-03-31 15:24:32.303987+00,jsonld,/test-jsonld,Claude,Claude-Web,HEAD,200,3,{}
+361,2026-03-31 15:24:32.617093+00,jsonld,/test-jsonld,Claude,Claude-User,HEAD,200,2,{}
+362,2026-03-31 15:24:33.238173+00,jsonld,/test-jsonld,Claude,Claude-SearchBot,HEAD,200,12,{}
+363,2026-03-31 15:24:33.783722+00,jsonld,/test-jsonld,Claude,anthropic-ai,HEAD,200,2,{}
+364,2026-03-31 15:24:34.081253+00,jsonld,/test-jsonld,Gemini,Google-Extended,HEAD,200,1,{}
+365,2026-03-31 15:24:34.39266+00,jsonld,/test-jsonld,Gemini,Gemini-Deep-Research,HEAD,200,3,{}
+366,2026-03-31 15:24:34.698623+00,jsonld,/test-jsonld,Gemini,Google-NotebookLM,HEAD,200,1,{}
+367,2026-03-31 15:24:34.983585+00,jsonld,/test-jsonld,Gemini,NotebookLM,HEAD,200,2,{}
+368,2026-03-31 15:24:35.469487+00,jsonld,/test-jsonld,Gemini,GoogleAgent-Mariner,HEAD,200,1,{}
+369,2026-03-31 15:24:35.768078+00,jsonld,/test-jsonld,Perplexity,PerplexityBot,HEAD,200,2,{}
+370,2026-03-31 15:24:36.062115+00,jsonld,/test-jsonld,Perplexity,Perplexity-User,HEAD,200,2,{}
+371,2026-03-31 15:24:36.376599+00,jsonld,/test-jsonld,CommonCrawl,CCBot,HEAD,200,1,{}
+372,2026-03-31 15:24:36.66904+00,jsonld,/test-jsonld,Applebot,Applebot,HEAD,200,1,{}
+373,2026-03-31 15:24:37.001479+00,jsonld,/test-jsonld,Applebot,Applebot-Extended,HEAD,200,1,{}
+374,2026-03-31 15:24:37.286249+00,jsonld,/test-jsonld,Meta,meta-externalagent,HEAD,200,2,{}
+375,2026-03-31 15:24:37.583259+00,jsonld,/test-jsonld,Meta,Meta-ExternalAgent,HEAD,200,1,{}
+376,2026-03-31 15:24:37.892098+00,jsonld,/test-jsonld,Meta,meta-externalfetcher,HEAD,200,1,{}
+377,2026-03-31 15:24:38.202387+00,jsonld,/test-jsonld,Meta,meta-webindexer,HEAD,200,1,{}
+378,2026-03-31 15:24:38.53753+00,jsonld,/test-jsonld,DeepSeek,DeepSeekBot,HEAD,200,0,{}
+379,2026-03-31 15:24:38.883423+00,jsonld,/test-jsonld,Mistral,MistralAI-User,HEAD,200,1,{}
+380,2026-03-31 15:24:39.188465+00,jsonld,/test-jsonld,DuckDuckGo,DuckAssistBot,HEAD,200,1,{}
+381,2026-03-31 15:24:39.49325+00,jsonld,/test-jsonld,Brave,Bravebot,HEAD,200,1,{}
+382,2026-03-31 15:24:39.792462+00,jsonld,/test-jsonld,You,YouBot,HEAD,200,2,{}
+383,2026-03-31 15:24:40.090505+00,jsonld,/test-jsonld,Cohere,cohere-ai,HEAD,200,1,{}
+384,2026-03-31 15:24:40.402784+00,jsonld,/test-jsonld,ByteDance,Bytespider,HEAD,200,1,{}
+385,2026-03-31 15:24:40.706694+00,jsonld,/test-jsonld,ByteDance,TikTokSpider,HEAD,200,1,{}
+386,2026-03-31 15:24:40.998182+00,jsonld,/test-jsonld,Manus,Manus-User,HEAD,200,2,{}
+387,2026-03-31 15:24:41.309068+00,jsonld,/test-jsonld,Amazon,Amazonbot,HEAD,200,1,{}
+388,2026-03-31 15:24:41.77395+00,semantic,/test-semantic,ChatGPT,GPTBot,HEAD,200,1,{}
+389,2026-03-31 15:24:42.059385+00,semantic,/test-semantic,ChatGPT,ChatGPT-User,HEAD,200,1,{}
+390,2026-03-31 15:24:42.348474+00,semantic,/test-semantic,ChatGPT,OAI-SearchBot,HEAD,200,2,{}
+391,2026-03-31 15:24:42.645594+00,semantic,/test-semantic,ChatGPT,ChatGPT Agent,HEAD,200,2,{}
+392,2026-03-31 15:24:42.964182+00,semantic,/test-semantic,Claude,ClaudeBot,HEAD,200,2,{}
+393,2026-03-31 15:24:43.251191+00,semantic,/test-semantic,Claude,Claude-Web,HEAD,200,2,{}
+394,2026-03-31 15:24:43.548154+00,semantic,/test-semantic,Claude,Claude-User,HEAD,200,2,{}
+395,2026-03-31 15:24:43.837028+00,semantic,/test-semantic,Claude,Claude-SearchBot,HEAD,200,2,{}
+396,2026-03-31 15:24:44.12088+00,semantic,/test-semantic,Claude,anthropic-ai,HEAD,200,2,{}
+397,2026-03-31 15:24:44.431252+00,semantic,/test-semantic,Gemini,Google-Extended,HEAD,200,0,{}
+398,2026-03-31 15:24:44.728856+00,semantic,/test-semantic,Gemini,Gemini-Deep-Research,HEAD,200,1,{}
+399,2026-03-31 15:24:45.021029+00,semantic,/test-semantic,Gemini,Google-NotebookLM,HEAD,200,2,{}
+400,2026-03-31 15:24:45.343591+00,semantic,/test-semantic,Gemini,NotebookLM,HEAD,200,1,{}
+401,2026-03-31 15:24:45.719316+00,semantic,/test-semantic,Gemini,GoogleAgent-Mariner,HEAD,200,1,{}
+402,2026-03-31 15:24:46.007734+00,semantic,/test-semantic,Perplexity,PerplexityBot,HEAD,200,1,{}
+403,2026-03-31 15:24:46.316191+00,semantic,/test-semantic,Perplexity,Perplexity-User,HEAD,200,1,{}
+404,2026-03-31 15:24:46.644297+00,semantic,/test-semantic,CommonCrawl,CCBot,HEAD,200,2,{}
+405,2026-03-31 15:24:46.932383+00,semantic,/test-semantic,Applebot,Applebot,HEAD,200,1,{}
+406,2026-03-31 15:24:47.237635+00,semantic,/test-semantic,Applebot,Applebot-Extended,HEAD,200,1,{}
+407,2026-03-31 15:24:47.525059+00,semantic,/test-semantic,Meta,meta-externalagent,HEAD,200,2,{}
+408,2026-03-31 15:24:47.836227+00,semantic,/test-semantic,Meta,Meta-ExternalAgent,HEAD,200,2,{}
+409,2026-03-31 15:24:48.147009+00,semantic,/test-semantic,Meta,meta-externalfetcher,HEAD,200,1,{}
+410,2026-03-31 15:24:48.44944+00,semantic,/test-semantic,Meta,meta-webindexer,HEAD,200,1,{}
+411,2026-03-31 15:24:48.754949+00,semantic,/test-semantic,DeepSeek,DeepSeekBot,HEAD,200,1,{}
+412,2026-03-31 15:24:49.06712+00,semantic,/test-semantic,Mistral,MistralAI-User,HEAD,200,2,{}
+413,2026-03-31 15:24:49.362688+00,semantic,/test-semantic,DuckDuckGo,DuckAssistBot,HEAD,200,1,{}
+414,2026-03-31 15:24:49.654599+00,semantic,/test-semantic,Brave,Bravebot,HEAD,200,1,{}
+415,2026-03-31 15:24:49.948577+00,semantic,/test-semantic,You,YouBot,HEAD,200,1,{}
+416,2026-03-31 15:24:50.258521+00,semantic,/test-semantic,Cohere,cohere-ai,HEAD,200,1,{}
+417,2026-03-31 15:24:50.55541+00,semantic,/test-semantic,ByteDance,Bytespider,HEAD,200,1,{}
+418,2026-03-31 15:24:50.858408+00,semantic,/test-semantic,ByteDance,TikTokSpider,HEAD,200,2,{}
+419,2026-03-31 15:24:51.151267+00,semantic,/test-semantic,Manus,Manus-User,HEAD,200,4,{}
+420,2026-03-31 15:24:51.467232+00,semantic,/test-semantic,Amazon,Amazonbot,HEAD,200,2,{}
+421,2026-03-31 15:24:51.933816+00,aria,/test-aria,ChatGPT,GPTBot,HEAD,200,1,{}
+422,2026-03-31 15:24:52.250355+00,aria,/test-aria,ChatGPT,ChatGPT-User,HEAD,200,2,{}
+423,2026-03-31 15:24:52.554387+00,aria,/test-aria,ChatGPT,OAI-SearchBot,HEAD,200,2,{}
+424,2026-03-31 15:24:52.854588+00,aria,/test-aria,ChatGPT,ChatGPT Agent,HEAD,200,1,{}
+425,2026-03-31 15:24:53.147205+00,aria,/test-aria,Claude,ClaudeBot,HEAD,200,1,{}
+426,2026-03-31 15:24:53.450483+00,aria,/test-aria,Claude,Claude-Web,HEAD,200,2,{}
+427,2026-03-31 15:24:53.75721+00,aria,/test-aria,Claude,Claude-User,HEAD,200,1,{}
+428,2026-03-31 15:24:54.045508+00,aria,/test-aria,Claude,Claude-SearchBot,HEAD,200,1,{}
+429,2026-03-31 15:24:54.33282+00,aria,/test-aria,Claude,anthropic-ai,HEAD,200,1,{}
+430,2026-03-31 15:24:54.621921+00,aria,/test-aria,Gemini,Google-Extended,HEAD,200,0,{}
+431,2026-03-31 15:24:54.903488+00,aria,/test-aria,Gemini,Gemini-Deep-Research,HEAD,200,1,{}
+432,2026-03-31 15:24:55.213656+00,aria,/test-aria,Gemini,Google-NotebookLM,HEAD,200,1,{}
+433,2026-03-31 15:24:55.497184+00,aria,/test-aria,Gemini,NotebookLM,HEAD,200,1,{}
+434,2026-03-31 15:24:55.816234+00,aria,/test-aria,Gemini,GoogleAgent-Mariner,HEAD,200,1,{}
+435,2026-03-31 15:24:56.101465+00,aria,/test-aria,Perplexity,PerplexityBot,HEAD,200,1,{}
+436,2026-03-31 15:24:56.403472+00,aria,/test-aria,Perplexity,Perplexity-User,HEAD,200,1,{}
+437,2026-03-31 15:24:56.724758+00,aria,/test-aria,CommonCrawl,CCBot,HEAD,200,1,{}
+438,2026-03-31 15:24:57.02102+00,aria,/test-aria,Applebot,Applebot,HEAD,200,1,{}
+439,2026-03-31 15:24:57.471566+00,aria,/test-aria,Applebot,Applebot-Extended,HEAD,200,1,{}
+440,2026-03-31 15:24:57.768654+00,aria,/test-aria,Meta,meta-externalagent,HEAD,200,2,{}
+441,2026-03-31 15:24:58.075634+00,aria,/test-aria,Meta,Meta-ExternalAgent,HEAD,200,1,{}
+442,2026-03-31 15:24:58.371137+00,aria,/test-aria,Meta,meta-externalfetcher,HEAD,200,2,{}
+443,2026-03-31 15:24:58.670804+00,aria,/test-aria,Meta,meta-webindexer,HEAD,200,1,{}
+444,2026-03-31 15:24:58.962757+00,aria,/test-aria,DeepSeek,DeepSeekBot,HEAD,200,1,{}
+445,2026-03-31 15:24:59.252856+00,aria,/test-aria,Mistral,MistralAI-User,HEAD,200,1,{}
+446,2026-03-31 15:24:59.541653+00,aria,/test-aria,DuckDuckGo,DuckAssistBot,HEAD,200,1,{}
+447,2026-03-31 15:24:59.836735+00,aria,/test-aria,Brave,Bravebot,HEAD,200,1,{}
+448,2026-03-31 15:25:00.164437+00,aria,/test-aria,You,YouBot,HEAD,200,0,{}
+449,2026-03-31 15:25:00.448459+00,aria,/test-aria,Cohere,cohere-ai,HEAD,200,1,{}
+450,2026-03-31 15:25:00.740723+00,aria,/test-aria,ByteDance,Bytespider,HEAD,200,1,{}
+451,2026-03-31 15:25:01.051967+00,aria,/test-aria,ByteDance,TikTokSpider,HEAD,200,1,{}
+452,2026-03-31 15:25:01.369555+00,aria,/test-aria,Manus,Manus-User,HEAD,200,1,{}
+453,2026-03-31 15:25:01.743847+00,aria,/test-aria,Amazon,Amazonbot,HEAD,200,1,{}
+454,2026-03-31 15:25:02.335099+00,noscript,/test-noscript,ChatGPT,GPTBot,HEAD,200,2,{}
+455,2026-03-31 15:25:02.648735+00,noscript,/test-noscript,ChatGPT,ChatGPT-User,HEAD,200,1,{}
+456,2026-03-31 15:25:02.954081+00,noscript,/test-noscript,ChatGPT,OAI-SearchBot,HEAD,200,1,{}
+457,2026-03-31 15:25:03.305816+00,noscript,/test-noscript,ChatGPT,ChatGPT Agent,HEAD,200,1,{}
+458,2026-03-31 15:25:03.635615+00,noscript,/test-noscript,Claude,ClaudeBot,HEAD,200,0,{}
+459,2026-03-31 15:25:03.939422+00,noscript,/test-noscript,Claude,Claude-Web,HEAD,200,1,{}
+460,2026-03-31 15:25:04.242398+00,noscript,/test-noscript,Claude,Claude-User,HEAD,200,2,{}
+461,2026-03-31 15:25:04.664568+00,noscript,/test-noscript,Claude,Claude-SearchBot,HEAD,200,1,{}
+462,2026-03-31 15:25:05.081749+00,noscript,/test-noscript,Claude,anthropic-ai,HEAD,200,1,{}
+463,2026-03-31 15:25:05.453588+00,noscript,/test-noscript,Gemini,Google-Extended,HEAD,200,1,{}
+464,2026-03-31 15:25:05.763071+00,noscript,/test-noscript,Gemini,Gemini-Deep-Research,HEAD,200,1,{}
+465,2026-03-31 15:25:06.056701+00,noscript,/test-noscript,Gemini,Google-NotebookLM,HEAD,200,2,{}
+466,2026-03-31 15:25:06.36873+00,noscript,/test-noscript,Gemini,NotebookLM,HEAD,200,1,{}
+467,2026-03-31 15:25:06.653665+00,noscript,/test-noscript,Gemini,GoogleAgent-Mariner,HEAD,200,1,{}
+468,2026-03-31 15:25:06.962872+00,noscript,/test-noscript,Perplexity,PerplexityBot,HEAD,200,1,{}
+469,2026-03-31 15:25:07.254445+00,noscript,/test-noscript,Perplexity,Perplexity-User,HEAD,200,1,{}
+470,2026-03-31 15:25:07.564158+00,noscript,/test-noscript,CommonCrawl,CCBot,HEAD,200,1,{}
+471,2026-03-31 15:25:07.894271+00,noscript,/test-noscript,Applebot,Applebot,HEAD,200,1,{}
+472,2026-03-31 15:25:08.191247+00,noscript,/test-noscript,Applebot,Applebot-Extended,HEAD,200,1,{}
+473,2026-03-31 15:25:08.532273+00,noscript,/test-noscript,Meta,meta-externalagent,HEAD,200,1,{}
+474,2026-03-31 15:25:08.813388+00,noscript,/test-noscript,Meta,Meta-ExternalAgent,HEAD,200,1,{}
+475,2026-03-31 15:25:09.097963+00,noscript,/test-noscript,Meta,meta-externalfetcher,HEAD,200,1,{}
+476,2026-03-31 15:25:09.401959+00,noscript,/test-noscript,Meta,meta-webindexer,HEAD,200,1,{}
+477,2026-03-31 15:25:09.700095+00,noscript,/test-noscript,DeepSeek,DeepSeekBot,HEAD,200,1,{}
+478,2026-03-31 15:25:10.013222+00,noscript,/test-noscript,Mistral,MistralAI-User,HEAD,200,1,{}
+479,2026-03-31 15:25:10.312189+00,noscript,/test-noscript,DuckDuckGo,DuckAssistBot,HEAD,200,1,{}
+480,2026-03-31 15:25:10.617808+00,noscript,/test-noscript,Brave,Bravebot,HEAD,200,1,{}
+481,2026-03-31 15:25:10.926823+00,noscript,/test-noscript,You,YouBot,HEAD,200,1,{}
+482,2026-03-31 15:25:11.218531+00,noscript,/test-noscript,Cohere,cohere-ai,HEAD,200,1,{}
+483,2026-03-31 15:25:11.533452+00,noscript,/test-noscript,ByteDance,Bytespider,HEAD,200,1,{}
+484,2026-03-31 15:25:11.832363+00,noscript,/test-noscript,ByteDance,TikTokSpider,HEAD,200,1,{}
+485,2026-03-31 15:25:12.14103+00,noscript,/test-noscript,Manus,Manus-User,HEAD,200,0,{}
+486,2026-03-31 15:25:12.460451+00,noscript,/test-noscript,Amazon,Amazonbot,HEAD,200,1,{}
+487,2026-03-31 15:25:13.394249+00,dsd,/test-dsd,ChatGPT,GPTBot,HEAD,200,33,{}
+488,2026-03-31 15:25:13.92067+00,dsd,/test-dsd,ChatGPT,ChatGPT-User,HEAD,200,4,{}
+489,2026-03-31 15:25:14.916808+00,dsd,/test-dsd,ChatGPT,OAI-SearchBot,HEAD,200,50,{}
+490,2026-03-31 15:25:15.415768+00,dsd,/test-dsd,ChatGPT,ChatGPT Agent,HEAD,200,4,{}
+491,2026-03-31 15:25:15.715104+00,dsd,/test-dsd,Claude,ClaudeBot,HEAD,200,3,{}
+492,2026-03-31 15:25:16.028481+00,dsd,/test-dsd,Claude,Claude-Web,HEAD,200,4,{}
+493,2026-03-31 15:25:16.537422+00,dsd,/test-dsd,Claude,Claude-User,HEAD,200,5,{}
+494,2026-03-31 15:25:16.867143+00,dsd,/test-dsd,Claude,Claude-SearchBot,HEAD,200,5,{}
+495,2026-03-31 15:25:17.185424+00,dsd,/test-dsd,Claude,anthropic-ai,HEAD,200,4,{}
+496,2026-03-31 15:25:17.489733+00,dsd,/test-dsd,Gemini,Google-Extended,HEAD,200,3,{}
+497,2026-03-31 15:25:17.843932+00,dsd,/test-dsd,Gemini,Gemini-Deep-Research,HEAD,200,12,{}
+498,2026-03-31 15:25:18.341771+00,dsd,/test-dsd,Gemini,Google-NotebookLM,HEAD,200,3,{}
+499,2026-03-31 15:25:18.667213+00,dsd,/test-dsd,Gemini,NotebookLM,HEAD,200,10,{}
+500,2026-03-31 15:25:18.958734+00,dsd,/test-dsd,Gemini,GoogleAgent-Mariner,HEAD,200,4,{}
+501,2026-03-31 15:25:19.266403+00,dsd,/test-dsd,Perplexity,PerplexityBot,HEAD,200,3,{}
+502,2026-03-31 15:25:19.586193+00,dsd,/test-dsd,Perplexity,Perplexity-User,HEAD,200,4,{}
+503,2026-03-31 15:25:20.078891+00,dsd,/test-dsd,CommonCrawl,CCBot,HEAD,200,4,{}
+504,2026-03-31 15:25:20.401067+00,dsd,/test-dsd,Applebot,Applebot,HEAD,200,4,{}
+505,2026-03-31 15:25:20.732069+00,dsd,/test-dsd,Applebot,Applebot-Extended,HEAD,200,5,{}
+506,2026-03-31 15:25:21.046164+00,dsd,/test-dsd,Meta,meta-externalagent,HEAD,200,12,{}
+507,2026-03-31 15:25:21.359245+00,dsd,/test-dsd,Meta,Meta-ExternalAgent,HEAD,200,3,{}
+508,2026-03-31 15:25:21.681825+00,dsd,/test-dsd,Meta,meta-externalfetcher,HEAD,200,11,{}
+509,2026-03-31 15:25:22.008463+00,dsd,/test-dsd,Meta,meta-webindexer,HEAD,200,4,{}
+510,2026-03-31 15:25:22.371046+00,dsd,/test-dsd,DeepSeek,DeepSeekBot,HEAD,200,4,{}
+511,2026-03-31 15:25:22.695763+00,dsd,/test-dsd,Mistral,MistralAI-User,HEAD,200,2,{}
+512,2026-03-31 15:25:23.033221+00,dsd,/test-dsd,DuckDuckGo,DuckAssistBot,HEAD,200,3,{}
+513,2026-03-31 15:25:23.365447+00,dsd,/test-dsd,Brave,Bravebot,HEAD,200,2,{}
+514,2026-03-31 15:25:23.689256+00,dsd,/test-dsd,You,YouBot,HEAD,200,2,{}
+515,2026-03-31 15:25:23.995599+00,dsd,/test-dsd,Cohere,cohere-ai,HEAD,200,2,{}
+516,2026-03-31 15:25:24.349955+00,dsd,/test-dsd,ByteDance,Bytespider,HEAD,200,2,{}
+517,2026-03-31 15:25:24.710797+00,dsd,/test-dsd,ByteDance,TikTokSpider,HEAD,200,4,{}
+518,2026-03-31 15:25:25.007427+00,dsd,/test-dsd,Manus,Manus-User,HEAD,200,3,{}
+519,2026-03-31 15:25:25.334837+00,dsd,/test-dsd,Amazon,Amazonbot,HEAD,200,6,{}
+520,2026-03-31 15:25:25.836787+00,microdata,/test-microdata,ChatGPT,GPTBot,HEAD,200,2,{}
+521,2026-03-31 15:25:26.155964+00,microdata,/test-microdata,ChatGPT,ChatGPT-User,HEAD,200,1,{}
+522,2026-03-31 15:25:26.484996+00,microdata,/test-microdata,ChatGPT,OAI-SearchBot,HEAD,200,2,{}
+523,2026-03-31 15:25:26.807055+00,microdata,/test-microdata,ChatGPT,ChatGPT Agent,HEAD,200,1,{}
+524,2026-03-31 15:25:27.13022+00,microdata,/test-microdata,Claude,ClaudeBot,HEAD,200,1,{}
+525,2026-03-31 15:25:27.459578+00,microdata,/test-microdata,Claude,Claude-Web,HEAD,200,1,{}
+526,2026-03-31 15:25:27.783828+00,microdata,/test-microdata,Claude,Claude-User,HEAD,200,1,{}
+527,2026-03-31 15:25:28.088811+00,microdata,/test-microdata,Claude,Claude-SearchBot,HEAD,200,2,{}
+528,2026-03-31 15:25:28.40144+00,microdata,/test-microdata,Claude,anthropic-ai,HEAD,200,2,{}
+529,2026-03-31 15:25:28.703507+00,microdata,/test-microdata,Gemini,Google-Extended,HEAD,200,1,{}
+530,2026-03-31 15:25:29.000951+00,microdata,/test-microdata,Gemini,Gemini-Deep-Research,HEAD,200,1,{}
+531,2026-03-31 15:25:29.326493+00,microdata,/test-microdata,Gemini,Google-NotebookLM,HEAD,200,2,{}
+532,2026-03-31 15:25:29.630622+00,microdata,/test-microdata,Gemini,NotebookLM,HEAD,200,1,{}
+533,2026-03-31 15:25:29.991226+00,microdata,/test-microdata,Gemini,GoogleAgent-Mariner,HEAD,200,3,{}
+534,2026-03-31 15:25:30.320367+00,microdata,/test-microdata,Perplexity,PerplexityBot,HEAD,200,0,{}
+535,2026-03-31 15:25:30.623266+00,microdata,/test-microdata,Perplexity,Perplexity-User,HEAD,200,1,{}
+536,2026-03-31 15:25:30.937286+00,microdata,/test-microdata,CommonCrawl,CCBot,HEAD,200,1,{}
+537,2026-03-31 15:25:31.271624+00,microdata,/test-microdata,Applebot,Applebot,HEAD,200,1,{}
+538,2026-03-31 15:25:31.58046+00,microdata,/test-microdata,Applebot,Applebot-Extended,HEAD,200,1,{}
+539,2026-03-31 15:25:31.908362+00,microdata,/test-microdata,Meta,meta-externalagent,HEAD,200,1,{}
+540,2026-03-31 15:25:32.209214+00,microdata,/test-microdata,Meta,Meta-ExternalAgent,HEAD,200,1,{}
+541,2026-03-31 15:25:32.518465+00,microdata,/test-microdata,Meta,meta-externalfetcher,HEAD,200,1,{}
+542,2026-03-31 15:25:32.82432+00,microdata,/test-microdata,Meta,meta-webindexer,HEAD,200,1,{}
+543,2026-03-31 15:25:33.441097+00,microdata,/test-microdata,DeepSeek,DeepSeekBot,HEAD,200,12,{}
+544,2026-03-31 15:25:33.867123+00,microdata,/test-microdata,Mistral,MistralAI-User,HEAD,200,1,{}
+545,2026-03-31 15:25:34.44684+00,microdata,/test-microdata,DuckDuckGo,DuckAssistBot,HEAD,200,2,{}
+546,2026-03-31 15:25:34.876086+00,microdata,/test-microdata,Brave,Bravebot,HEAD,200,1,{}
+547,2026-03-31 15:25:35.275879+00,microdata,/test-microdata,You,YouBot,HEAD,200,2,{}
+548,2026-03-31 15:25:35.782399+00,microdata,/test-microdata,Cohere,cohere-ai,HEAD,200,2,{}
+549,2026-03-31 15:25:36.105237+00,microdata,/test-microdata,ByteDance,Bytespider,HEAD,200,1,{}
+550,2026-03-31 15:25:36.4115+00,microdata,/test-microdata,ByteDance,TikTokSpider,HEAD,200,1,{}
+551,2026-03-31 15:25:36.913073+00,microdata,/test-microdata,Manus,Manus-User,HEAD,200,1,{}
+552,2026-03-31 15:25:37.421351+00,microdata,/test-microdata,Amazon,Amazonbot,HEAD,200,0,{}
+553,2026-03-31 15:25:38.194856+00,combined,/combined,ChatGPT,GPTBot,HEAD,200,45,{}
+554,2026-03-31 15:25:38.507931+00,combined,/combined,ChatGPT,ChatGPT-User,HEAD,200,6,{}
+555,2026-03-31 15:25:38.813122+00,combined,/combined,ChatGPT,OAI-SearchBot,HEAD,200,5,{}
+556,2026-03-31 15:25:39.108867+00,combined,/combined,ChatGPT,ChatGPT Agent,HEAD,200,6,{}
+557,2026-03-31 15:25:39.40331+00,combined,/combined,Claude,ClaudeBot,HEAD,200,5,{}
+558,2026-03-31 15:25:39.710576+00,combined,/combined,Claude,Claude-Web,HEAD,200,4,{}
+559,2026-03-31 15:25:40.008443+00,combined,/combined,Claude,Claude-User,HEAD,200,3,{}
+560,2026-03-31 15:25:40.372746+00,combined,/combined,Claude,Claude-SearchBot,HEAD,200,3,{}
+561,2026-03-31 15:25:40.679206+00,combined,/combined,Claude,anthropic-ai,HEAD,200,4,{}
+562,2026-03-31 15:25:40.981304+00,combined,/combined,Gemini,Google-Extended,HEAD,200,4,{}
+563,2026-03-31 15:25:41.26658+00,combined,/combined,Gemini,Gemini-Deep-Research,HEAD,200,3,{}
+564,2026-03-31 15:25:41.552285+00,combined,/combined,Gemini,Google-NotebookLM,HEAD,200,3,{}
+565,2026-03-31 15:25:41.848128+00,combined,/combined,Gemini,NotebookLM,HEAD,200,3,{}
+566,2026-03-31 15:25:42.148512+00,combined,/combined,Gemini,GoogleAgent-Mariner,HEAD,200,3,{}
+567,2026-03-31 15:25:42.44911+00,combined,/combined,Perplexity,PerplexityBot,HEAD,200,3,{}
+568,2026-03-31 15:25:42.74124+00,combined,/combined,Perplexity,Perplexity-User,HEAD,200,3,{}
+569,2026-03-31 15:25:43.056688+00,combined,/combined,CommonCrawl,CCBot,HEAD,200,2,{}
+570,2026-03-31 15:25:43.363445+00,combined,/combined,Applebot,Applebot,HEAD,200,3,{}
+571,2026-03-31 15:25:43.676419+00,combined,/combined,Applebot,Applebot-Extended,HEAD,200,3,{}
+572,2026-03-31 15:25:43.979787+00,combined,/combined,Meta,meta-externalagent,HEAD,200,3,{}
+573,2026-03-31 15:25:44.275608+00,combined,/combined,Meta,Meta-ExternalAgent,HEAD,200,2,{}
+574,2026-03-31 15:25:44.585381+00,combined,/combined,Meta,meta-externalfetcher,HEAD,200,4,{}
+575,2026-03-31 15:25:44.875746+00,combined,/combined,Meta,meta-webindexer,HEAD,200,4,{}
+576,2026-03-31 15:25:45.166117+00,combined,/combined,DeepSeek,DeepSeekBot,HEAD,200,3,{}
+577,2026-03-31 15:25:45.462857+00,combined,/combined,Mistral,MistralAI-User,HEAD,200,3,{}
+578,2026-03-31 15:25:45.757512+00,combined,/combined,DuckDuckGo,DuckAssistBot,HEAD,200,3,{}
+579,2026-03-31 15:25:46.069824+00,combined,/combined,Brave,Bravebot,HEAD,200,2,{}
+580,2026-03-31 15:25:46.3647+00,combined,/combined,You,YouBot,HEAD,200,4,{}
+581,2026-03-31 15:25:46.699666+00,combined,/combined,Cohere,cohere-ai,HEAD,200,3,{}
+582,2026-03-31 15:25:47.003268+00,combined,/combined,ByteDance,Bytespider,HEAD,200,4,{}
+583,2026-03-31 15:25:47.319833+00,combined,/combined,ByteDance,TikTokSpider,HEAD,200,4,{}
+584,2026-03-31 15:25:47.621615+00,combined,/combined,Manus,Manus-User,HEAD,200,4,{}
+585,2026-03-31 15:25:47.948+00,combined,/combined,Amazon,Amazonbot,HEAD,200,5,{}
+586,2026-03-31 15:28:40.98468+00,control,/control,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,2,{}
+587,2026-03-31 15:28:41.670775+00,control,/control,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,2,{}
+588,2026-03-31 15:28:42.382853+00,jsonld,/test-jsonld,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,1,{}
+589,2026-03-31 15:28:42.697822+00,jsonld,/test-jsonld,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,2,{}
+590,2026-03-31 15:28:43.433297+00,semantic,/test-semantic,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,2,{}
+591,2026-03-31 15:28:43.775315+00,semantic,/test-semantic,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,2,{}
+592,2026-03-31 15:28:44.922123+00,aria,/test-aria,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,7,{}
+593,2026-03-31 15:28:45.441776+00,aria,/test-aria,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,5,{}
+594,2026-03-31 15:28:46.158935+00,noscript,/test-noscript,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,2,{}
+595,2026-03-31 15:28:46.478382+00,noscript,/test-noscript,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,1,{}
+596,2026-03-31 15:28:47.174528+00,dsd,/test-dsd,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,6,{}
+597,2026-03-31 15:28:47.585682+00,dsd,/test-dsd,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,4,{}
+598,2026-03-31 15:28:48.467325+00,microdata,/test-microdata,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,1,{}
+599,2026-03-31 15:28:48.775872+00,microdata,/test-microdata,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,1,{}
+600,2026-03-31 15:28:49.523831+00,combined,/combined,ChatGPT,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.0; +https://openai.com/gptbot)",GET,200,9,{}
+601,2026-03-31 15:28:49.855502+00,combined,/combined,Claude,"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-Web/1.0; +https://anthropic.com)",GET,200,3,{}
