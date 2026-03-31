@@ -2,6 +2,51 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.1.0] - 2026-03-31
+
+### Added
+
+- Root `LICENSE` file with the standard MIT License text.
+- `scripts/export-datasets.mjs` and `npm run export:datasets` for reproducible `datasets/DATA_*.csv` exports.
+- Exploratory visibility-axis variants and routing support:
+  - `/combined-dsd` (combined + DSD visibility channel)
+  - `/combined-noscript` (combined + noscript visibility channel)
+- Exploratory persistence pipeline:
+  - `--variant-set combined-visibility`
+  - `--persist-exploratory`
+  - `llm_evaluation_results_exploratory` and exploratory comparison views.
+- Schema analytics expansion:
+  - `llm_eval_comparison_exploratory`
+  - `v_macro_f1_scores`
+  - `v_macro_f1_scores_exploratory`
+- Quality/tooling automation:
+  - Prettier + markdownlint setup (`format:*`, `lint:md*`)
+  - CI quality workflow and `test:ci` server-backed gate
+  - `test-integrity.mjs` experiment invariant checks.
+
+### Changed
+
+- Project licensing metadata switched from `UNLICENSED` to `MIT`:
+  - `package.json` license field updated to `MIT`
+  - `CITATION.cff` license updated to `MIT`
+- Evaluation pipeline extended for tiered/variance-controlled runs:
+  - Added model-tier controls (`primary`, `validation`, `exploratory`)
+  - Added thinking profile controls (`minimized`, `provider-default`)
+  - Added OpenAI exploratory model selection (`gpt-5-mini`, `gpt-5`)
+  - Added persistence metadata such as `thinking_controls`.
+- Canonical URL handling corrected in layout/page metadata.
+- Bot/header validation coverage expanded in `test-bots.mjs`.
+- `.gitignore` updated for local tooling artifacts (including Gemini instruction files).
+
+### Documentation
+
+- Major documentation refresh across README and `docs/*`:
+  - Replication/evaluation/database/scripts guidance aligned to current CLI flags and schema.
+  - Research questions refined and thesis result snapshots added.
+  - Project structure references aligned to repository contents.
+  - Clarified that `scripts/indexnow.mjs` submits **canonical** benchmark routes (`VARIANT_PATHS`).
+  - Clarified `results/` as runtime-generated, gitignored evaluation CSV output.
+
 ## [1.0.1] - 2026-03-13
 
 ### Added
