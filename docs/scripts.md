@@ -9,7 +9,7 @@ This page documents all executable scripts in `scripts/` and how they relate to 
 - `evaluate.mjs` uses canonical routes by default and switches to exploratory routes with `--variant-set combined-visibility`.
 - Supabase writes use `src/lib/supabase.mjs` (`supabaseInsert`).
 - Scripts that persist data require `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
-- NPM shortcuts for `evaluate:*`, `indexnow`, and `test:extract:persist` load `.env` via Node `--env-file`.
+- NPM shortcuts for `evaluate:*`, `indexnow`, `test:extract:persist`, and `export:datasets` load `.env` via Node `--env-file`.
 - Database setup and query examples are documented in [docs/database.md](database.md).
 
 ## LLM Evaluation (`evaluate.mjs`)
@@ -60,6 +60,32 @@ CSV rows use metadata-first ordering (`Provider, Model, Tier, Thinking_Controls,
 Persisted rows include `thinking_controls` in `llm_evaluation_results`.
 `--persist` is limited to canonical variant IDs and writes to `llm_evaluation_results`.
 `--persist-exploratory` is limited to exploratory visibility routes and writes to `llm_evaluation_results_exploratory`.
+
+## Dataset Export (`export-datasets.mjs`)
+
+Exports full rows from Supabase tables/views into curated CSV snapshots in `datasets/`.
+
+### Command
+
+```bash
+npm run export:datasets
+```
+
+### Required Environment
+
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+
+### Output Files
+
+- `datasets/DATA_llm_evaluation_results_rows.csv`
+- `datasets/DATA_llm_evaluation_results_exploratory_rows.csv`
+- `datasets/DATA_llm_eval_comparison_rows.csv`
+- `datasets/DATA_llm_eval_comparison_exploratory_rows.csv`
+- `datasets/DATA_v_macro_f1_scores_rows.csv`
+- `datasets/DATA_v_macro_f1_scores_exploratory_rows.csv`
+
+This script mirrors the manual Supabase UI export workflow and standardizes naming for thesis snapshots.
 
 ## Bot Simulation (`test-bots.mjs`)
 
@@ -174,7 +200,7 @@ For a full local gate, run `npm run lint && npm run build && npm run test:ci`.
 
 ## IndexNow Submission (`indexnow.mjs`)
 
-Submits all variant URLs to IndexNow (`https://api.indexnow.org/IndexNow`) after deployment.
+Submits canonical benchmark variant URLs to IndexNow (`https://api.indexnow.org/IndexNow`) after deployment.
 
 ### Command
 
@@ -189,7 +215,7 @@ npm run indexnow
 | `SITE_HOST`    | Public host, e.g. `gaio-validation-lab.vercel.app` |
 | `INDEXNOW_KEY` | IndexNow key matching deployed key file name       |
 
-The script builds `urlList` from `VARIANT_PATHS`, so every benchmark route is submitted consistently.
+The script builds `urlList` from `VARIANT_PATHS`, so canonical benchmark routes are submitted consistently.
 
 ### Expected Responses
 
