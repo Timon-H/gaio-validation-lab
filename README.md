@@ -1,5 +1,12 @@
 # gaio-validation-lab
 
+[![Quality](https://github.com/Timon-H/gaio-validation-lab/actions/workflows/quality.yml/badge.svg)](https://github.com/Timon-H/gaio-validation-lab/actions/workflows/quality.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20.10-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Astro](https://img.shields.io/badge/Astro-5-FF5D01?logo=astro&logoColor=white)](https://astro.build/)
+[![Lit](https://img.shields.io/badge/Lit-3-324fff?logo=lit&logoColor=white)](https://lit.dev/)
+[![Vercel](https://img.shields.io/badge/Live%20on-Vercel-000000?logo=vercel&logoColor=white)](https://gaio-validation-lab.vercel.app)
+
 This repository benchmarks how different HTML markup techniques affect content extraction from Web Components with **Shadow DOM encapsulation** by AI crawlers and large language models.
 
 Shadow DOM — used extensively in component-driven DXP architectures — is opaque to most AI crawlers by default. This lab benchmarks six **GAIO (Generative AI Optimization)** measures that make Shadow DOM content machine-readable:
