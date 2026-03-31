@@ -63,6 +63,7 @@ npm run lint   # formatting + markdown checks (Prettier + markdownlint)
 
 - `npm run test:bots`, `npm run test:extract`, `npm run test:integrity`, and `npm run test:all` run integration/simulation scripts (see scripts/).
 - `npm run test:ci` runs all tests in a CI environment using `start-server-and-test`.
+- `npm run export:datasets` exports full Supabase tables/views into `datasets/DATA_*.csv`.
 
 **Environment variables:**
 Copy `.env.example` to `.env` and fill in the required values:
@@ -107,17 +108,22 @@ src/
     test-microdata/        ← Isolated: Microdata
 scripts/
   evaluate.mjs             ← Multi-provider LLM extraction benchmark (tier/profile controls + metadata)
+  export-datasets.mjs      ← Export Supabase tables/views to curated DATA_*.csv snapshots
   test-bots.mjs            ← Bot UA simulation
   test-extract.mjs         ← Structural content extraction
   test-integrity.mjs       ← Variant/header/marker integrity gate
-  indexnow.mjs             ← Submit all variant URLs to IndexNow (Bing)
+  indexnow.mjs             ← Submit canonical variant URLs to IndexNow (Bing)
 supabase/
   schema.sql               ← DDL v2: enums, tables, views, and RLS policies
 results/
-  archive/                 ← Archived result sets (pre-traps, pre-shadowdom, etc.)
-  results_baseline/        ← Canonical evaluation CSVs
-  results_combined-visibility/ ← Exploratory visibility-axis results
-  results_pre-minimized/   ← Pre-minimization results
+  gaio_evaluation_<provider>_<model>_<timestamp>.csv ← Runtime-generated evaluation outputs (gitignored)
+datasets/
+  DATA_llm_evaluation_results_rows.csv                  ← Canonical raw benchmark snapshot (table export)
+  DATA_llm_evaluation_results_exploratory_rows.csv      ← Exploratory raw benchmark snapshot (table export)
+  DATA_llm_eval_comparison_rows.csv                     ← Canonical aggregated view snapshot
+  DATA_llm_eval_comparison_exploratory_rows.csv         ← Exploratory aggregated view snapshot
+  DATA_v_macro_f1_scores_rows.csv                       ← Canonical macro-F1 view snapshot
+  DATA_v_macro_f1_scores_exploratory_rows.csv           ← Exploratory macro-F1 view snapshot
 public/                    ← Static assets (robots.txt, etc.)
 docs/
   database.md              ← Supabase setup, table contracts, view queries, validation checks
@@ -141,6 +147,26 @@ docs/
 | [docs/scripts.md](docs/scripts.md)                               | Bot simulation, content extraction, middleware reference                         |
 | [docs/replication.md](docs/replication.md)                       | Full step-by-step replication guide                                              |
 | [docs/results-interpretation.md](docs/results-interpretation.md) | How to read and analyse the evaluation CSV outputs                               |
+
+## Runtime Results vs Curated Datasets
+
+The repository separates local runtime outputs from curated thesis datasets:
+
+- **Script-generated run files** (runtime output):
+  `results/gaio_evaluation_<provider>_<model>_<timestamp>.csv`
+  These are produced by `scripts/evaluate.mjs` during benchmarking and stay local (gitignored).
+- **Curated thesis dataset snapshots** (`DATA_*.csv`):
+  `datasets/DATA_*.csv`
+  Manually exported reference datasets used for analysis, reproducibility, and thesis reporting.
+
+Current curated snapshot files:
+
+- `datasets/DATA_llm_evaluation_results_rows.csv` -> export of canonical raw rows (`llm_evaluation_results`)
+- `datasets/DATA_llm_evaluation_results_exploratory_rows.csv` -> export of exploratory raw rows (`llm_evaluation_results_exploratory`)
+- `datasets/DATA_llm_eval_comparison_rows.csv` -> export of canonical aggregate view (`llm_eval_comparison`)
+- `datasets/DATA_llm_eval_comparison_exploratory_rows.csv` -> export of exploratory aggregate view (`llm_eval_comparison_exploratory`)
+- `datasets/DATA_v_macro_f1_scores_rows.csv` -> export of canonical macro-F1 view (`v_macro_f1_scores`)
+- `datasets/DATA_v_macro_f1_scores_exploratory_rows.csv` -> export of exploratory macro-F1 view (`v_macro_f1_scores_exploratory`)
 
 ## Technologies
 

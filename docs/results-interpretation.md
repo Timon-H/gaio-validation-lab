@@ -2,6 +2,8 @@
 
 Column reference and analysis guide for the CSV outputs produced by `scripts/evaluate.mjs`.
 
+This document also maps the curated thesis snapshot datasets (`datasets/DATA_*.csv`) to their underlying schema/view origin.
+
 This version is calibrated to the following Claude run:
 
 `results/gaio_evaluation_claude_claude-haiku-4-5_2026-03-13T16-16-56.csv`
@@ -15,6 +17,28 @@ Each evaluation run produces a file named:
 ```
 results/gaio_evaluation_<provider>_<model>_<timestamp>.csv
 ```
+
+In addition, the repository contains curated thesis snapshot datasets:
+
+- `datasets/DATA_llm_evaluation_results_rows.csv`
+- `datasets/DATA_llm_evaluation_results_exploratory_rows.csv`
+- `datasets/DATA_llm_eval_comparison_rows.csv`
+- `datasets/DATA_llm_eval_comparison_exploratory_rows.csv`
+- `datasets/DATA_v_macro_f1_scores_rows.csv`
+- `datasets/DATA_v_macro_f1_scores_exploratory_rows.csv`
+
+These `DATA_*.csv` files are manually exported reference datasets. They do not replace the script naming convention; they complement it for reproducible thesis reporting.
+
+### Dataset Mapping (DATA snapshots)
+
+| File                                               | Origin                                     | Granularity                                             |
+| -------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------- |
+| `DATA_llm_evaluation_results_rows.csv`             | table `llm_evaluation_results`             | canonical raw runs (one row per run and variant)        |
+| `DATA_llm_evaluation_results_exploratory_rows.csv` | table `llm_evaluation_results_exploratory` | exploratory raw runs (combined-dsd / combined-noscript) |
+| `DATA_llm_eval_comparison_rows.csv`                | view `llm_eval_comparison`                 | canonical aggregated metrics                            |
+| `DATA_llm_eval_comparison_exploratory_rows.csv`    | view `llm_eval_comparison_exploratory`     | exploratory aggregated metrics                          |
+| `DATA_v_macro_f1_scores_rows.csv`                  | view `v_macro_f1_scores`                   | canonical F1 and Macro-F1 aggregates                    |
+| `DATA_v_macro_f1_scores_exploratory_rows.csv`      | view `v_macro_f1_scores_exploratory`       | exploratory F1 and Macro-F1 aggregates                  |
 
 ### Column Reference
 

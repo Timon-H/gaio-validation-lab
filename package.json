@@ -24,6 +24,7 @@
     "evaluate:claude": "node --env-file=.env ./scripts/evaluate.mjs --provider claude",
     "evaluate:gemini": "node --env-file=.env ./scripts/evaluate.mjs --provider gemini",
     "evaluate:all": "node --env-file=.env ./scripts/evaluate.mjs --provider all",
+    "export:datasets": "node --env-file=.env ./scripts/export-datasets.mjs",
     "preview": "astro build && astro preview",
     "indexnow": "node --env-file=.env ./scripts/indexnow.mjs",
     "prepare": "simple-git-hooks"
@@ -68,7 +69,7 @@
     "research"
   ],
   "author": "Timon Hargesheimer",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Timon-H/gaio-validation-lab/issues"
   },

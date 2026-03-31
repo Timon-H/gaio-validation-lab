@@ -146,7 +146,9 @@ npm run evaluate:claude -- --url https://gaio-validation-lab.vercel.app
 npm run evaluate:gemini -- --url https://gaio-validation-lab.vercel.app
 ```
 
-Results are written to `results/gaio_evaluation_<provider>_<model>_<timestamp>.csv`. The `results/` directory is gitignored; CSV files are generated locally.
+Results are written to `results/gaio_evaluation_<provider>_<model>_<timestamp>.csv`. The `results/` directory is gitignored for runtime outputs; CSV files are generated locally.
+
+If you maintain curated thesis snapshots in-repo (for example `datasets/DATA_*.csv` exports), treat them as manually versioned reference datasets derived from tables/views, not as direct script output files.
 
 To additionally persist each run to the Supabase `llm_evaluation_results` table:
 
@@ -209,6 +211,14 @@ Note: `--persist` only accepts canonical variants; `--persist-exploratory` only 
 ### Against Local CSVs
 
 Each run produces a CSV in `results/`. Open any CSV in a spreadsheet tool or parse it with a script. See [`docs/results-interpretation.md`](results-interpretation.md) for a full column reference and worked example.
+
+To export reproducible thesis snapshots from persisted Supabase data, run:
+
+```bash
+npm run export:datasets
+```
+
+This writes curated full-row exports to `datasets/DATA_*.csv`.
 
 ### Via Supabase
 

@@ -1,0 +1,17 @@
+variant_id,provider,model,f1_tarife,f1_faq,f1_felder,f1_karten,f1_kontakt,f1_anbieter,macro_f1_score
+combined-dsd,openai,gpt-4.1,0.857,0.909,1.000,1.000,1.000,1.000,0.961
+combined-dsd,openai,gpt-4.1-mini,1.000,1.000,1.000,1.000,1.000,1.000,1.000
+combined-dsd,openai,gpt-5,1.000,0.857,1.000,1.000,1.000,1.000,0.976
+combined-dsd,openai,gpt-5-mini,1.000,1.000,1.000,1.000,1.000,1.000,1.000
+combined-dsd,claude,claude-haiku-4-5,1.000,1.000,1.000,1.000,1.000,1.000,1.000
+combined-dsd,claude,claude-sonnet-4-5,1.000,1.000,0.909,1.000,1.000,1.000,0.985
+combined-dsd,gemini,gemini-2.5-flash,1.000,0.857,1.000,1.000,1.000,1.000,0.976
+combined-dsd,gemini,gemini-2.5-pro,1.000,1.000,1.000,1.000,1.000,1.000,1.000
+combined-noscript,openai,gpt-4.1,0.857,1.000,1.000,1.000,1.000,1.000,0.976
+combined-noscript,openai,gpt-4.1-mini,1.000,1.000,1.000,1.000,1.000,1.000,1.000
+combined-noscript,openai,gpt-5,0.857,1.000,1.000,1.000,1.000,1.000,0.976
+combined-noscript,openai,gpt-5-mini,0.857,1.000,1.000,1.000,1.000,1.000,0.976
+combined-noscript,claude,claude-haiku-4-5,1.000,1.000,1.000,1.000,1.000,1.000,1.000
+combined-noscript,claude,claude-sonnet-4-5,1.000,1.000,1.000,1.000,1.000,1.000,1.000
+combined-noscript,gemini,gemini-2.5-flash,1.000,0.857,1.000,1.000,1.000,1.000,0.976
+combined-noscript,gemini,gemini-2.5-pro,1.000,0.857,1.000,1.000,1.000,1.000,0.976

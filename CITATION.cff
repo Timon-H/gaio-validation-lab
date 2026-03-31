@@ -14,7 +14,7 @@ authors:
     given-names: Timon
 repository-code: "https://github.com/Timon-H/gaio-validation-lab"
 url: "https://gaio-validation-lab.vercel.app"
-license: UNLICENSED
+license: MIT
 keywords:
   - generative AI optimization
   - GAIO
