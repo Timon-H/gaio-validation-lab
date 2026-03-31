@@ -90,13 +90,13 @@ Key fields written:
 
 ## 4. Views
 
-### `gaio_comparison`
+### `logging_comparison`
 
 Aggregates crawler visits per variant.
 
 ```sql
 SELECT *
-FROM gaio_comparison
+FROM logging_comparison
 ORDER BY variant_id;
 ```
 

@@ -173,6 +173,6 @@ When runs are persisted, use:
 - `llm_eval_comparison_exploratory` for exploratory visibility aggregates (`--persist-exploratory`)
 - `v_macro_f1_scores_exploratory` for exploratory per-dimension F1 and macro F1 aggregates
 - `extraction_comparison` for structural marker extraction aggregates
-- `gaio_comparison` for crawler telemetry aggregates
+- `logging_comparison` for crawler telemetry aggregates
 
 Practical API and SQL examples are documented in [`docs/database.md`](database.md).

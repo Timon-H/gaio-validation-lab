@@ -252,7 +252,7 @@ Detects 16 AI crawler groups by user-agent and logs visits to Supabase `bot_logs
 
 Schema v2 provides five analytics views:
 
-- `gaio_comparison` -> bot visit aggregates per variant
+- `logging_comparison` -> bot visit aggregates per variant
 - `extraction_comparison` -> structural extraction aggregates per variant and extractor
 - `llm_eval_comparison` -> LLM extraction aggregates per variant/provider/model/tier/thinking profile
 - `v_macro_f1_scores` -> per-dimension F1 and macro F1 derived from canonical LLM aggregates
