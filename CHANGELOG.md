@@ -95,7 +95,7 @@ All notable changes to this project are documented in this file.
 - Canonical variant ID alignment across runtime paths (`variant_id` adoption in middleware, scripts, and schema).
 - New trap barrel export and page-level trap import standardization.
 - Supabase schema redesign (v2) with enums, stronger constraints, indexes, analytics views, and permissive lab RLS.
-- Added and validated analytics views: `gaio_comparison`, `extraction_comparison`, `llm_eval_comparison`.
+- Added and validated analytics views: `logging_comparison`, `extraction_comparison`, `llm_eval_comparison`.
 - Extended persistence payloads with richer metadata such as `tier`, `base_url`, and request URL context where applicable.
 - Added dedicated database operations guide and synchronized major docs/README references.
 - Updated interpretation guide to the latest Claude run snapshot.

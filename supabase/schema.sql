@@ -17,7 +17,7 @@ DROP VIEW IF EXISTS llm_eval_comparison_exploratory;
 DROP VIEW IF EXISTS v_macro_f1_scores;
 DROP VIEW IF EXISTS v_macro_f1_scores_exploratory;
 DROP VIEW IF EXISTS extraction_comparison;
-DROP VIEW IF EXISTS gaio_comparison;
+DROP VIEW IF EXISTS logging_comparison;
 
 DROP TABLE IF EXISTS llm_evaluation_results_exploratory;
 DROP TABLE IF EXISTS llm_evaluation_results;
@@ -179,7 +179,7 @@ CREATE INDEX idx_llm_eval_expl_created
 -- --------------------------------------------------------------------------
 -- 5) Analytics views
 -- --------------------------------------------------------------------------
-CREATE OR REPLACE VIEW gaio_comparison AS
+CREATE OR REPLACE VIEW logging_comparison AS
 SELECT
   variant_id,
   COUNT(*) AS total_visits,
