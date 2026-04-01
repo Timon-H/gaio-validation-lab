@@ -9,7 +9,7 @@ This page documents all executable scripts in `scripts/` and how they relate to 
 - `evaluate.mjs` uses canonical routes by default and switches to exploratory routes with `--variant-set combined-visibility`.
 - Supabase writes use `src/lib/supabase.mjs` (`supabaseInsert`).
 - Scripts that persist data require `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
-- NPM shortcuts for `evaluate:*`, `indexnow`, `test:extract:persist`, and `export:datasets` load `.env` via Node `--env-file`.
+- NPM shortcuts for `evaluate:*`, `test:extract:persist`, and `export:datasets` load `.env` via Node `--env-file`.
 - Database setup and query examples are documented in [docs/database.md](database.md).
 
 ## LLM Evaluation (`evaluate.mjs`)
@@ -197,31 +197,6 @@ For a full local gate, run `npm run lint && npm run build && npm run test:ci`.
 - GitHub Actions workflow: `.github/workflows/quality.yml`
 - Trigger: push to `main` and all pull requests
 - Steps: `npm ci` → `npm run lint` → `npm run build` → `npm run test:ci`
-
-## IndexNow Submission (`indexnow.mjs`)
-
-Submits canonical benchmark variant URLs to IndexNow (`https://api.indexnow.org/IndexNow`) after deployment.
-
-### Command
-
-```bash
-npm run indexnow
-```
-
-### Required Environment
-
-| Variable       | Purpose                                            |
-| -------------- | -------------------------------------------------- |
-| `SITE_HOST`    | Public host, e.g. `gaio-validation-lab.vercel.app` |
-| `INDEXNOW_KEY` | IndexNow key matching deployed key file name       |
-
-The script builds `urlList` from `VARIANT_PATHS`, so canonical benchmark routes are submitted consistently.
-
-### Expected Responses
-
-- `200`: submitted immediately
-- `202`: accepted/queued (normal)
-- `422`: key file missing or unreachable at `https://<host>/<key>.txt`
 
 ## Middleware (`src/middleware.ts`)
 

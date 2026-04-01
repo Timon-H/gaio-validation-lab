@@ -45,8 +45,6 @@ SUPABASE_URL=https://your-project-id.supabase.co
 SUPABASE_ANON_KEY=eyJhbGci...
 ```
 
-The `INDEXNOW_KEY` and `SITE_HOST` variables are only needed when you run `npm run indexnow`. They are required for that script and have no effect on local extraction/evaluation runs.
-
 Initialize Supabase schema before any persistence run (`--persist` or `--persist-exploratory`):
 
 1. Open Supabase SQL Editor.

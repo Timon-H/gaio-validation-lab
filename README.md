@@ -79,8 +79,8 @@ Copy `.env.example` to `.env` and fill in the required values:
 
 - `SUPABASE_URL` and `SUPABASE_ANON_KEY` (from your Supabase project; required for logging and persistence)
 - `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY` (for LLM evaluation; only the key for the provider you use is required)
-- `INDEXNOW_KEY`, `SITE_HOST` (optional, for IndexNow URL submission)
-  See comments in `.env.example` for details. See [`docs/replication.md`](docs/replication.md) for full step-by-step replication instructions, including LLM evaluation and result persistence.
+
+See comments in `.env.example` for details. See [`docs/replication.md`](docs/replication.md) for full step-by-step replication instructions, including LLM evaluation and result persistence.
 
 ## Quality Workflow
 
@@ -121,7 +121,6 @@ scripts/
   test-bots.mjs            ← Bot UA simulation
   test-extract.mjs         ← Structural content extraction
   test-integrity.mjs       ← Variant/header/marker integrity gate
-  indexnow.mjs             ← Submit canonical variant URLs to IndexNow (Bing)
 supabase/
   schema.sql               ← DDL v2: enums, tables, views, and RLS policies
 results/
