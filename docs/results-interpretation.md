@@ -20,6 +20,10 @@ results/gaio_evaluation_<provider>_<model>_<timestamp>.csv
 
 In addition, the repository contains curated thesis snapshot datasets:
 
+- `datasets/DATA_bot_logs_rows.csv`
+- `datasets/DATA_extraction_results_rows.csv`
+- `datasets/DATA_extraction_comparison.csv`
+- `datasets/DATA_logging_comparison.csv`
 - `datasets/DATA_llm_evaluation_results_rows.csv`
 - `datasets/DATA_llm_evaluation_results_exploratory_rows.csv`
 - `datasets/DATA_llm_eval_comparison_rows.csv`
@@ -33,6 +37,10 @@ These `DATA_*.csv` files are manually exported reference datasets. They do not r
 
 | File                                               | Origin                                     | Granularity                                             |
 | -------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------- |
+| `DATA_bot_logs_rows.csv`                           | table `bot_logs`                           | real AI crawler visits logged by middleware             |
+| `DATA_extraction_results_rows.csv`                 | table `extraction_results`                 | simulated extraction runs (test:extract with --persist) |
+| `DATA_extraction_comparison.csv`                   | view `extraction_comparison`               | structural extraction aggregates                        |
+| `DATA_logging_comparison.csv`                      | view `logging_comparison`                  | crawler telemetry aggregates                            |
 | `DATA_llm_evaluation_results_rows.csv`             | table `llm_evaluation_results`             | canonical raw runs (one row per run and variant)        |
 | `DATA_llm_evaluation_results_exploratory_rows.csv` | table `llm_evaluation_results_exploratory` | exploratory raw runs (combined-dsd / combined-noscript) |
 | `DATA_llm_eval_comparison_rows.csv`                | view `llm_eval_comparison`                 | canonical aggregated metrics                            |

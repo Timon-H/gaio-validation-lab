@@ -78,6 +78,10 @@ npm run export:datasets
 
 ### Output Files
 
+- `datasets/DATA_bot_logs_rows.csv`
+- `datasets/DATA_extraction_results_rows.csv`
+- `datasets/DATA_extraction_comparison.csv`
+- `datasets/DATA_logging_comparison.csv`
 - `datasets/DATA_llm_evaluation_results_rows.csv`
 - `datasets/DATA_llm_evaluation_results_exploratory_rows.csv`
 - `datasets/DATA_llm_eval_comparison_rows.csv`

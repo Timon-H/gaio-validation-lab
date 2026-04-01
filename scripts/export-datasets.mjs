@@ -4,6 +4,10 @@
  * Export curated thesis datasets from Supabase REST to local CSV files.
  *
  * Writes the following full-row exports into ./datasets:
+ * - DATA_bot_logs_rows.csv
+ * - DATA_extraction_results_rows.csv
+ * - DATA_extraction_comparison.csv
+ * - DATA_logging_comparison.csv
  * - DATA_llm_evaluation_results_rows.csv
  * - DATA_llm_evaluation_results_exploratory_rows.csv
  * - DATA_llm_eval_comparison_rows.csv
@@ -20,6 +24,22 @@ import path from "node:path";
 import process from "node:process";
 
 const DATASET_EXPORTS = [
+  {
+    source: "bot_logs",
+    output: "DATA_bot_logs_rows.csv",
+  },
+  {
+    source: "extraction_results",
+    output: "DATA_extraction_results_rows.csv",
+  },
+  {
+    source: "extraction_comparison",
+    output: "DATA_extraction_comparison.csv",
+  },
+  {
+    source: "logging_comparison",
+    output: "DATA_logging_comparison.csv",
+  },
   {
     source: "llm_evaluation_results",
     output: "DATA_llm_evaluation_results_rows.csv",
