@@ -26,7 +26,6 @@
     "evaluate:all": "node --env-file=.env ./scripts/evaluate.mjs --provider all",
     "export:datasets": "node --env-file=.env ./scripts/export-datasets.mjs",
     "preview": "astro build && astro preview",
-    "indexnow": "node --env-file=.env ./scripts/indexnow.mjs",
     "prepare": "simple-git-hooks"
   },
   "repository": {
