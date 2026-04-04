@@ -87,6 +87,53 @@ npm run export:datasets
 
 This script mirrors the manual Supabase UI export workflow and standardizes naming for thesis snapshots.
 
+## Bootstrap Confidence Intervals (`bootstrap_ci_all_tiers.py`)
+
+Computes 95% bootstrap confidence intervals for run-level Macro-F1 values from
+the exported dataset `datasets/DATA_llm_evaluation_results_rows.csv`.
+
+### Purpose
+
+- Quantify uncertainty around Macro-F1 means per provider/model/profile.
+- Support tier-specific interpretation for `primary`, `validation`, and `exploratory`.
+- Provide a reproducible post-processing step for thesis result reporting.
+
+### Commands
+
+```bash
+# Primary tier (default variant: combined)
+python scripts/bootstrap_ci_all_tiers.py \
+  --csv datasets/DATA_llm_evaluation_results_rows.csv \
+  --tier primary
+
+# Validation tier
+python scripts/bootstrap_ci_all_tiers.py \
+  --csv datasets/DATA_llm_evaluation_results_rows.csv \
+  --tier validation \
+  --variant combined
+
+# Exploratory tier
+python scripts/bootstrap_ci_all_tiers.py \
+  --csv datasets/DATA_llm_evaluation_results_rows.csv \
+  --tier exploratory \
+  --variant combined
+```
+
+### Flags
+
+- `--csv <path>`: input run-level CSV (default: `datasets/DATA_llm_evaluation_results_rows.csv`)
+- `--tier <primary|validation|exploratory>`: tier filter (default: `primary`)
+- `--variant <id>`: variant filter (default: `combined`)
+- `--bootstrap <n>`: number of bootstrap resamples (default: `10000`)
+- `--seed <n>`: RNG seed for reproducibility (default: `42`)
+- `--collapse-profiles`: aggregate across thinking profiles per provider/model
+
+### Output
+
+- Console report with group name, run count (`n`), mean Macro-F1, and 95% CI.
+- Grouping is profile-aware by default (`profile=minimized`, `profile=provider-default`).
+- With `--collapse-profiles`, groups are merged per provider/model.
+
 ## Bot Simulation (`test-bots.mjs`)
 
 Simulates crawler requests with representative user-agent tokens for all 16 bot groups detected by middleware.

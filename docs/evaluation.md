@@ -55,6 +55,37 @@ With `--persist-exploratory`, exploratory visibility-axis runs (`combined-dsd`, 
 
 By default (without either persist flag), exploratory visibility-axis runs remain CSV-only.
 
+## Bootstrap CI Post-Processing
+
+After generating run-level data, use `scripts/bootstrap_ci_all_tiers.py` to compute
+95% bootstrap confidence intervals for Macro-F1 means.
+
+```bash
+# Primary tier
+python scripts/bootstrap_ci_all_tiers.py \
+  --csv datasets/DATA_llm_evaluation_results_rows.csv \
+  --tier primary \
+  --variant combined
+
+# Validation tier
+python scripts/bootstrap_ci_all_tiers.py \
+  --csv datasets/DATA_llm_evaluation_results_rows.csv \
+  --tier validation \
+  --variant combined
+
+# Exploratory tier
+python scripts/bootstrap_ci_all_tiers.py \
+  --csv datasets/DATA_llm_evaluation_results_rows.csv \
+  --tier exploratory \
+  --variant combined
+```
+
+Useful options:
+
+- `--bootstrap <n>` (default: `10000`)
+- `--seed <n>` (default: `42`)
+- `--collapse-profiles` to aggregate over thinking profiles per provider/model
+
 ## Variant Selection
 
 - Default: canonical set (`control`, `jsonld`, `semantic`, `aria`, `noscript`, `dsd`, `microdata`, `combined`)

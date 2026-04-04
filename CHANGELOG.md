@@ -2,6 +2,28 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.2.0]
+
+### Added
+
+- Bootstrap CI post-processing utility for run-level Macro-F1 across all tiers:
+  - `scripts/bootstrap_ci_all_tiers.py`
+  - Supports `--tier primary|validation|exploratory`, `--variant`, `--bootstrap`, `--seed`, and `--collapse-profiles`.
+
+### Changed
+
+- Replaced the previous primary-specific bootstrap helper name with the tier-generic script name:
+  - `bootstrap_ci_combined_primary.py` -> `bootstrap_ci_all_tiers.py`.
+
+### Documentation
+
+- Extended script documentation to cover the bootstrap post-processing workflow end-to-end:
+  - `README.md` (project structure + dedicated Bootstrap CI section)
+  - `docs/scripts.md` (full command/flags/output reference)
+  - `docs/evaluation.md` (post-evaluation CI step)
+  - `docs/replication.md` (replication step for CI quantification)
+  - `docs/results-interpretation.md` (CI usage example)
+
 ## [1.1.0] - 2026-03-31
 
 ### Added
