@@ -162,6 +162,17 @@ print(summary)
 
 With a single run, `std` will be `NaN`. That is expected.
 
+For CI-based uncertainty instead of standard deviation summaries, run:
+
+```bash
+python scripts/bootstrap_ci_all_tiers.py \
+  --csv datasets/DATA_llm_evaluation_results_rows.csv \
+  --tier primary \
+  --variant combined
+```
+
+Switch `--tier` to `validation` or `exploratory` as needed.
+
 ---
 
 ## Supabase Views

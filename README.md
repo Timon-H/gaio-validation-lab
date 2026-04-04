@@ -117,6 +117,7 @@ src/
     test-microdata/        ← Isolated: Microdata
 scripts/
   evaluate.mjs             ← Multi-provider LLM extraction benchmark (tier/profile controls + metadata)
+  bootstrap_ci_all_tiers.py ← Bootstrap 95% CI post-processing for Macro-F1 (primary/validation/exploratory)
   export-datasets.mjs      ← Export Supabase tables/views to curated DATA_*.csv snapshots
   test-bots.mjs            ← Bot UA simulation
   test-extract.mjs         ← Structural content extraction
@@ -166,6 +167,43 @@ The repository separates local runtime outputs from curated thesis datasets:
 - **Curated thesis dataset snapshots** (`DATA_*.csv`):
   `datasets/DATA_*.csv`
   Manually exported reference datasets used for analysis, reproducibility, and thesis reporting.
+
+## Bootstrap CI Post-Processing
+
+For uncertainty quantification of run-level Macro-F1 values, use:
+
+`scripts/bootstrap_ci_all_tiers.py`
+
+The script reads `datasets/DATA_llm_evaluation_results_rows.csv` and computes
+95% bootstrap confidence intervals for any supported tier and variant.
+
+Examples:
+
+```bash
+# Primary tier, canonical combined variant
+python scripts/bootstrap_ci_all_tiers.py \
+  --csv datasets/DATA_llm_evaluation_results_rows.csv \
+  --tier primary \
+  --variant combined
+
+# Validation tier
+python scripts/bootstrap_ci_all_tiers.py \
+  --csv datasets/DATA_llm_evaluation_results_rows.csv \
+  --tier validation \
+  --variant combined
+
+# Exploratory tier
+python scripts/bootstrap_ci_all_tiers.py \
+  --csv datasets/DATA_llm_evaluation_results_rows.csv \
+  --tier exploratory \
+  --variant combined
+```
+
+Optional flags:
+
+- `--bootstrap <n>`: number of resamples (default: 10000)
+- `--seed <n>`: RNG seed (default: 42)
+- `--collapse-profiles`: aggregate across thinking profiles per provider/model
 
 Current curated snapshot files:
 

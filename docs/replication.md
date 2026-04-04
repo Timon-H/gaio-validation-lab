@@ -279,6 +279,37 @@ Each call generates a new timestamped CSV; aggregate multiple runs for more reli
 
 ---
 
+## 9. Bootstrap Uncertainty Quantification (Optional, Recommended)
+
+To reproduce CI-based uncertainty reporting for Macro-F1, run the bootstrap post-processing script on the exported run-level dataset:
+
+```bash
+# Primary
+python scripts/bootstrap_ci_all_tiers.py \
+	--csv datasets/DATA_llm_evaluation_results_rows.csv \
+	--tier primary \
+	--variant combined
+
+# Validation
+python scripts/bootstrap_ci_all_tiers.py \
+	--csv datasets/DATA_llm_evaluation_results_rows.csv \
+	--tier validation \
+	--variant combined
+
+# Exploratory
+python scripts/bootstrap_ci_all_tiers.py \
+	--csv datasets/DATA_llm_evaluation_results_rows.csv \
+	--tier exploratory \
+	--variant combined
+```
+
+Optional:
+
+- Add `--collapse-profiles` to merge provider-default/minimized rows per provider/model.
+- Increase `--bootstrap` for tighter Monte Carlo stability.
+
+---
+
 ## Known Limitations
 
 - **API quotas:** Gemini free-tier quota may throttle or reject requests during high-load periods. The script includes automatic retry logic with exponential backoff.
