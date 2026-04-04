@@ -6,6 +6,7 @@
 [![Astro](https://img.shields.io/badge/Astro-5-FF5D01?logo=astro&logoColor=white)](https://astro.build/)
 [![Lit](https://img.shields.io/badge/Lit-3-324fff?logo=lit&logoColor=white)](https://lit.dev/)
 [![Vercel](https://img.shields.io/badge/Live%20on-Vercel-000000?logo=vercel&logoColor=white)](https://gaio-validation-lab.vercel.app)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 
 Thesis snapshot release: [`v1.1-thesis`](https://github.com/Timon-H/gaio-validation-lab/releases/tag/v1.1-thesis)
 
@@ -216,7 +217,7 @@ Current curated snapshot files:
 
 ## Technologies
 
-- **Astro 5** · **Lit 3** · **@lit-labs/ssr** · **TypeScript**
+- **Astro 5** · **Lit 3** · **@lit-labs/ssr** · **TypeScript** . **Python**
 - **openai** · **@anthropic-ai/sdk** · **@google/generative-ai**
 - **Supabase** · **Vercel**
 - **Prettier** · **markdownlint-cli2** · **lint-staged** · **simple-git-hooks** · **start-server-and-test**
