@@ -4,16 +4,22 @@
 
 Canonical benchmark matrix (8 variants). Each variant isolates a single GAIO variable so its effect on LLM extraction can be measured independently.
 
-| Variant           | JSON-LD | Semantic HTML | ARIA | Noscript | DSD | Microdata |
-| ----------------- | :-----: | :-----------: | :--: | :------: | :-: | :-------: |
-| `/control`        |    —    |       —       |  —   |    —     |  —  |     —     |
-| `/test-jsonld`    |   ✅    |       —       |  —   |    —     |  —  |     —     |
-| `/test-semantic`  |    —    |      ✅       |  —   |    —     |  —  |     —     |
-| `/test-aria`      |    —    |       —       |  ✅  |    —     |  —  |     —     |
-| `/test-noscript`  |    —    |       —       |  —   |    ✅    |  —  |     —     |
-| `/test-dsd`       |    —    |       —       |  —   |    —     | ✅  |     —     |
-| `/test-microdata` |    —    |       —       |  —   |    —     |  —  |    ✅     |
-| `/combined`       |   ✅    |      ✅       |  ✅  |    —     | ✅  |    ✅     |
+Axis convention used throughout docs:
+
+- Structured Data Axis = JSON-LD / Microdata
+- Semantic Context Axis = ARIA / Semantic HTML
+- Visibility Bridge Axis = DSD / `<noscript>`
+
+| Variant           | Structured Data Axis | Semantic Context Axis | Visibility Bridge Axis |
+| ----------------- | -------------------- | --------------------- | ---------------------- |
+| `/control`        | —                    | —                     | —                      |
+| `/test-jsonld`    | JSON-LD              | —                     | —                      |
+| `/test-semantic`  | —                    | Semantic HTML         | —                      |
+| `/test-aria`      | —                    | ARIA                  | —                      |
+| `/test-noscript`  | —                    | —                     | `<noscript>`           |
+| `/test-dsd`       | —                    | —                     | DSD                    |
+| `/test-microdata` | Microdata            | —                     | —                      |
+| `/combined`       | JSON-LD + Microdata  | ARIA + Semantic HTML  | DSD                    |
 
 **Hydration note:** `/combined` and `/test-dsd` are SSR-only to keep the initial HTML deterministic for crawler/LLM evaluation and to avoid client-side re-rendering artifacts.
 
@@ -57,9 +63,9 @@ This pair is used to address the methodological question why `noscript` is exclu
 
 ### Research Questions
 
-- **RQ1** — How do semantic and structural markup measures impact the extraction accuracy of LLMs for Shadow DOM-encapsulated web content?
-- **RQ2** — Which individual GAIO measures (JSON-LD, Semantic HTML, ARIA, Declarative Shadow DOM, Microdata) contribute most effectively to improving content extraction and disambiguation?
-- **RQ3** — To what extent can these results be generalized across different LLM providers (OpenAI, Anthropic, Google)?
+- **RQ1:** How do semantic and structural markup measures impact the extraction quality (precision, recall, F1) of LLMs at the isolated DOM level for content initially encapsulated in a Shadow DOM?
+- **RQ2:** Which of the isolated GAIO measures (JSON-LD, Semantic HTML, ARIA, Declarative Shadow DOM, Microdata, and <noscript>) contribute most effectively to improving precision and reducing fallback hallucinations under API-driven, schema-strict laboratory conditions?
+- **RQ3:** To what extent can the observed effects of these markup techniques be generalized across different LLM providers (OpenAI, Anthropic, Google) under direct API control, or do provider-specific differences exist?
 
 ### Hypotheses
 
