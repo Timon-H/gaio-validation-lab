@@ -57,9 +57,9 @@ This pair is used to address the methodological question why `noscript` is exclu
 
 ### Research Questions
 
-- **RQ1** — How do semantic and structural markup measures impact the extraction accuracy of LLMs for Shadow DOM-encapsulated web content?
-- **RQ2** — Which individual GAIO measures (JSON-LD, Semantic HTML, ARIA, Declarative Shadow DOM, Microdata) contribute most effectively to improving content extraction and disambiguation?
-- **RQ3** — To what extent can these results be generalized across different LLM providers (OpenAI, Anthropic, Google)?
+- **RQ1:** How do semantic and structural markup measures impact the extraction quality (precision, recall, F1) of LLMs at the isolated DOM level for content initially encapsulated in a Shadow DOM?
+- **RQ2:** Which of the isolated GAIO measures (JSON-LD, Semantic HTML, ARIA, Declarative Shadow DOM, Microdata, and <noscript>) contribute most effectively to improving precision and reducing fallback hallucinations under API-driven, schema-strict laboratory conditions?
+- **RQ3:** To what extent can the observed effects of these markup techniques be generalized across different LLM providers (OpenAI, Anthropic, Google) under direct API control, or do provider-specific differences exist?
 
 ### Hypotheses
 
