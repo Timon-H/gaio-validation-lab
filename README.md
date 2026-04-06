@@ -15,8 +15,8 @@
 - **Software Development Period:** 2026-01 to 2026-04
 - **Final Evaluation Data Collection Period:** 2026-03-13 to 2026-03-14
 - **Later Simulated Runs (diagnostic only):** Additional March runs were executed for `bot_logs` and `extraction_results` (simulated data, not part of the final LLM evaluation window).
-
-Thesis snapshot release: [`v1.1-thesis`](https://github.com/Timon-H/gaio-validation-lab/releases/tag/v1.1-thesis)
+- **Archived DOI:** [10.5281/zenodo.19439383](https://doi.org/10.5281/zenodo.19439383)
+- **Thesis snapshot release:** [`v1.1-thesis`](https://github.com/Timon-H/gaio-validation-lab/releases/tag/v1.1-thesis)
 
 This repository benchmarks how different HTML markup techniques affect content extraction from Web Components with **Shadow DOM encapsulation** by AI crawlers and large language models.
 
