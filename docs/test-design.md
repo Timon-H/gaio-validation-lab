@@ -4,16 +4,22 @@
 
 Canonical benchmark matrix (8 variants). Each variant isolates a single GAIO variable so its effect on LLM extraction can be measured independently.
 
-| Variant           | JSON-LD | Semantic HTML | ARIA | Noscript | DSD | Microdata |
-| ----------------- | :-----: | :-----------: | :--: | :------: | :-: | :-------: |
-| `/control`        |    —    |       —       |  —   |    —     |  —  |     —     |
-| `/test-jsonld`    |   ✅    |       —       |  —   |    —     |  —  |     —     |
-| `/test-semantic`  |    —    |      ✅       |  —   |    —     |  —  |     —     |
-| `/test-aria`      |    —    |       —       |  ✅  |    —     |  —  |     —     |
-| `/test-noscript`  |    —    |       —       |  —   |    ✅    |  —  |     —     |
-| `/test-dsd`       |    —    |       —       |  —   |    —     | ✅  |     —     |
-| `/test-microdata` |    —    |       —       |  —   |    —     |  —  |    ✅     |
-| `/combined`       |   ✅    |      ✅       |  ✅  |    —     | ✅  |    ✅     |
+Axis convention used throughout docs:
+
+- Structured Data Axis = JSON-LD / Microdata
+- Semantic Context Axis = ARIA / Semantic HTML
+- Visibility Bridge Axis = DSD / `<noscript>`
+
+| Variant           | Structured Data Axis | Semantic Context Axis | Visibility Bridge Axis |
+| ----------------- | -------------------- | --------------------- | ---------------------- |
+| `/control`        | —                    | —                     | —                      |
+| `/test-jsonld`    | JSON-LD              | —                     | —                      |
+| `/test-semantic`  | —                    | Semantic HTML         | —                      |
+| `/test-aria`      | —                    | ARIA                  | —                      |
+| `/test-noscript`  | —                    | —                     | `<noscript>`           |
+| `/test-dsd`       | —                    | —                     | DSD                    |
+| `/test-microdata` | Microdata            | —                     | —                      |
+| `/combined`       | JSON-LD + Microdata  | ARIA + Semantic HTML  | DSD                    |
 
 **Hydration note:** `/combined` and `/test-dsd` are SSR-only to keep the initial HTML deterministic for crawler/LLM evaluation and to avoid client-side re-rendering artifacts.
 

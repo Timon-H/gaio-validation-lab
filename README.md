@@ -8,20 +8,24 @@
 [![Vercel](https://img.shields.io/badge/Live%20on-Vercel-000000?logo=vercel&logoColor=white)](https://gaio-validation-lab.vercel.app)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 
+## Thesis Metadata
+
+- **Author:** Timon Hargesheimer
+- **Academic Context:** Master's thesis, HTW Berlin (2026)
+- **Software Development Period:** 2026-01 to 2026-04
+- **Final Data Collection Period:** 2026-03-13 to 2026-03-31
+
 Thesis snapshot release: [`v1.1-thesis`](https://github.com/Timon-H/gaio-validation-lab/releases/tag/v1.1-thesis)
 
 This repository benchmarks how different HTML markup techniques affect content extraction from Web Components with **Shadow DOM encapsulation** by AI crawlers and large language models.
 
-Shadow DOM — used extensively in component-driven DXP architectures — is opaque to most AI crawlers by default. This lab benchmarks six **GAIO (Generative AI Optimization)** measures that make Shadow DOM content machine-readable:
+Shadow DOM — used extensively in component-driven DXP architectures — is opaque to most AI crawlers by default. This lab benchmarks three paired **GAIO (Generative AI Optimization)** axes that make Shadow DOM content machine-readable:
 
-| Measure                    | Technique                                                |
-| -------------------------- | -------------------------------------------------------- |
-| **JSON-LD**                | Structured `schema.org` data in `<head>`                 |
-| **Semantic HTML**          | `<section>`, `<article>`, `<aside>` landmark wrappers    |
-| **ARIA**                   | `aria-label` / `aria-labelledby` on custom element hosts |
-| **Declarative Shadow DOM** | SSR-rendered shadow content via `@lit-labs/ssr`          |
-| **Microdata**              | Inline `itemscope` / `itemprop` attributes               |
-| `<noscript>`               | Light DOM fallbacks for no-JS parsers (see note below)   |
+| Axis Group                 | Paired Measures                           | Technique Focus                                                                             |
+| -------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------- |
+| **Structured Data Axis**   | **JSON-LD / Microdata**                   | `schema.org` signals in `<head>` (JSON-LD) and inline attributes (`itemscope` / `itemprop`) |
+| **Visibility Bridge Axis** | **Declarative Shadow DOM / `<noscript>`** | SSR-rendered shadow serialization (`@lit-labs/ssr`) vs Light DOM fallback channel           |
+| **Semantic Context Axis**  | **ARIA / Semantic HTML**                  | Host-level accessibility semantics and document landmark structure                          |
 
 > **Note:** `<noscript>` is included as an isolated variant and in exploratory combined variants, but is not part of the canonical combined stack. See the variant matrix below for details.
 
@@ -37,16 +41,22 @@ Each GAIO measure is isolated to a separate canonical page variant to quantify i
 
 Canonical benchmark matrix (8 variants):
 
-| Variant                | GAIO Measure                                                                                | URL                                                                      |
-| ---------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| Control                | None — bare Shadow DOM baseline                                                             | [/control](https://gaio-validation-lab.vercel.app/control)               |
-| Combined               | Combined stack (JSON-LD + Semantic + ARIA + DSD + Microdata; `<noscript>` remains isolated) | [/combined](https://gaio-validation-lab.vercel.app/combined)             |
-| JSON-LD only           | Structured data in `<head>`                                                                 | [/test-jsonld](https://gaio-validation-lab.vercel.app/test-jsonld)       |
-| Semantic HTML only     | `<section>`, `<article>`, `<aside>` wrappers                                                | [/test-semantic](https://gaio-validation-lab.vercel.app/test-semantic)   |
-| ARIA only              | `aria-label` / `aria-labelledby` on host elements                                           | [/test-aria](https://gaio-validation-lab.vercel.app/test-aria)           |
-| `<noscript>` only      | Light DOM fallbacks for no-JS crawlers                                                      | [/test-noscript](https://gaio-validation-lab.vercel.app/test-noscript)   |
-| Declarative Shadow DOM | SSR-rendered shadow content via `@lit-labs/ssr`                                             | [/test-dsd](https://gaio-validation-lab.vercel.app/test-dsd)             |
-| Microdata only         | Inline `schema.org` `itemscope`/`itemprop` attributes                                       | [/test-microdata](https://gaio-validation-lab.vercel.app/test-microdata) |
+Axis labels used below:
+
+- Structured Data = JSON-LD / Microdata
+- Semantic Context = ARIA / Semantic HTML
+- Visibility Bridge = DSD / `<noscript>`
+
+| Variant                | Axis Group                | GAIO Measure                                                               | URL                                                                      |
+| ---------------------- | ------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Control                | None                      | None — bare Shadow DOM baseline                                            | [/control](https://gaio-validation-lab.vercel.app/control)               |
+| Combined               | Cross-axis combined stack | JSON-LD + Semantic + ARIA + DSD + Microdata; `<noscript>` remains isolated | [/combined](https://gaio-validation-lab.vercel.app/combined)             |
+| JSON-LD only           | Structured Data           | JSON-LD member (`<head>` graph)                                            | [/test-jsonld](https://gaio-validation-lab.vercel.app/test-jsonld)       |
+| Microdata only         | Structured Data           | Microdata member (inline attributes)                                       | [/test-microdata](https://gaio-validation-lab.vercel.app/test-microdata) |
+| Semantic HTML only     | Semantic Context          | Semantic HTML member (landmarks)                                           | [/test-semantic](https://gaio-validation-lab.vercel.app/test-semantic)   |
+| ARIA only              | Semantic Context          | ARIA member (host accessibility semantics)                                 | [/test-aria](https://gaio-validation-lab.vercel.app/test-aria)           |
+| `<noscript>` only      | Visibility Bridge         | `<noscript>` member (Light DOM fallback)                                   | [/test-noscript](https://gaio-validation-lab.vercel.app/test-noscript)   |
+| Declarative Shadow DOM | Visibility Bridge         | DSD member (SSR-rendered shadow content)                                   | [/test-dsd](https://gaio-validation-lab.vercel.app/test-dsd)             |
 
 Exploratory visibility-axis pair (optional, not part of canonical trial statistics):
 

@@ -61,16 +61,22 @@ npm run dev         # Local server at http://localhost:4321
 
 Canonical benchmark matrix (8 variants):
 
-| Path              | Variant                                                                                                    |
-| ----------------- | ---------------------------------------------------------------------------------------------------------- |
-| `/control`        | Bare Shadow DOM — no GAIO measures                                                                         |
-| `/combined`       | Combined stack (JSON-LD + Semantic + ARIA + DSD + Microdata; `<noscript>` is isolated in `/test-noscript`) |
-| `/test-jsonld`    | JSON-LD only                                                                                               |
-| `/test-semantic`  | Semantic HTML only                                                                                         |
-| `/test-aria`      | ARIA only                                                                                                  |
-| `/test-noscript`  | `<noscript>` fallbacks only                                                                                |
-| `/test-dsd`       | Declarative Shadow DOM only                                                                                |
-| `/test-microdata` | Microdata only                                                                                             |
+Axis convention used throughout docs:
+
+- Structured Data Axis = JSON-LD / Microdata
+- Semantic Context Axis = ARIA / Semantic HTML
+- Visibility Bridge Axis = DSD / `<noscript>`
+
+| Path              | Axis Group          | Variant                                                                                                    |
+| ----------------- | ------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `/control`        | None                | Bare Shadow DOM — no GAIO measures                                                                         |
+| `/combined`       | Cross-axis combined | Combined stack (JSON-LD + Semantic + ARIA + DSD + Microdata; `<noscript>` is isolated in `/test-noscript`) |
+| `/test-jsonld`    | Structured Data     | JSON-LD member                                                                                             |
+| `/test-microdata` | Structured Data     | Microdata member                                                                                           |
+| `/test-semantic`  | Semantic Context    | Semantic HTML member                                                                                       |
+| `/test-aria`      | Semantic Context    | ARIA member                                                                                                |
+| `/test-noscript`  | Visibility Bridge   | `<noscript>` member                                                                                        |
+| `/test-dsd`       | Visibility Bridge   | DSD member                                                                                                 |
 
 Optional exploratory visibility-axis pair (not part of canonical trial statistics):
 
