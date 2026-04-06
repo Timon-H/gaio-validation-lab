@@ -13,7 +13,8 @@
 - **Author:** Timon Hargesheimer
 - **Academic Context:** Master's thesis, HTW Berlin (2026)
 - **Software Development Period:** 2026-01 to 2026-04
-- **Final Data Collection Period:** 2026-03-13 to 2026-03-31
+- **Final Evaluation Data Collection Period:** 2026-03-13 to 2026-03-14
+- **Later Simulated Runs (diagnostic only):** Additional March runs were executed for `bot_logs` and `extraction_results` (simulated data, not part of the final LLM evaluation window).
 
 Thesis snapshot release: [`v1.1-thesis`](https://github.com/Timon-H/gaio-validation-lab/releases/tag/v1.1-thesis)
 
